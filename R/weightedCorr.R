@@ -4,7 +4,7 @@
 #'
 #' @param x          a numeric (or numeric factor in case of polychoric and polyserial) vector or an object can be forced to a numeric or factor vector
 #' @param y          a numeric vector (or numeric factor in case of polychoric) or an object can be forced to a numeric or factor vector
-#' @param method     a character string indicating which correlation coefficient (or covariance) is to be computed. One of "pearson" (default), "spearman", "polychoric", or "polyserial".
+#' @param method     a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 #' @param weights    a numeric vector of weights
 #' 
 #' @details 
@@ -29,25 +29,26 @@
 #'
 #'
 #' @export
-weightedCorr <- function(x, y, method = c("pearson", "spearman", "polyserial", "polychoric"), weights=rep(1,length(x))) {
-  x <- as.numeric(as.character(x))
-  y <- as.numeric(as.character(y))
-  w <- as.numric(as.character(w))
+weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "Polychoric"), weights=rep(1,length(x))) {
+  x <- as.numeric(x)
+  y <- as.numeric(y)
+  weights <- as.numeric(weights)
   if(!is.vector(x)) stop(paste0("The argument ",sQuote("x"), " must be a vector."))
   if(!is.vector(y)) stop(paste0("The argument ",sQuote("y"), " must be a vector."))
-  if(!is.vector(w)) stop(paste0("The argument ",sQuote("w"), " must be a vector."))
+  if(!is.vector(weights)) stop(paste0("The argument ",sQuote("weights"), " must be a vector."))
   if(length(x) != length(y)) stop(paste0("The vectors ", sQuote("x"), ", ", sQuote("y"), ", and ", sQuote("w") ," must all be of the same length."))
-  if(length(x) != length(w)) stop(paste0("The vectors ", sQuote("x"), ", ", sQuote("y"), ", and ", sQuote("w") ," must all be of the same length."))
+  if(length(x) != length(weights)) stop(paste0("The vectors ", sQuote("x"), ", ", sQuote("y"), ", and ", sQuote("weights") ," must all be of the same length."))
   
-  if (method == "polyserial") {
-    value <- polys(x, y, weightVar)
+  value <- 0
+  if (method == "Polyserial") {
+    value <- polys(x, y, weights)
   }
   
-  if (method == "polychoric") {
+  if (method == "Polychoric") {
     value <- polyc(x, y, w=weights)
   }
 
-  if (method == "pearson" | method == "spearman") {
+  if (method == "Pearson" | method == "Spearman") {
     value <- contCorr(x, y, w = weights, method=method)
   }
   value

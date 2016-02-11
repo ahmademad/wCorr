@@ -4,15 +4,15 @@
 \alias{weightedCorr}
 \title{Run a bivariate correlation on an edsurvey.data.frame}
 \usage{
-weightedCorr(x, y, method = c("pearson", "spearman", "polyserial",
-  "polychoric"), weights = rep(1, length(x)))
+weightedCorr(x, y, method = c("Pearson", "Spearman", "Polyserial",
+  "Polychoric"), weights = rep(1, length(x)))
 }
 \arguments{
 \item{x}{a numeric (or numeric factor in case of polychoric and polyserial) vector or an object can be forced to a numeric or factor vector}
 
 \item{y}{a numeric vector (or numeric factor in case of polychoric) or an object can be forced to a numeric or factor vector}
 
-\item{method}{a character string indicating which correlation coefficient (or covariance) is to be computed. One of "pearson" (default), "spearman", "polychoric", or "polyserial".}
+\item{method}{a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".}
 
 \item{weights}{a numeric vector of weights}
 }
