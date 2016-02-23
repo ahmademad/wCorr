@@ -29,7 +29,7 @@
 #'
 #'
 #' @export
-weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "Polychoric"), weights=rep(1,length(x))) {
+weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "Polychoric"), weights=rep(1,length(x)), ML=FALSE) {
   x <- as.numeric(x)
   y <- as.numeric(y)
   weights <- as.numeric(weights)
@@ -38,18 +38,34 @@ weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "
   if(!is.vector(weights)) stop(paste0("The argument ",sQuote("weights"), " must be a vector."))
   if(length(x) != length(y)) stop(paste0("The vectors ", sQuote("x"), ", ", sQuote("y"), ", and ", sQuote("w") ," must all be of the same length."))
   if(length(x) != length(weights)) stop(paste0("The vectors ", sQuote("x"), ", ", sQuote("y"), ", and ", sQuote("weights") ," must all be of the same length."))
-  
+
   value <- 0
-  if (method == "Polyserial") {
-    value <- polys(x, y, weights)
-  }
+  foundMethod <- FALSE
+  #if (method == "Polyserial") {
+  #  value <- polys(x, y, weights)
+  #}
   
+  if (method == "Polyserial") {
+    value <- polys_opt1(x, y, weights, ML=ML)
+    foundMethod <- TRUE
+  }
+
+  #if (method == "Polychoric") {
+  #  value <- polyc(x, y, w=weights)
+  #}
+
   if (method == "Polychoric") {
-    value <- polyc(x, y, w=weights)
+    value <- polyc_opt1(x, y, w=weights, ML=ML)
+    foundMethod <- TRUE
   }
 
   if (method == "Pearson" | method == "Spearman") {
-    value <- contCorr(x, y, w = weights, method=method)
+    value <- contCorr(x, y, w=weights, method=method)
+    foundMethod <- TRUE
+  }
+
+  if(!foundMethod) {
+    stop(paste0("Could not find method ",sQuote(method), " see help for available methods."))
   }
   value
 }
