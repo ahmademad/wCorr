@@ -1,11 +1,19 @@
 Package: wCorr
 Type: Package
-Title: Computes weighted correlations
-Version: 1.0
-Date: 2016-02-11
+Title: Computes Weighted Correlations
+Version: 1.4
+Date: 2016-02-25
 Author: Ahmad Emad & Paul Bailey
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Maintainer: Paul Bailey <pbailey@air.org>
+Description: Calculate weighted correlations of four types, Pearson, Spearman,
+    Polychoric, and Polyserial. The Polychoric and Polyserial correlations are
+    calculated numerically and can use either the well known fast method that
+    approximates the nusiance parameters but does not optimize over them or
+    a full ML estimation that typically gives almost identical results after
+    multiplicatively longer run times. All correlations are dispatched by the
+    'weightedCorr' function.
 License: GPL-2
-Depends:  R (>= 3.0.0), psych
-RoxygenNote: 5.0.0
+Imports: minqa, mnormt
+Depends:
+    R (>= 3.0.0) 
+RoxygenNote: 5.0.1
