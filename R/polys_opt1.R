@@ -5,6 +5,7 @@ polys_opt1 <- function(x, M, w, ML=FALSE) {
     R <- (1-rho^2)^0.5
     Qp2 <- (theta[M+2] - rho*x) / R
     Qp1 <- (theta[M+1] - rho*x) / R
+    #print(M)
     #-log(R) + sum(w*dnorm(x,log=TRUE)) + sum(w*log(pnorm(Qp2) - pnorm(Qp1)))
     #-log(R) + sum(w*dnorm(x,log=TRUE)) + sum(w*log(Phi(x,M+2,rho,theta) - Phi(x,M+1,rho,theta)))
     sum(w*dnorm(x,log=TRUE)) + sum(w* log(pnorm(Qp2) - pnorm(Qp1)))
