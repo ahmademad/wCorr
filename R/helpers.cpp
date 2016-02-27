@@ -1,6 +1,11 @@
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
+#include <omp.h>
+
 using namespace Rcpp;
 using namespace std;
+using namespace arma;
+// [[Rcpp::depends("RcppArmadillo")]]
+// [[Rcpp::plugins(openmp)]]
 // Below is a simple example of exporting a C++ function to R. You can
 // source this function into an R session using the Rcpp::sourceCpp 
 // function (or via the Source button on the editor toolbar)
@@ -12,11 +17,23 @@ double square(double x) {
   return x*x;
 }
 // [[Rcpp::export]]
-NumericVector fixxFast(NumericVector x, NumericVector w) {
-  NumericVector mux(x.size(), sum(x*w));
-  NumericVector temp = w*(x-mux);
-  double sdx = sum(sapply(temp, square));
-  return wrap((x-mux)/pow(sdx, 0.5));
+arma::vec fixxFast(vec x, vec w) {
+  omp_set_num_threads(4);
+  arma::vec mux(x.size());
+  double s = 0;
+  for(int i=0; i < x.size(); i+=1)
+    s+=x(i)*w(i);
+  
+  for(int i = 0 ; i < x.size(); i+=1) {
+    mux(i) = s;
+  }
+ arma::vec temp = x-mux;
+ arma::vec temp2(x.size());
+ for(int i=0; i < x.size(); i+=1)
+   temp2(i) = pow(temp(i)*w(i),2);
+
+ double sdx = arma::sum(temp2);
+ return (temp)/pow(sdx, 0.5);
 }
 
 // [[Rcpp::export]]
@@ -32,39 +49,27 @@ NumericVector mapThetaFast(NumericVector v) {
   NumericVector vv = cumsum(temp);
   NumericVector temp2(vv.size()+3);
   temp2[0] = NAN;
-  temp2[1] = -89585;
+  temp2[1] = -std::numeric_limits<double>::infinity();;
   int i = 1;
   for(i =0; i < vv.size(); i+=1)
     temp2[i+2] = vv[i];
-  temp2[vv.size()+2] = 89898;
+  temp2[vv.size()+2] = std::numeric_limits<double>::infinity();
   return wrap(temp2);
 }
 
 // [[Rcpp::export]]
 
-double temp1(NumericVector x, IntegerVector M, NumericVector w, NumericVector theta0, NumericVector par) {
-  w = w/sum(w);
-  NumericVector fx = fixxFast(x, w);
-  NumericVector ftheta0 = mapThetaFast(theta0);
+double optFcFast(NumericVector par, NumericVector x, NumericVector w, NumericVector temp1, NumericVector temp2,
+                 NumericVector temp3) {
+ 
   double rho = tanh(par[0]);
   double R = pow((1-rho*rho), 0.5);
-  IntegerVector idx1 = M +IntegerVector(M.size(), 1);
-  IntegerVector idx2 = M +IntegerVector(M.size(), 0);
-  
-  NumericVector temp1 = ftheta0[idx1];
+
   NumericVector Qp2 = (temp1 - (rho*x))/R;
-  NumericVector temp2 = ftheta0[idx2];
   NumericVector Qp1 = (temp2 - (rho*x))/R;
-  NumericVector temp3 =(w*dnorm(x));
   double res= sum(temp3) + sum(w* (pnorm(Qp2) - pnorm(Qp1)));
-  cout << res;
   return -res;
   
-}
-
-double optFcFast(NumericVector pars) {
-  
-  temp1
 }
 
 
