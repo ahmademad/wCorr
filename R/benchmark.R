@@ -10,8 +10,11 @@ M <- as.numeric(as.factor(M))
 uM <- sort(unique(M))
 theta0 <- sapply(uM[-length(uM)],function(z) qnorm(mean(M<=z)) )
 sourceCpp("helpers.cpp")
-fixxFast(x,w)
-optFcFast(x,M, w, imapTheta(theta0), c(0))
-optFc(x,M,w,imapTheta(theta0))
-polys_opt1Fast(U, M, w, FALSE)
-benchmark(polys_opt1(U, M, w, FALSE), polys_opt1Fast(U, M, w, FALSE))
+
+benchmark(polys_opt1(rep(U, 1000), rep(M, 1000), rep(w, 1000), FALSE),polys_opt1(rep(U, 1000), rep(M, 1000), rep(w, 1000), TRUE),
+          polys_opt1Fast(rep(U, 1000), rep(M, 1000), rep(w, 1000), FALSE), polys_opt1Fast(rep(U, 1000), rep(M, 1000), rep(w, 1000), TRUE))
+benchmark(theta(rep(theta0,10000)), test2(rep(theta0,10000)))
+
+test2 <- function(uM, M) {
+  sapply(uM[-length(uM)],function(z) qnorm(mean(M<=z)) )
+}

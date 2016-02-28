@@ -1,85 +1,102 @@
+// [[Rcpp::depends(BH)]]
 #include <RcppArmadillo.h>
-#include <omp.h>
-
-using namespace Rcpp;
-using namespace std;
-using namespace arma;
+#include <boost/math/distributions/inverse_gaussian.hpp>
+#include <Rmath.h>
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::plugins(openmp)]]
-// Below is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar)
-
-// For more on using Rcpp click the Help button on the editor toolbar
-
-
-double square(double x) {
-  return x*x;
-}
-// [[Rcpp::export]]
-arma::vec fixxFast(vec x, vec w) {
-  omp_set_num_threads(4);
-  arma::vec mux(x.size());
-  double s = 0;
-  for(int i=0; i < x.size(); i+=1)
-    s+=x(i)*w(i);
-  
-  for(int i = 0 ; i < x.size(); i+=1) {
-    mux(i) = s;
-  }
- arma::vec temp = x-mux;
- arma::vec temp2(x.size());
- for(int i=0; i < x.size(); i+=1)
-   temp2(i) = pow(temp(i)*w(i),2);
-
- double sdx = arma::sum(temp2);
- return (temp)/pow(sdx, 0.5);
-}
+// [[Rcpp::depends(BH)]]
 
 // [[Rcpp::export]]
-double imapCorFast(double cor) {
-  return atanh(cor);
+const arma::vec fixxFast(const arma::vec x, const arma::vec w) {
+  const arma::vec temp = x-arma::sum(x%w);
+  double sdx = arma::sum(arma::square(temp)%w);
+  return (temp)/pow(sdx, 0.5);
 }
+
 
 // [[Rcpp::export]]
 
-NumericVector mapThetaFast(NumericVector v) {
-  NumericVector temp = exp(v);
-  temp[0] = v[0];
-  NumericVector vv = cumsum(temp);
-  NumericVector temp2(vv.size()+3);
-  temp2[0] = NAN;
-  temp2[1] = -std::numeric_limits<double>::infinity();;
-  int i = 1;
-  for(i =0; i < vv.size(); i+=1)
-    temp2[i+2] = vv[i];
-  temp2[vv.size()+2] = std::numeric_limits<double>::infinity();
-  return wrap(temp2);
+const arma::vec mapThetaFast(const arma::vec& v) {
+  int s = v.size();
+  arma::vec temp(s+3);
+  temp(0) = R_NaReal;
+  temp(1) = -std::numeric_limits<double>::infinity();
+  temp(s+2) = std::numeric_limits<double>::infinity();
+  temp.subvec(3,s+1) = arma::cumsum(arma::exp(v.tail(s-1)))+v(0);
+  temp(2) = v(0);
+  return temp;
 }
-
 // [[Rcpp::export]]
-
-double optFcFast(NumericVector par, NumericVector x, NumericVector w, NumericVector temp1, NumericVector temp2,
-                 NumericVector temp3) {
+double optFcFast(const arma::vec& par, const arma::vec& x, const arma::vec& w, 
+                 const arma::vec& temp1, const arma::vec& temp2, const arma::vec& temp3) {
  
   double rho = tanh(par[0]);
   double R = pow((1-rho*rho), 0.5);
 
-  NumericVector Qp2 = (temp1 - (rho*x))/R;
-  NumericVector Qp1 = (temp2 - (rho*x))/R;
-  double res= sum(temp3) + sum(w* (pnorm(Qp2) - pnorm(Qp1)));
-  return -res;
+  const arma::vec Qp2 = (temp1 - (rho*x))/R;
+  const arma::vec Qp1 = (temp2 - (rho*x))/R;
+  const arma::vec t = (Rcpp::pnorm(Rcpp::NumericVector(Qp2.begin(),Qp2.end())) -
+                       Rcpp::pnorm(Rcpp::NumericVector(Qp1.begin(),Qp1.end())));
+  double res= temp3(0) + arma::sum(w%arma::log(t));
+  if (res == -std::numeric_limits<double>::infinity()) 
+    res = -std::numeric_limits<double>::max();
+  else
+    res = -res;
+  return res;
   
 }
 
+// [[Rcpp::export]]
 
+const arma::vec theta(const arma::vec& uM, const arma::vec& M) {
+  arma::vec theta0(uM.size()-1);
+  double s = 0;
+  for(int i=0; i < uM.size()-1; i+=1) {
+    s = arma::mean(arma::conv_to<arma::vec>::from(M<=uM(i)));
+    theta0(i) =  R::qnorm(s, 0.0, 1.0, 1, 0);
+   
+  }
+  return theta0;
+}
 
-// 
-// polysLnL <- function(x,M,rho,theta,w) {
-//   R <- (1-rho^2)^0.5
-//   Qp2 <- (theta[M+2] - rho*x) / R
-//   Qp1 <- (theta[M+1] - rho*x) / R
-// #-log(R) + sum(w*dnorm(x,log=TRUE)) + sum(w*log(pnorm(Qp2) - pnorm(Qp1)))
-// #-log(R) + sum(w*dnorm(x,log=TRUE)) + sum(w*log(Phi(x,M+2,rho,theta) - Phi(x,M+1,rho,theta)))
-//   sum(w*dnorm(x,log=TRUE)) + sum(w* log(pnorm(Qp2) - pnorm(Qp1)))
-// }
+// [[Rcpp::export]]
+const arma::vec imapThetaFast(const arma::vec& theta0) {
+  int n = theta0.size();
+  arma::vec temp(n);
+  temp(0) = theta0(0);
+  temp.subvec(1, n-1) = arma::log(theta0.subvec(1, n-1) - theta0.subvec(0, n-2));
+  return temp;
+}
+// [[Rcpp::export]]
+
+arma::field<arma::vec> mainF(const arma::vec x, const arma::vec M, arma::vec  w) {
+  const arma::vec uM = arma::sort(arma::unique(M));
+  const arma::vec theta0 = theta(uM, M);
+  
+
+    const arma::vec ftheta0 = mapThetaFast(imapThetaFast(theta0));
+    const arma::vec temp1 = ftheta0.elem(arma::conv_to<arma::uvec>::from(M)+1); 
+    const arma::vec temp2 = ftheta0.elem(arma::conv_to<arma::uvec>::from(M)); 
+    w = w/arma::sum(w);
+    const arma::vec fx= fixxFast(x, w);
+    
+    arma::vec temp3 = Rcpp::dnorm(Rcpp::NumericVector(fx.begin(),fx.end()), 0.0, 1.0, true);
+    arma::vec temp(2);
+    const arma::mat s = arma::cor(x,M);
+    double c = s(0,0); 
+    double s1 = arma::sum(w%temp3);
+    
+    arma::vec t(1);
+    t.fill(s1);
+    temp(0) = c-3;
+    temp(1) = c+3;
+    arma::field<arma::vec> F(5);
+    F(0) = temp;
+    F(1) = temp1;
+    F(2) = temp2;
+    F(3) = t;
+    F(4) = fx;
+    //double r  = R.parseEval("optimize(optFcFast, interval = temp, x,w,temp1, temp2, temp3)");
+    return F;
+  
+}
+
