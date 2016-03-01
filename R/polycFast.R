@@ -1,7 +1,7 @@
 # based losely on Olsson, Ulf (1979), "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient", Psychometrica, 44(4), 443-460.
 #' @importFrom mnormt biv.nt.prob
 #' @importFrom minqa bobyqa
-polyc <- function(x,y,w,ML=FALSE) {
+polycFast <- function(x,y,w,ML=FALSE) {
   
   lnl <- function(xytab, cc, rc, corr) {
     cc <- c(-Inf, cc, Inf)
@@ -28,37 +28,32 @@ polyc <- function(x,y,w,ML=FALSE) {
   optf_all <- function(par, xytab) {
     c1 <- ncol(xytab)-1
     c2 <- c1 + nrow(xytab)-1
-    -1 * lnl(xytab, cc=fscale_cuts(par[1:c1]), rc=fscale_cuts(par[(c1+1):c2]), corr=fscale_corr(par[length(par)] ))
+    -1 * lnl(xytab, cc=fscale_cutsFast(par[1:c1]), rc=fscale_cutsFast(par[(c1+1):c2]), corr=fscale_corr(par[length(par)] ))
   }
   
   optf_corr <- function(par, xytab, theta1, theta2) {
     c1 <- ncol(xytab)-1
     c2 <- c1 + nrow(xytab)-1
-    -1 * lnl(xytab, cc=fscale_cuts(theta2), rc=fscale_cuts(theta1), corr=fscale_corr(par))
+    -1 * lnl(xytab, cc=fscale_cutsFast(theta2), rc=fscale_cutsFast(theta1), corr=fscale_corr(par))
   }
   
-  fscale_cuts <- function(par) {
-    cumsum(c(par[1],exp(par[-1])))
-  }
-  
+
   fscale_corr <- function(par) {
     tanh(par)
   }
   
   weightedTable <- function(x,y,w=rep(1,length(x))) {
-    tab <- table(x,y)
+    tab <- tableFast(x,y)
+    t1 <- sort(unique(x))
+    t2 <- sort(unique(y))
     for(i in 1:nrow(tab)) {
       for(j in 1:ncol(tab)) {
-        tab[i,j] <- sum(w[ x==dimnames(tab)[[1]][i] & y == dimnames(tab)[[2]][j] ])
+        tab[i,j] <- sum(w[ x==t1[i] & y == t2[j] ])
       }
     }
     tab
   }
-  
-  imapTheta <- function(theta0) {
-    c(theta0[1], log(theta0[-1]-theta0[-length(theta0)]))
-  }
-  
+
   xytab <- weightedTable(x,y,w)
   
   # first check for perfect correlations which throw the optimizer for a loop because of the infinite bounds of the mapped correlation
@@ -126,9 +121,9 @@ polyc <- function(x,y,w,ML=FALSE) {
   #op <- optim(par=c(log(1:(ncol(xytab)-1)), log(1:(nrow(xytab)-1)),cor(x,y)), optf_all, xytab=xytab, control=list(fnscale=-1), method="BFGS")
   #fscale_corr(op$par[length(op$par)])
   ux <- sort(unique(x))
-  cut1 <- imapTheta( sapply(ux[-length(ux)],function(z) qnorm(mean(x<=z)) ))
+  cut1 <- imapThetaFast( sapply(ux[-length(ux)],function(z) qnorm(mean(x<=z)) ))
   uy <- sort(unique(y))
-  cut2 <- imapTheta( sapply(uy[-length(uy)],function(z) qnorm(mean(y<=z)) ))
+  cut2 <- imapThetaFast( sapply(uy[-length(uy)],function(z) qnorm(mean(y<=z)) ))
   cor0 <- atanh(cor(as.numeric(x),as.numeric(y)))
   #bob <- bobyqa(c(cut1,cut2,cor0), fn=optf_all, xytab=xytab)
   if(ML) {

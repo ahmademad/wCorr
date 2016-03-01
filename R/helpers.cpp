@@ -1,9 +1,6 @@
-// [[Rcpp::depends(BH)]]
 #include <RcppArmadillo.h>
-#include <boost/math/distributions/inverse_gaussian.hpp>
 #include <Rmath.h>
 // [[Rcpp::depends("RcppArmadillo")]]
-// [[Rcpp::depends(BH)]]
 
 // [[Rcpp::export]]
 const arma::vec fixxFast(const arma::vec x, const arma::vec w) {

@@ -9,12 +9,10 @@ x <- U
 M <- as.numeric(as.factor(M))
 uM <- sort(unique(M))
 theta0 <- sapply(uM[-length(uM)],function(z) qnorm(mean(M<=z)) )
-sourceCpp("helpers.cpp")
-
-benchmark(polys_opt1(rep(U, 1000), rep(M, 1000), rep(w, 1000), FALSE),polys_opt1(rep(U, 1000), rep(M, 1000), rep(w, 1000), TRUE),
-          polys_opt1Fast(rep(U, 1000), rep(M, 1000), rep(w, 1000), FALSE), polys_opt1Fast(rep(U, 1000), rep(M, 1000), rep(w, 1000), TRUE))
-benchmark(theta(rep(theta0,10000)), test2(rep(theta0,10000)))
-
-test2 <- function(uM, M) {
-  sapply(uM[-length(uM)],function(z) qnorm(mean(M<=z)) )
-}
+sourceCpp("polycHelpers.cpp")
+#sourceCpp("helpers.cpp")
+benchmark(polyc(rep(U, 100), rep(M, 100), rep(w, 100), FALSE),
+          polycFast(rep(U, 100), rep(M, 100), rep(w, 100), FALSE))
+benchmark(table(rep(U, 1000), rep(M, 1000)), tableFast(rep(U, 1000), rep(M, 1000)))
+#benchmark(polys_opt1(rep(U, 10000), rep(M, 10000), rep(w, 10000), FALSE),polys_opt1(rep(U, 10000), rep(M, 10000), rep(w, 10000), TRUE),
+#          polys_opt1Fast(rep(U, 10000), rep(M, 10000), rep(w, 10000), FALSE), polys_opt1Fast(rep(U, 10000), rep(M, 10000), rep(w, 10000), TRUE))
