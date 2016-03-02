@@ -1,50 +1,50 @@
 # based losely on Olsson, Ulf (1979), "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient", Psychometrica, 44(4), 443-460.
 #' @importFrom mnormt biv.nt.prob
 #' @importFrom minqa bobyqa
-polyc <- function(x,y,w,ML=FALSE) {
-  
+polycSlow <- function(x,y,w,ML=FALSE) {
+
   lnl <- function(xytab, cc, rc, corr) {
     cc <- c(-Inf, cc, Inf)
     rc <- c(-Inf, rc, Inf)
     pm <- sapply(1:(length(cc)-1), function(c) {
-      sapply(1:(length(rc)-1), function(r) {
-        biv.nt.prob(df=Inf,
-                    lower=c(cc[c], rc[r]),
-                    upper=c(cc[c+1], rc[r+1]),
-                    mean=c(0,0),
-                    S=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
-        #pmvnorm(lower=c(cc[c], rc[r]),
-        #        upper=c(cc[c+1], rc[r+1]),
-        #        mean=c(0,0),
-        #        corr=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
-      })
+            sapply(1:(length(rc)-1), function(r) {
+              biv.nt.prob(df=Inf,
+                          lower=c(cc[c], rc[r]),
+                          upper=c(cc[c+1], rc[r+1]),
+                          mean=c(0,0),
+                          S=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
+              #pmvnorm(lower=c(cc[c], rc[r]),
+              #        upper=c(cc[c+1], rc[r+1]),
+              #        mean=c(0,0),
+              #        corr=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
+          })
     })
     suppressWarnings(lpm <- log(pm))
     lpm[is.nan(lpm)] <- 0
     lpm[!is.finite(lpm)] <- log(.Machine$double.xmin)
     sum(xytab * lpm)
   }
-  
+
   optf_all <- function(par, xytab) {
     c1 <- ncol(xytab)-1
     c2 <- c1 + nrow(xytab)-1
     -1 * lnl(xytab, cc=fscale_cuts(par[1:c1]), rc=fscale_cuts(par[(c1+1):c2]), corr=fscale_corr(par[length(par)] ))
   }
-  
+
   optf_corr <- function(par, xytab, theta1, theta2) {
     c1 <- ncol(xytab)-1
     c2 <- c1 + nrow(xytab)-1
     -1 * lnl(xytab, cc=fscale_cuts(theta2), rc=fscale_cuts(theta1), corr=fscale_corr(par))
   }
-  
+
   fscale_cuts <- function(par) {
     cumsum(c(par[1],exp(par[-1])))
   }
-  
+
   fscale_corr <- function(par) {
     tanh(par)
   }
-  
+
   weightedTable <- function(x,y,w=rep(1,length(x))) {
     tab <- table(x,y)
     for(i in 1:nrow(tab)) {
@@ -54,13 +54,13 @@ polyc <- function(x,y,w,ML=FALSE) {
     }
     tab
   }
-  
+
   imapTheta <- function(theta0) {
     c(theta0[1], log(theta0[-1]-theta0[-length(theta0)]))
   }
   
   xytab <- weightedTable(x,y,w)
-  
+
   # first check for perfect correlations which throw the optimizer for a loop because of the infinite bounds of the mapped correlation
   i <- 1
   j <- 1
@@ -86,7 +86,7 @@ polyc <- function(x,y,w,ML=FALSE) {
       j <- j + 1
     }
   }
-  
+
   i <- 1
   j <- 1
   while(j<ncol(xytab)) {
@@ -117,12 +117,12 @@ polyc <- function(x,y,w,ML=FALSE) {
     #print(xytab)
     return(-1)
   }
-  
+ 
   #GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
   #if( GKgamma %in%  c(-1,1)) {
   #  return(unname(GKgamma))
   #}
-  
+
   #op <- optim(par=c(log(1:(ncol(xytab)-1)), log(1:(nrow(xytab)-1)),cor(x,y)), optf_all, xytab=xytab, control=list(fnscale=-1), method="BFGS")
   #fscale_corr(op$par[length(op$par)])
   ux <- sort(unique(x))

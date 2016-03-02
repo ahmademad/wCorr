@@ -6,6 +6,7 @@ polycFast <- function(x,y,w,ML=FALSE) {
   lnl <- function(xytab, cc, rc, corr) {
     cc <- c(-Inf, cc, Inf)
     rc <- c(-Inf, rc, Inf)
+    
     pm <- sapply(1:(length(cc)-1), function(c) {
       sapply(1:(length(rc)-1), function(r) {
         biv.nt.prob(df=Inf,
@@ -13,16 +14,9 @@ polycFast <- function(x,y,w,ML=FALSE) {
                     upper=c(cc[c+1], rc[r+1]),
                     mean=c(0,0),
                     S=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
-        #pmvnorm(lower=c(cc[c], rc[r]),
-        #        upper=c(cc[c+1], rc[r+1]),
-        #        mean=c(0,0),
-        #        corr=matrix(c(1,corr,corr,1), nrow=2, ncol=2, byrow=TRUE))
       })
     })
-    suppressWarnings(lpm <- log(pm))
-    lpm[is.nan(lpm)] <- 0
-    lpm[!is.finite(lpm)] <- log(.Machine$double.xmin)
-    sum(xytab * lpm)
+    lnlFast(xytab, pm)
   }
   
   optf_all <- function(par, xytab) {
@@ -37,89 +31,16 @@ polycFast <- function(x,y,w,ML=FALSE) {
     -1 * lnl(xytab, cc=fscale_cutsFast(theta2), rc=fscale_cutsFast(theta1), corr=fscale_corr(par))
   }
   
-
+  
   fscale_corr <- function(par) {
     tanh(par)
   }
   
-  weightedTable <- function(x,y,w=rep(1,length(x))) {
-    tab <- tableFast(x,y)
-    t1 <- sort(unique(x))
-    t2 <- sort(unique(y))
-    for(i in 1:nrow(tab)) {
-      for(j in 1:ncol(tab)) {
-        tab[i,j] <- sum(w[ x==t1[i] & y == t2[j] ])
-      }
-    }
-    tab
-  }
-
-  xytab <- weightedTable(x,y,w)
+  xytab <- tableFast(x,y,w)
+  temp <- discord(xytab)
+  if(temp!=0)
+    return(temp)
   
-  # first check for perfect correlations which throw the optimizer for a loop because of the infinite bounds of the mapped correlation
-  i <- 1
-  j <- 1
-  foundConcord <- FALSE
-  foundDiscord <- FALSE
-  while(j<ncol(xytab)) {
-    if(i<nrow(xytab) & j < ncol(xytab)) {
-      if(xytab[i,j]>0 & sum(xytab[(i+1):nrow(xytab), (j+1):ncol(xytab)]) > 0) {
-        foundConcord <- TRUE
-        break
-      }
-    }
-    if(i>1 & j > 1) {
-      if(xytab[i,j]>0 & sum(xytab[1:(i-1), 1:(j-1)]) > 0) {
-        foundConcord <- TRUE
-        break
-      }
-    }
-    # incriment
-    i <- i + 1
-    if(i>nrow(xytab)) { 
-      i <- 1
-      j <- j + 1
-    }
-  }
-  
-  i <- 1
-  j <- 1
-  while(j<ncol(xytab)) {
-    if(i>1 & j < ncol(xytab)) {
-      if(xytab[i,j]>0 & sum(xytab[1:(i-1), (j+1):ncol(xytab)]) > 0) {
-        foundDiscord <- TRUE
-        break
-      }
-    }
-    if(i<nrow(xytab) & j > 1) {
-      if(xytab[i,j]>0 & sum(xytab[(i+1):nrow(xytab), 1:(j-1)]) > 0) {
-        foundDiscord <- TRUE
-        break
-      }
-    }
-    # incriment
-    i <- i + 1
-    if(i>nrow(xytab)) { 
-      i <- 1
-      j <- j + 1
-    }
-  }
-  if(!foundDiscord){
-    #print(xytab)
-    return(1)
-  }
-  if(!foundConcord) {
-    #print(xytab)
-    return(-1)
-  }
-  
-  #GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
-  #if( GKgamma %in%  c(-1,1)) {
-  #  return(unname(GKgamma))
-  #}
-  
-  #op <- optim(par=c(log(1:(ncol(xytab)-1)), log(1:(nrow(xytab)-1)),cor(x,y)), optf_all, xytab=xytab, control=list(fnscale=-1), method="BFGS")
-  #fscale_corr(op$par[length(op$par)])
   ux <- sort(unique(x))
   cut1 <- imapThetaFast( sapply(ux[-length(ux)],function(z) qnorm(mean(x<=z)) ))
   uy <- sort(unique(y))

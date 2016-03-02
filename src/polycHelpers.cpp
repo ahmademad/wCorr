@@ -3,15 +3,6 @@
 #include <Rcpp.h>
 // [[Rcpp::depends("RcppArmadillo")]]
 
-// This is a simple example of exporting a C++ function to R. You can
-// source this function into an R session using the Rcpp::sourceCpp 
-// function (or via the Source button on the editor toolbar). Learn
-// more about Rcpp at:
-//
-//   http://www.rcpp.org/
-//   http://adv-r.had.co.nz/Rcpp.html
-//   http://gallery.rcpp.org/
-//
 
 template< typename ARMA_VECTOR_TYPE >
 ARMA_VECTOR_TYPE vintersection( ARMA_VECTOR_TYPE first, ARMA_VECTOR_TYPE second )
@@ -19,8 +10,8 @@ ARMA_VECTOR_TYPE vintersection( ARMA_VECTOR_TYPE first, ARMA_VECTOR_TYPE second 
   std::vector< typename ARMA_VECTOR_TYPE::value_type > output ;
   std::set_intersection( first.begin(), first.end(), second.begin(), second.end(),
                          std::back_inserter(output) ) ;
-  std::reverse( output.begin(), output.end() ) ;   
-  
+  std::reverse( output.begin(), output.end() ) ;
+
   ARMA_VECTOR_TYPE result = arma::conv_to< ARMA_VECTOR_TYPE >::from(output);
   return result ;
 }
@@ -45,8 +36,8 @@ const arma::vec fscale_cutsFast(const arma::vec& par) {
 
 // [[Rcpp::export]]
 const arma::mat tableFast(const arma::vec& x, const arma::vec& y, const arma::vec& w) {
-  const arma::vec xUni = arma::sort(arma::unique(x)); 
-  const arma::vec yUni = arma::sort(arma::unique(y)); 
+  const arma::vec xUni = arma::sort(arma::unique(x));
+  const arma::vec yUni = arma::sort(arma::unique(y));
   int xsize = xUni.size();
   int ysize = yUni.size();
   arma::mat tab(xsize, ysize);
@@ -97,24 +88,24 @@ int discord(const arma::mat& xytab) {
       }
     }
     i += 1;
-    if(i>nrows) { 
+    if(i>nrows) {
       i = 1;
       j = j + 1;
     }
   }
-  
+
   i = 0;
   j = 0;
   while(j < ncols) {
     if(i>0 && j<ncols) {
-      
+
       const arma::uvec ind1 = arma::linspace<arma::uvec>(0, i-1);
       const arma::uvec ind2 = arma::linspace<arma::uvec>(j+1,ncols);
       bool temp1 = xytab(i,j)>0;
       double temp2 = arma::accu(xytab.elem(ind1, ind2));
       bool temp3 = temp2 >0;
       if(temp1 && temp3 ) {
-        
+
         foundDiscord = true;
         break;
       }
@@ -131,7 +122,7 @@ int discord(const arma::mat& xytab) {
       }
     }
     i += 1;
-    if(i>nrows) { 
+    if(i>nrows) {
       i = 1;
       j = j + 1;
     }
@@ -150,7 +141,7 @@ double lnlFast(const arma::mat& xytab, const arma::mat& pm) {
   //Rcpp::Rcout << lpm;
   lpm.elem(arma::find_nonfinite(lpm)).fill(arma::datum::log_min);
   double sum = arma::accu(xytab % lpm);
-  
+
   return sum;
 }
 

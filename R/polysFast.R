@@ -1,9 +1,8 @@
-
-polys_opt1Fast <- function(x, M, w, ML=FALSE) {
-  #bob <- bobyqa(par=c(imapCor(cor(x,M)),imapTheta(theta0)), fn=optF(x,M,w))
+#' @importFrom minqa bobyqa
+polysFast <- function(x, M, w, ML=FALSE) {
   if(ML) {
     values = mainF(x, M, w)
-    bob <- bobyqa(par=c(atanh(cor(x,M)),imapThetaFast(theta0)),
+    bob <- bobyqa(par=c(atanh(cor(x,M)),imapThetaFast2(theta0)),
                   fn=optFcFast, x=unlist(values[5]),  w=w, temp1=unlist(values[2]),temp2=unlist(values[3]),
                                 temp3=unlist(values[4]))
     return(  tanh(bob$par[1]))
