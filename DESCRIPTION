@@ -1,7 +1,7 @@
 Package: wCorr
 Type: Package
 Title: Computes weighted correlations
-Version: 1.3
+Version: 1.5
 Date: 2016-03-02
 Author: Ahmad Emad & Paul Bailey
 Maintainer: Who to complain to <yourfault@somewhere.net>
