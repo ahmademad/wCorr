@@ -2,10 +2,10 @@
 % Please edit documentation in R/weightedCorr.R
 \name{weightedCorr}
 \alias{weightedCorr}
-\title{Calculates bivariate correlation on diescrete or continious variables}
+\title{Run a bivariate correlation on an edsurvey.data.frame}
 \usage{
 weightedCorr(x, y, method = c("Pearson", "Spearman", "Polyserial",
-  "Polychoric"), weights = rep(1, length(x)), ML = FALSE)
+  "Polychoric"), weights = rep(1, length(x)))
 }
 \arguments{
 \item{x}{a numeric (or numeric factor in case of polychoric and polyserial) vector or an object can be forced to a numeric or factor vector}
@@ -15,34 +15,16 @@ weightedCorr(x, y, method = c("Pearson", "Spearman", "Polyserial",
 \item{method}{a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".}
 
 \item{weights}{a numeric vector of weights}
-
-\item{ML}{a boolean value indicating if full ML is to be used (polyserial and polychoric only, has no effect on Pearson or Spearman results). This substantially increases the compute time and has a very small change in the the result.}
 }
 \value{
-A scalar that is the estimated correlation.
+Computed value of the correlation
 }
 \description{
-Implements weighted polyserial, weighted polychoric, weighted spearman, and weighted pearson correlations
+Implements weighted polyserial, weighted polychoric, weighted spearman, and weighted pearson  correlations
 }
 \details{
-In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For polychoric, both must be categorical.
-the correlation methods are calculated as described in seperate documentaiton. For Spearman the data is first ranked and then a Pearson type correlation
-coefficient is calculated on the result. The ranking method gives averages for ties.
-
-The details of computation are given in the vignette.
-}
-\examples{
-# run a polyserial correlation
-attach(mtcars)
-weightedCorr(gear, x=cyl, method="polyserial")
-# weight by MPG
-weightedCorr(y=gear, x=cyl, method="polyserial", weights=mpg)
-
-# run a polychoric correlation
-weightedCorr(gear, x=cyl, method="polychoric")
-# weight by MPG
-weightedCorr(y=gear, x=cyl, method="polychoric", weights=mpg)
-detach(mtcars)
+In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable.
+the correlation methods are calculated as described in seperate documentaiton.
 }
 \seealso{
 \ifelse{latex}{\code{cor}}{\code{\link[stats]{cor}}}

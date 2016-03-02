@@ -1,0 +1,137 @@
+[
+    {
+        "definitions" : [
+            {
+                "column" : 8,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/contCorrHelpers.cpp",
+                "kind" : 6,
+                "line" : 6,
+                "name" : "cont(arma::vec, arma::vec, const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@cont#$@N@arma@C@Col>#d#S0_#&1S0_#"
+            }
+        ],
+        "file" : "C:/Users/aemad/Documents/wCorr/src/contCorrHelpers.cpp",
+        "file_last_write" : 1456947493
+    },
+    {
+        "definitions" : [
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 6,
+                "name" : "fixxFast(const arma::vec, const arma::vec)",
+                "parent_name" : "",
+                "usr" : "c:@F@fixxFast#1$@N@arma@C@Col>#d#1S0_#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 15,
+                "name" : "mapThetaFast(const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@mapThetaFast#&1$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 8,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 26,
+                "name" : "optFcFast(const arma::vec &, const arma::vec &, const arma::vec &, const arma::vec &, const arma::vec &, const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@optFcFast#&1$@N@arma@C@Col>#d#S0_#S0_#S0_#S0_#S0_#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 47,
+                "name" : "theta(const arma::vec &, const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@theta#&1$@N@arma@C@Col>#d#S0_#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 59,
+                "name" : "imapThetaFast2(const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@imapThetaFast2#&1$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 24,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+                "kind" : 6,
+                "line" : 68,
+                "name" : "mainF(const arma::vec, const arma::vec, arma::vec)",
+                "parent_name" : "",
+                "usr" : "c:@F@mainF#1$@N@arma@C@Col>#d#1S0_#S0_#"
+            }
+        ],
+        "file" : "C:/Users/aemad/Documents/wCorr/src/helpers.cpp",
+        "file_last_write" : 1456946881
+    },
+    {
+        "definitions" : [
+            {
+                "column" : 18,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 8,
+                "name" : "vintersection(ARMA_VECTOR_TYPE, ARMA_VECTOR_TYPE)",
+                "parent_name" : "",
+                "usr" : "c:@FT@>1#Tvintersection#t0.0#S0_#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 21,
+                "name" : "imapThetaFast(const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@imapThetaFast#&1$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 30,
+                "name" : "fscale_cutsFast(const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@fscale_cutsFast#&1$@N@arma@C@Col>#d#"
+            },
+            {
+                "column" : 17,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 38,
+                "name" : "tableFast(const arma::vec &, const arma::vec &, const arma::vec &)",
+                "parent_name" : "",
+                "usr" : "c:@F@tableFast#&1$@N@arma@C@Col>#d#S0_#S0_#"
+            },
+            {
+                "column" : 5,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 59,
+                "name" : "discord(const arma::mat &)",
+                "parent_name" : "",
+                "usr" : "c:@F@discord#&1$@N@arma@C@Mat>#d#"
+            },
+            {
+                "column" : 8,
+                "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+                "kind" : 6,
+                "line" : 138,
+                "name" : "lnlFast(const arma::mat &, const arma::mat &)",
+                "parent_name" : "",
+                "usr" : "c:@F@lnlFast#&1$@N@arma@C@Mat>#d#S0_#"
+            }
+        ],
+        "file" : "C:/Users/aemad/Documents/wCorr/src/polycHelpers.cpp",
+        "file_last_write" : 1456947132
+    }
+]
