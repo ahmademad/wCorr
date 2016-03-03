@@ -20,8 +20,8 @@ polycSlow <- function(x,y,w,ML=FALSE) {
           })
     })
     suppressWarnings(lpm <- log(pm))
-    lpm[is.nan(lpm)] <- 0
-    lpm[!is.finite(lpm)] <- log(.Machine$double.xmin)
+    #lpm[is.nan(lpm)] <- 0
+    lpm[(is.nan(lpm)) | (!is.finite(lpm))] <- log(.Machine$double.xmin)
     sum(xytab * lpm)
   }
 

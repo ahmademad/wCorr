@@ -4,11 +4,12 @@ Title: Computes weighted correlations
 Version: 1.5
 Date: 2016-03-02
 Author: Ahmad Emad & Paul Bailey
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Maintainer: Paul Bailey <pbailey@air.org>
+Description: Calculates weighted Pearson, Spearman, polychoric or polyserial correlation coefficients.
 License: GPL-2
-Depends:  R (>= 3.0.0), psych, minqa, mvtnorm, Hmisc, mnormt
-Imports: 
-    Rcpp (>= 0.12.3)
+Imports: minqa, mnormt, Rcpp 
+Depends: R (>= 3.0.0) 
+RoxygenNote: 5.0.1
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppArmadillo
-RoxygenNote: 5.0.0

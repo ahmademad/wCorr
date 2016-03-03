@@ -44,7 +44,7 @@ polysSlow <- function(x, M, w, ML=FALSE) {
 
   M <- as.numeric(as.factor(M)) # make discrete values that are adjacent.
   uM <- sort(unique(M))
-  theta0 <- sapply(uM[-length(uM)],function(z) qnorm(mean(M<=z)) )
+  theta0 <- sapply(uM[-length(uM)],function(z) qnorm(weighted.mean(M<=z, w)) )
 
   imapTheta <- function(theta0) {
     c(theta0[1], log(theta0[-1]-theta0[-length(theta0)]))

@@ -2,12 +2,13 @@
 #'
 #' @description Implements weighted polyserial, weighted polychoric, weighted spearman, and weighted pearson correlations
 #'
-#' @param x          a numeric (or numeric factor in case of polychoric and polyserial) vector or an object can be forced to a numeric or factor vector
-#' @param y          a numeric vector (or numeric factor in case of polychoric) or an object can be forced to a numeric or factor vector
+#' @param x          a numeric (or numeric factor in case of polychoric) vector or an object can be forced to a numeric or factor vector
+#' @param y          a numeric vector (or factor in case of polychoric and polyserial) or an object can be forced to a numeric or factor vector
 #' @param method     a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 #' @param weights    a numeric vector of weights
 #' @param ML         a boolean value indicating if full ML is to be used (polyserial and polychoric only, has no effect on Pearson or Spearman results). This substantially increases the compute time and has a very small change in the the result.
-#' 
+#' @param fast       a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE uses the pure R implementation and is included primarily for comparing the implementations to eachother.
+#'
 #' @details 
 #' In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For polychoric, both must be categorical.
 #' the correlation methods are calculated as described in seperate documentaiton. For Spearman the data is first ranked and then a Pearson type correlation
@@ -83,11 +84,9 @@ weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "
   if (method == "pearson" | method == "spearman") {
     if(fast){
       value <- contCorrFast(x, y, w=weights, method=method)
-      
     }
     else {
       value <- contCorr(x, y, w=weights, method=method)
-      
     }
     foundMethod <- TRUE
   }

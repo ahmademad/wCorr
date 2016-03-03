@@ -13,4 +13,4 @@ contCorrFast <- function(x,y,w, method=c("Pearson", "Spearman")) {
     y <- rank(y)
   }
   cont(x,y,w)
-  }
+}
