@@ -14,6 +14,9 @@ Description: Calculate weighted correlations of four types, Pearson, Spearman,
     'weightedCorr' function.
 License: GPL-2
 Imports: minqa, mnormt
-Depends:
+Depends: 
     R (>= 3.0.0) 
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
