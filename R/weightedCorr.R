@@ -7,7 +7,8 @@
 #' @param method     a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 #' @param weights    a numeric vector of weights
 #' @param ML         a boolean value indicating if full ML is to be used (polyserial and polychoric only, has no effect on Pearson or Spearman results). This substantially increases the compute time and has a very small change in the the result.
-#' 
+#' @param fast       a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE uses the pure R implementation and is included primarily for comparing the implementations to eachother.
+#'
 #' @details 
 #' In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For polychoric, both must be categorical.
 #' the correlation methods are calculated as described in seperate documentaiton. For Spearman the data is first ranked and then a Pearson type correlation
@@ -33,7 +34,7 @@
 #' @seealso \ifelse{latex}{\code{cor}}{\code{\link[stats]{cor}}}
 #'
 #' @export
-weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "Polychoric"), weights=rep(1,length(x)), ML=FALSE) {
+weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "Polychoric"), weights=rep(1,length(x)), ML=FALSE, fast=TRUE) {
   x <- as.numeric(x)
   y <- as.numeric(y)
   weights <- as.numeric(weights)
@@ -61,17 +62,32 @@ weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "
     if(is.factor(x)) {
       stop(paste0("The argument ", sQuote("X"), " is a factor but must be continious in the Polyserial correlation."))
     }
-    value <- polys(x, y, weights, ML=ML)
+    if(fast){
+      value <- polysFast(x, y, weights, ML=ML)
+    }
+    else {
+     value <- polysSlow(x, y, weights, ML=ML) 
+    }
     foundMethod <- TRUE
   }
 
   if (method == "polychoric") {
-    value <- polyc(x, y, w=weights, ML=ML)
+    if (fast) {
+      value <- polycFast(x, y, w=weights, ML=ML)
+    }
+    else {
+      value <- polycSlow(x, y, w=weights, ML=ML)
+    }
     foundMethod <- TRUE
   }
 
   if (method == "pearson" | method == "spearman") {
-    value <- contCorr(x, y, w=weights, method=method)
+    if(fast){
+      value <- contCorrFast(x, y, w=weights, method=method)
+    }
+    else {
+      value <- contCorr(x, y, w=weights, method=method)
+    }
     foundMethod <- TRUE
   }
 

@@ -215,7 +215,33 @@ xyplot(t ~ cor0|est,
 ```
 
 ## General setup for the weighted case
+For the weighted case the unweighted result would be consistent if there were not something about the higher weight cases that makes them diffeent from the lower weight cases. Thus, while it is not reasonable to always assume that thee is a difference between the high and low weight cases, boht are possible and it serves as a more robust test of the methods in this package to consider a cases where they are associated.
+
+There are many possible ways to associate the higher and lower weight cases. For the purposes of this document it is assumed that there is a third variable ***W*** that is correlated with ***X*** and ***Y*** and that the varible ***W*** is also the weight. While in a pratical cases it is unlikely that the weight itself would be causing changes in the relationship between ***X*** and ***Y***, this is a simplifying assumption that is used as a conveniance--averting the need for a fourth variable. 
+
+Thus, the general setup is this:
+
+$$\begin{pmatrix} \mathbf{X} \\ \mathbf{Y} \\ \mathbf{W} \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \\ \mu_w \end{pmatrix}, \Sigma \right] $$
+
+for conveniance, and without loss of generality, it is assumed that $\mu_x = \mu_y = \mu_w \equiv 0$ and that
+
+$$\Sigma \equiv \begin{pmatrix} 1 & \rho & a \\ \rho & 1 & b \\ a & b &  1 \end{pmatrix} $$
+
+where $\rho$ remails the parameter of interest and $a\in [0,1]$ and $b \in [0,1]$ are the correlation between ***X*** and ***W*** and the correlation between ***Y*** and ***W***, respectively.
+
+Simulations are carred out in the same fashion as before, except that after $\rho$ is elected, $a$ and $b$ are aslo selected.
 
 ##Polyserial simulation study, weighted
 
+* method(s) of selecting $n$, $\rho$, $\rho$, $a$, $b$, $t$, $t'$,  $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$.
+
+then make these plots (note: include Pearson and Spearman):
+* Compare weighted and unweighted bias as a function of $\rho$ and $a=b$, all $n=$ something reasonable based on the final bias chart . 
+* Compare weighted and unweighted RMSE as a function of $\rho$ and $a=b$, all $n=$ something reasonable based on the final bias chart. 
+
+* Compare weighted and unweighted bias as a function of $\rho$ and $a$ while $b=0$, all $n=$ something reasonable based on the final bias chart. 
+* Compare weighted and unweighted RMSE as a function of $\rho$ and $a$ while $b=0$, all $n=$ something reasonable based on the final bias chart. 
+
 ##Polychoric simulation study, weighted
+
+

@@ -1,9 +1,6 @@
-setwd("Q:/Paul/wCorr/wCorr/vignettes")
-
-sim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
-  
-  len <- max(c(length(n), length(rho), length(ML), length(fast), length(rest), length(usew)))
-  vec <- c("n", "rho", "ML", "fast", "rest", "usew")
+wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
+  len <- max(c(length(n), length(rho), length(ML), length(fast), length(reset), length(usew)))
+  vec <- c("n", "rho", "ML", "fast", "reset", "usew")
   for(i in 1:length(vec)) {
     var <- get(vec[i])
     if(length(var) != len) {
@@ -110,4 +107,8 @@ sim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
   dfout
 }
 
-save(biasdf, file="bias.RData")
+
+if(FALSE) {
+  wCorrSim(n=c(10,100,1000), rho=c(0,0,0))
+}
+

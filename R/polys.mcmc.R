@@ -1,6 +1,6 @@
-require(MASS)
-require(sqldf)
-source("G:/pdbr/helpers.R")
+#require(MASS)
+#require(sqldf)
+#source("G:/pdbr/helpers.R")
 
 polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
   t1 <- list(xbar=Inf,xsd=Inf,wlpx=Inf)
@@ -230,64 +230,65 @@ polys <- function(x,y,w=rep(1,length(x)), verbose=FALSE) {
   fscale_corr(cor0)
 }
 
+if(FALSE) {
+  nr <- 2100
+  df <- data.frame(n=rep(0,nr),
+                   cor=rep(NA,nr),
+                   cuts1=rep(NA,nr),
+                   cuts2=rep(NA,nr),
+                   ps1c=rep(NA,nr),
+                   psm=rep(NA,nr),
+                   Pe=rep(NA,nr))
+  corv <- seq(-0.95,0.95,len=21)
 
-nr <- 2100
-df <- data.frame(n=rep(0,nr),
-                 cor=rep(NA,nr),
-                 cuts1=rep(NA,nr),
-                 cuts2=rep(NA,nr),
-                 ps1c=rep(NA,nr),
-                 psm=rep(NA,nr),
-                 Pe=rep(NA,nr))
-corv <- seq(-0.95,0.95,len=21)
+  for(i in 1:nr) {
+    cat("i=",i,"\n")
+    n <- 1e4
+    cuts <- c(-0.2,0.2)
+    if(runif(1) < 0.2) { cuts <- c(-1,1) }
+    if(runif(1) < 0.2) { cuts <- c(-1,0,1) }
+    if(runif(1) < 0.2) { cuts <- c(-0.5,0,0.5) }
+    
+    cor <- sample(corv,1)
+    df$cuts1[i] <- cuts[1]
+    df$cuts2[i] <- cuts[2]
+    df$cor[i] <- cor
+    df$n[i] <- n
+    
+    S <- matrix(c(1,cor,cor,1), nrow=2)
 
-for(i in 1:nr) {
-  cat("i=",i,"\n")
-  n <- 1e4
-  cuts <- c(-0.2,0.2)
-  if(runif(1) < 0.2) { cuts <- c(-1,1) }
-  if(runif(1) < 0.2) { cuts <- c(-1,0,1) }
-  if(runif(1) < 0.2) { cuts <- c(-0.5,0,0.5) }
-  
-  cor <- sample(corv,1)
-  df$cuts1[i] <- cuts[1]
-  df$cuts2[i] <- cuts[2]
-  df$cor[i] <- cor
-  df$n[i] <- n
-  
-  S <- matrix(c(1,cor,cor,1), nrow=2)
+    xy <- mvrnorm(n=n, mu=c(0,0), Sigma=S)
+    x <- xy[,1]
+    y <- length(cuts)+1
+    for(j in rev(1:length(cuts))) {
+      y <- ifelse(xy[,2] <= cuts[j], j, y)
+    }
 
-  xy <- mvrnorm(n=n, mu=c(0,0), Sigma=S)
-  x <- xy[,1]
-  y <- length(cuts)+1
-  for(j in rev(1:length(cuts))) {
-    y <- ifelse(xy[,2] <= cuts[j], j, y)
+    df$ps1c[i] <- polys(x,y)
+  #  df$psm[i]<- polys.mcmc(x,y)
+    df$Pe[i] <- cor(xy)[1,2]
+    print(df[i,])
+
+    dfi <- df[1:i,]
+    dfi$dps1c <- dfi$ps1c - dfi$cor
+    dfi$dPe <- dfi$Pe - dfi$cor
+    dfi$dpsm <- dfi$psm - dfi$cor
+    
+    df2 <- sqldf("SELECT avg(dps1c) AS dps1c, avg(dPe) as dPe, avg(dpsm) as dpsm, cor FROM dfi GROUP BY cor")
+    df2 <- df2[order(df2$cor),]
+
+    plot(c(-1,1), range(c(df2$dps1c, df2$dPe, df2$dpsm)), , type="n", lwd=3, lty=1, col="black")
+    abline(h = 0)
+    lines(df2$cor, df2$dps1c , lwd=1, lty=2, col="blue")
+    lines(df2$cor, df2$dPe   , lwd=1, lty=1, col="orange")
+    lines(df2$cor, df2$dpsm  , lwd=1, lty=3, col="green")
+    
   }
 
-  df$ps1c[i] <- polys(x,y)
-#  df$psm[i]<- polys.mcmc(x,y)
-  df$Pe[i] <- cor(xy)[1,2]
-  print(df[i,])
+  require(lattice)
+  df <- df[order(df$cor),]
 
-  dfi <- df[1:i,]
-  dfi$dps1c <- dfi$ps1c - dfi$cor
-  dfi$dPe <- dfi$Pe - dfi$cor
-  dfi$dpsm <- dfi$psm - dfi$cor
-  
-  df2 <- sqldf("SELECT avg(dps1c) AS dps1c, avg(dPe) as dPe, avg(dpsm) as dpsm, cor FROM dfi GROUP BY cor")
-  df2 <- df2[order(df2$cor),]
-
-  plot(c(-1,1), range(c(df2$dps1c, df2$dPe, df2$dpsm)), , type="n", lwd=3, lty=1, col="black")
-  abline(h = 0)
-  lines(df2$cor, df2$dps1c , lwd=1, lty=2, col="blue")
-  lines(df2$cor, df2$dPe   , lwd=1, lty=1, col="orange")
-  lines(df2$cor, df2$dpsm  , lwd=1, lty=3, col="green")
-  
+  plot(df$cor, df$ps1c, type="l", lwd=1, lty=2, col="blue")
+  abline(0,1)
+  lines(df$cor, df$Pe, lwd=3, lty=1)
 }
-
-require(lattice)
-df <- df[order(df$cor),]
-
-plot(df$cor, df$ps1c, type="l", lwd=1, lty=2, col="blue")
-abline(0,1)
-lines(df$cor, df$Pe, lwd=3, lty=1)

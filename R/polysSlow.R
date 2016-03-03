@@ -1,5 +1,5 @@
 #' @importFrom minqa bobyqa
-polys <- function(x, M, w, ML=FALSE) {
+polysSlow <- function(x, M, w, ML=FALSE) {
 
   polysLnL <- function(x,M,rho,theta,w) {
     R <- (1-rho^2)^0.5
