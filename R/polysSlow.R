@@ -7,7 +7,7 @@ polysSlow <- function(x, M, w, ML=FALSE) {
     Qp1 <- (theta[M+1] - rho*x) / R
     sum(w*dnorm(x,log=TRUE)) + sum(w* log(pnorm(Qp2) - pnorm(Qp1)))
   }
-  
+
   fixx <- function(x,w) {
     mux <- sum(x*w)
     sdx <- sum(w*(x-mux)^2)
@@ -41,11 +41,6 @@ polysSlow <- function(x, M, w, ML=FALSE) {
       ifelse(res==-Inf,.Machine$double.xmax,-1*res)
     }
   }
-
-  M <- as.numeric(as.factor(M)) # make discrete values that are adjacent.
-  uM <- sort(unique(M))
-  theta0 <- sapply(uM[-length(uM)],function(z) qnorm(weighted.mean(M<=z, w)) )
-
   imapTheta <- function(theta0) {
     c(theta0[1], log(theta0[-1]-theta0[-length(theta0)]))
   }
@@ -58,10 +53,16 @@ polysSlow <- function(x, M, w, ML=FALSE) {
     tanh(v)
   }
 
+  M <- as.numeric(as.factor(M)) # make discrete values that are adjacent.
+  uM <- sort(unique(M))
+  theta0 <- sapply(uM[-length(uM)],function(z) qnorm(weighted.mean(M<=z, w)) )
+
+
   if(ML) {
     bob <- bobyqa(par=c(imapCor(cor(x,M)),imapTheta(theta0)), fn=optF(x,M,w))
     return(mapCor(bob$par[1]))
   } else {
+
     opt <- optimize(optFc(x,M,w,imapTheta(theta0)), imapCor(cor(x,M)) + c(-3,3))
     return(mapCor(opt$minimum))
   }

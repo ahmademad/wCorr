@@ -43,30 +43,44 @@ BEGIN_RCPP
 END_RCPP
 }
 // optFcFast
-double optFcFast(const arma::vec& par, const arma::vec& x, const arma::vec& w, const arma::vec& temp1, const arma::vec& temp2, const arma::vec& temp3);
-RcppExport SEXP wCorr_optFcFast(SEXP parSEXP, SEXP xSEXP, SEXP wSEXP, SEXP temp1SEXP, SEXP temp2SEXP, SEXP temp3SEXP) {
+double optFcFast(const arma::vec& par, const arma::vec& x, arma::vec w, const arma::vec& M, double temp3, const arma::vec& theta0);
+RcppExport SEXP wCorr_optFcFast(SEXP parSEXP, SEXP xSEXP, SEXP wSEXP, SEXP MSEXP, SEXP temp3SEXP, SEXP theta0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type temp1(temp1SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type temp2(temp2SEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type temp3(temp3SEXP);
-    __result = Rcpp::wrap(optFcFast(par, x, w, temp1, temp2, temp3));
+    Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< double >::type temp3(temp3SEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    __result = Rcpp::wrap(optFcFast(par, x, w, M, temp3, theta0));
+    return __result;
+END_RCPP
+}
+// optFFast
+double optFFast(const arma::vec& par, const arma::vec& x, const arma::vec w, const arma::vec& M, double temp3);
+RcppExport SEXP wCorr_optFFast(SEXP parSEXP, SEXP xSEXP, SEXP wSEXP, SEXP MSEXP, SEXP temp3SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec& >::type par(parSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
+    Rcpp::traits::input_parameter< double >::type temp3(temp3SEXP);
+    __result = Rcpp::wrap(optFFast(par, x, w, M, temp3));
     return __result;
 END_RCPP
 }
 // theta
-const arma::vec theta(const arma::vec& uM, const arma::vec& M);
-RcppExport SEXP wCorr_theta(SEXP uMSEXP, SEXP MSEXP) {
+const arma::vec theta(const arma::vec& M);
+RcppExport SEXP wCorr_theta(SEXP MSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const arma::vec& >::type uM(uMSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
-    __result = Rcpp::wrap(theta(uM, M));
+    __result = Rcpp::wrap(theta(M));
     return __result;
 END_RCPP
 }
@@ -82,15 +96,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // mainF
-arma::field<arma::vec> mainF(const arma::vec x, const arma::vec M, arma::vec w);
-RcppExport SEXP wCorr_mainF(SEXP xSEXP, SEXP MSEXP, SEXP wSEXP) {
+arma::field<arma::vec> mainF(const arma::vec& x, const arma::vec& M, arma::vec w, const arma::vec& theta0);
+RcppExport SEXP wCorr_mainF(SEXP xSEXP, SEXP MSEXP, SEXP wSEXP, SEXP theta0SEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const arma::vec >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const arma::vec >::type M(MSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type M(MSEXP);
     Rcpp::traits::input_parameter< arma::vec >::type w(wSEXP);
-    __result = Rcpp::wrap(mainF(x, M, w));
+    Rcpp::traits::input_parameter< const arma::vec& >::type theta0(theta0SEXP);
+    __result = Rcpp::wrap(mainF(x, M, w, theta0));
     return __result;
 END_RCPP
 }
@@ -149,6 +164,49 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type xytab(xytabSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type pm(pmSEXP);
     __result = Rcpp::wrap(lnlFast(xytab, pm));
+    return __result;
+END_RCPP
+}
+// rcpparma_hello_world
+arma::mat rcpparma_hello_world();
+RcppExport SEXP wCorr_rcpparma_hello_world() {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    __result = Rcpp::wrap(rcpparma_hello_world());
+    return __result;
+END_RCPP
+}
+// rcpparma_outerproduct
+arma::mat rcpparma_outerproduct(const arma::colvec& x);
+RcppExport SEXP wCorr_rcpparma_outerproduct(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_outerproduct(x));
+    return __result;
+END_RCPP
+}
+// rcpparma_innerproduct
+double rcpparma_innerproduct(const arma::colvec& x);
+RcppExport SEXP wCorr_rcpparma_innerproduct(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_innerproduct(x));
+    return __result;
+END_RCPP
+}
+// rcpparma_bothproducts
+Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
+RcppExport SEXP wCorr_rcpparma_bothproducts(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
+    __result = Rcpp::wrap(rcpparma_bothproducts(x));
     return __result;
 END_RCPP
 }

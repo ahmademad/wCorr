@@ -13,20 +13,24 @@ mapThetaFast <- function(v) {
     .Call('wCorr_mapThetaFast', PACKAGE = 'wCorr', v)
 }
 
-optFcFast <- function(par, x, w, temp1, temp2, temp3) {
-    .Call('wCorr_optFcFast', PACKAGE = 'wCorr', par, x, w, temp1, temp2, temp3)
+optFcFast <- function(par, x, w, M, temp3, theta0) {
+    .Call('wCorr_optFcFast', PACKAGE = 'wCorr', par, x, w, M, temp3, theta0)
 }
 
-theta <- function(uM, M) {
-    .Call('wCorr_theta', PACKAGE = 'wCorr', uM, M)
+optFFast <- function(par, x, w, M, temp3) {
+    .Call('wCorr_optFFast', PACKAGE = 'wCorr', par, x, w, M, temp3)
+}
+
+theta <- function(M) {
+    .Call('wCorr_theta', PACKAGE = 'wCorr', M)
 }
 
 imapThetaFast2 <- function(theta0) {
     .Call('wCorr_imapThetaFast2', PACKAGE = 'wCorr', theta0)
 }
 
-mainF <- function(x, M, w) {
-    .Call('wCorr_mainF', PACKAGE = 'wCorr', x, M, w)
+mainF <- function(x, M, w, theta0) {
+    .Call('wCorr_mainF', PACKAGE = 'wCorr', x, M, w, theta0)
 }
 
 imapThetaFast <- function(theta0) {
@@ -47,5 +51,21 @@ discord <- function(xytab) {
 
 lnlFast <- function(xytab, pm) {
     .Call('wCorr_lnlFast', PACKAGE = 'wCorr', xytab, pm)
+}
+
+rcpparma_hello_world <- function() {
+    .Call('wCorr_rcpparma_hello_world', PACKAGE = 'wCorr')
+}
+
+rcpparma_outerproduct <- function(x) {
+    .Call('wCorr_rcpparma_outerproduct', PACKAGE = 'wCorr', x)
+}
+
+rcpparma_innerproduct <- function(x) {
+    .Call('wCorr_rcpparma_innerproduct', PACKAGE = 'wCorr', x)
+}
+
+rcpparma_bothproducts <- function(x) {
+    .Call('wCorr_rcpparma_bothproducts', PACKAGE = 'wCorr', x)
 }
 

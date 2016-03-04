@@ -4,7 +4,7 @@
 
 polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
   t1 <- list(xbar=Inf,xsd=Inf,wlpx=Inf)
-  
+
   lnl <- function(x_, y_, w_, y_c, x_bar, x_sd, corr_) {
     # following notation in Olsson, Drasgow, and Dorans, 1982
     y_c <- c(-Inf,y_c,Inf)
@@ -28,7 +28,7 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
     lpy[lpy==-Inf] <- min(lpy[lpy>-Inf])
     ti$wlpx + sum(w_*lpy)
   }
-  
+
   yi <- as.integer(y)
   yc <- 1:(length(unique(yi))-1)
   yc <- yc - mean(yc)
@@ -44,7 +44,7 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
   factsd <- 1
   factcorr <- 1
   facty <- rep(1,length(yc))
-  
+
   for(i in 1:nmax) {
     muxp <- mux + rnorm(1,0,1) * sdx / sqrt(length(y)) * factx
     lnli <- lnl(x, y, w, yc, muxp, sdx, corr)
@@ -90,7 +90,7 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
         factcorr <- factcorr * 0.5
       }
     }
-    
+
     for(yci in 1:length(yc)) {
       ycp <- yc
       ycp[yci] <- ycp[yci] + rnorm(1,0,sd=0.01) * facty[yci]
@@ -111,10 +111,10 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
     hist$mux[i] <- mux
     hist$sdx[i] <- sdx
     hist$corr[i] <- corr
-    hist$lnl[i] <- lnl0    
+    hist$lnl[i] <- lnl0
     #progress(i, i.max = nmax, n = 40)
   }
-  
+
   # enforce burn in
   # plot(1:nrow(hist), hist$lnl)
   #burni <- which.max( hist$lnl > hist$lnl[nrow(hist)]- 5)
@@ -123,15 +123,15 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
 
   # go to indep
 
-  
-  
+
+
   mean(hist$corr)
 }
 
 
 polys <- function(x,y,w=rep(1,length(x)), verbose=FALSE) {
   t1 <- list(xbar=Inf,xsd=Inf,wlpx=Inf)
-  
+
   lnl <- function(x_, y_, w_, y_c, x_bar, x_sd, corr_) {
     # following notation in Olsson, Drasgow, and Dorans, 1982
     y_c <- c(-Inf,y_c,Inf)
@@ -155,35 +155,35 @@ polys <- function(x,y,w=rep(1,length(x)), verbose=FALSE) {
     lpy[lpy==-Inf] <- min(lpy[lpy>-Inf])
     ti$wlpx + sum(w_*lpy)
   }
-  
+
   optf_all <- function(par, x, y, w) {
     print(par)
     c1 <- length(unique(y)) - 1
     lnl(x_=x, y_=y, w_=w, y_c=fscale_cuts(par[1:c1]), x_bar=par[c1+1], x_sd=fscale_sd(par[c1+2]), corr_=fscale_corr(par[c1+3]))
   }
-  
+
   optf_corr <- function(par, parm1, x, y, w) {
     c1 <- length(unique(y)) - 1
     lnl(x_=x, y_=y, w_=w, y_c=fscale_cuts(parm1[1:c1]), x_bar=parm1[c1+1], x_sd=fscale_sd(parm1[c1+2]), corr_=fscale_corr(par))
   }
-  
+
   optf_cut <- function(par, parm1, x, y, w) {
     lnl(x_=x, y_=y, w_=w, y_c=fscale_cuts(par), x_bar=parm1[1], x_sd=fscale_sd(parm1[2]), corr_=fscale_corr(parm1[3]))
   }
-  
+
   optf_xpar <- function(par, parm1, x, y, w) {
     c1 <- length(unique(y)) - 1
     lnl(x_=x, y_=y, w_=w, y_c=fscale_cuts(parm1[1:c1]), x_bar=par[1], x_sd=fscale_sd(par[2]), corr_=fscale_corr(parm1[c1+1]))
   }
-  
+
   fscale_cuts <- function(par) {
     cumsum(c(par[1],exp(par[-1])))
   }
-  
+
   fscale_corr <- function(par) {
     tanh(par)
   }
-  
+
   fscale_sd <- function(par) {
     exp(par)
   }
@@ -248,13 +248,13 @@ if(FALSE) {
     if(runif(1) < 0.2) { cuts <- c(-1,1) }
     if(runif(1) < 0.2) { cuts <- c(-1,0,1) }
     if(runif(1) < 0.2) { cuts <- c(-0.5,0,0.5) }
-    
+
     cor <- sample(corv,1)
     df$cuts1[i] <- cuts[1]
     df$cuts2[i] <- cuts[2]
     df$cor[i] <- cor
     df$n[i] <- n
-    
+
     S <- matrix(c(1,cor,cor,1), nrow=2)
 
     xy <- mvrnorm(n=n, mu=c(0,0), Sigma=S)
@@ -265,7 +265,7 @@ if(FALSE) {
     }
 
     df$ps1c[i] <- polys(x,y)
-  #  df$psm[i]<- polys.mcmc(x,y)
+    #  df$psm[i]<- polys.mcmc(x,y)
     df$Pe[i] <- cor(xy)[1,2]
     print(df[i,])
 
@@ -273,7 +273,7 @@ if(FALSE) {
     dfi$dps1c <- dfi$ps1c - dfi$cor
     dfi$dPe <- dfi$Pe - dfi$cor
     dfi$dpsm <- dfi$psm - dfi$cor
-    
+
     df2 <- sqldf("SELECT avg(dps1c) AS dps1c, avg(dPe) as dPe, avg(dpsm) as dpsm, cor FROM dfi GROUP BY cor")
     df2 <- df2[order(df2$cor),]
 
@@ -282,7 +282,7 @@ if(FALSE) {
     lines(df2$cor, df2$dps1c , lwd=1, lty=2, col="blue")
     lines(df2$cor, df2$dPe   , lwd=1, lty=1, col="orange")
     lines(df2$cor, df2$dpsm  , lwd=1, lty=3, col="green")
-    
+
   }
 
   require(lattice)

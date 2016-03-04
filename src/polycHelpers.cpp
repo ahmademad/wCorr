@@ -22,7 +22,8 @@ const arma::vec imapThetaFast(const arma::vec& theta0) {
   int n = theta0.size();
   arma::vec temp(n);
   temp(0) = theta0(0);
-  temp.subvec(1, n-1) = arma::log(theta0.subvec(1, n-1) - theta0.subvec(0, n-2));
+  if (n > 1)
+    temp.subvec(1, n-1) = arma::log(theta0.subvec(1, n-1) - theta0.subvec(0, n-2));
   return temp;
 }
 
@@ -30,7 +31,8 @@ const arma::vec imapThetaFast(const arma::vec& theta0) {
 const arma::vec fscale_cutsFast(const arma::vec& par) {
   arma::vec temp(par.size());
   temp(0) = par(0);
-  temp.subvec(1,par.size()-1) = arma::cumsum(arma::exp(par.subvec(1, par.size()-1)))+par(0);
+  if (par.size() > 1)
+    temp.subvec(1,par.size()-1) = arma::cumsum(arma::exp(par.subvec(1, par.size()-1)))+par(0);
   return temp;
 }
 
@@ -66,11 +68,15 @@ int discord(const arma::mat& xytab) {
   int nrows = xytab.n_rows-1;
   while(j < ncols) {
     if(i<nrows && j<ncols) {
+
       const arma::uvec ind1 = arma::linspace<arma::uvec>(i+1, nrows);
       const arma::uvec ind2 = arma::linspace<arma::uvec>(j+1,ncols);
+
       bool temp1 = xytab(i,j)>0;
+
       double temp2 = arma::accu(xytab.elem(ind1, ind2));
-      bool temp3 = temp2> 0;
+
+      bool temp3 = temp2 > 0;
       if(temp1 && temp3) {
         foundConcord = true;
         break;
@@ -89,10 +95,11 @@ int discord(const arma::mat& xytab) {
     }
     i += 1;
     if(i>nrows) {
-      i = 1;
+      i = 0;
       j = j + 1;
     }
   }
+
 
   i = 0;
   j = 0;
@@ -123,7 +130,7 @@ int discord(const arma::mat& xytab) {
     }
     i += 1;
     if(i>nrows) {
-      i = 1;
+      i = 0;
       j = j + 1;
     }
   }
