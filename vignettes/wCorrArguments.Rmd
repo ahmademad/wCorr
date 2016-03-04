@@ -1,6 +1,6 @@
 ---
 title: "wCorr Arguments"
-author: "Paul Bailey"
+author: "Paul Bailey, Ahmad Emad, (people who do QC for this product)"
 date: '`r Sys.Date()`'
 output: pdf_document
 vignette: |
@@ -13,7 +13,6 @@ require(wCorr)
 require(lattice)
 require(doBy)
 load("Q:/Paul/wCorr/wCorr/vignettes/ML.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/ntime.RData")
 load("Q:/Paul/wCorr/wCorr/vignettes/fast.RData")
 load("Q:/Paul/wCorr/wCorr/vignettes/speed.RData")
 ```
