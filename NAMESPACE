@@ -1,4 +1,5 @@
-exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 useDynLib(wCorr)
 export(weightedCorr)
+importFrom(minqa,bobyqa)
+importFrom(mnormt,biv.nt.prob)

@@ -1,12 +1,11 @@
 setwd("Q:/Paul/wCorr/wCorr/vignettes")
 source("sim.R")
 require(wCorr)
-require(mnormt)
 
 grid <- expand.grid(fast=c(TRUE,FALSE),
                     ML=c(TRUE,FALSE),
                     iter=3,
-                    n = round(10^seq(1,7,by=0.25)),
+                    n = round(10^seq(1,4,by=0.25)),
                     rho = c(-0.99,seq(-0.95,0.95,by=0.05), 0.99))
 grid$reset <- (grid$ML) & (grid$fast)
 speed <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=grid$reset, usew=FALSE)
