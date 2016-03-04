@@ -1,6 +1,6 @@
 ---
 title: "wCorr Formulas"
-author: "Paul Bailey"
+author: "Paul Bailey, Ahmad Emad, (people who do QC for this product)"
 date: '`r Sys.Date()`'
 output: pdf_document
 vignette: |
@@ -11,9 +11,8 @@ vignette: |
 require(wCorr)
 require(lattice)
 require(doBy)
-load("Q:/Paul/wCorr/wCorr/vignettes/fast.RData")
+load("Q:/Paul/wCorr/wCorr/vignettes/ntime.RData")
 load("Q:/Paul/wCorr/wCorr/vignettes/bias.RData")
-
 ```
 
 This document shows the methodology used in computing the correlations in wCorr for the weighted Pearson, Spearman, polyserial, and polychoric correlations. For the polyserial and polychoric correlations the coefficient is estimated using a numerical likelihood maximization. The weighted likelihood functions that are used are motivated and described.
@@ -55,7 +54,7 @@ par(ann=FALSE)
 par(mar=c(5,2,1,1)+0.1)
 plot(x,y,type="l",xlab="y",ylab="density", xaxt="n", yaxt="n")
 axis(1,at=c(-2,-0.5,1.6), labels=expression(theta[3],theta[4],theta[5]))
-text(x=c(-2.5,-1.25,0.55,2.3),y=0, labels=paste0("m=",1:4))
+text(x=c(-2.5,-1.25,0.55,2.3),y=0.05, labels=paste0("m=",1:4))
 theta <- c(-2,-0.5,1.6)
 for(i in 1:3) {
   lines(rep(theta[i],2), c(-1,dnorm(theta[i])))
@@ -144,19 +143,16 @@ This sections shows the bias of the correlations as a function of the true corre
 This plot shows the bias as a function of the true correlation $\rho$
 
 ```{r, echo=FALSE}
-biasdf$pcrmse <- sqrt( (biasdf$pc - biasdf$cor0)^2 )
-biasdf$psrmse <- sqrt( (biasdf$ps - biasdf$cor0)^2 )
-agg <- summaryBy(pcrmse + psrmse + pcb + psb + pct + pst  ~ n + cor0, data=biasdf, FUN=mean, na.rm=TRUE)
-pa <- data.frame(t=c(agg$pst.mean, agg$pct.mean),
-                 bias=c(agg$psb.mean, agg$pcb.mean),
-                 rmse=c(agg$psrmse.mean, agg$pcrmse.mean),
-                 cor0=rep(agg$cor0, 2),
-                 n=rep(agg$n,2),
-                 est=rep(c("Polyserial", "Polychoric"), each=nrow(agg)))
-xyplot(bias ~ cor0|est,
-      data=pa,
+bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
+bias$bias <- bias$est - bias$rho
+agg <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
+
+xyplot(bias.mean ~ rho|type,
+      data=agg,
       groups=n,
       type="l",
+      ylab="bias",
+      xlab=expression(rho),
       auto.key=list(lines=TRUE, points=FALSE),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
@@ -164,10 +160,12 @@ xyplot(bias ~ cor0|est,
 this plot shows the RMSE as a function of $\rho$
 
 ```{r, echo=FALSE}
-xyplot(rmse ~ cor0|est,
-      data=pa,
+xyplot(rmse.mean ~ rho|type,
+      data=agg,
       groups=n,
       scales=list(y=list(log=10)),
+      ylab="RMSE",
+      xlab=expression(rho),
       type="l",
       auto.key=list(lines=TRUE, points=FALSE),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
@@ -177,14 +175,12 @@ xyplot(rmse ~ cor0|est,
 This plot shows the RMSE as a function of $n$
 
 ```{r, echo=FALSE}
-agg <- summaryBy(pcrmse + psrmse + pcb + psb + pct + pst  ~ n, data=biasdf, FUN=mean, na.rm=TRUE)
-pb <- data.frame(t=c(agg$pst.mean, agg$pct.mean),
-                 bias=c(agg$psb.mean, agg$pcb.mean),
-                 rmse=c(agg$psrmse.mean, agg$pcrmse.mean),
-                 n=rep(agg$n,2),
-                 est=rep(c("Polyserial", "Polychoric"), each=nrow(agg)))
-xyplot(rmse ~ n|est,
-      data=pb,
+agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
+xyplot(rmse.mean ~ n,
+     groups=type,
+      data=agg,
+      ylab="RMSE",
+      xlab="n",
       scales=list(y=list(log=10), x=list(log=10)),
       type="l",
       auto.key=list(lines=TRUE, points=FALSE),
@@ -195,21 +191,15 @@ xyplot(rmse ~ n|est,
 This plot shows the mean time to compute a single correlation coefficient as a function of $\rho$ by $n$ size.
 
 ```{r, echo=FALSE}
+agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
+agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
-agg <- summaryBy(cor + pst + fpst + psb + pct + fpct + pcb ~ n + cor0, data=fastdf, FUN=mean, na.rm=TRUE)
-pe <- data.frame(t=c(agg$pst.mean, agg$fpst.mean, agg$pct.mean, agg$fpct.mean),
-                 cor0=rep(agg$cor0, 4),
-                 n=rep(agg$n,4),
-                 est=rep(c("Polyserial", "Polyserial", "Polychoric", "Polychoric"), each=nrow(agg)),
-                 type=rep(c("R", "Rcpp (fast)", "R", "Rcpp (fast)"), each=nrow(agg)))
-pe$ntype <- paste(pe$n, pe$type, sep=":")
-pe$t <- ifelse(pe$t==0, 0.01,pe$t)
-
-xyplot(t ~ cor0|est,
-       data=subset(pe, type=="Rcpp (fast)" & cor0 >= 0),
-       groups=n,
-       scales=list(y=list(log=10)),
+xyplot(t.mean ~ n|type,
+       data=agg,
+       scales=list(y=list(log=10), x=list(log=10)),
        type="l",
+       ylab="compute time",
+       xlab="n",
        auto.key=list(lines=TRUE, points=FALSE),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
