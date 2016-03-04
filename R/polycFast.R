@@ -37,7 +37,7 @@ polycFast <- function(x,y,w,ML=FALSE) {
   }
   xytab <- tableFast(x,y,w)
 
-  GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
+  #GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
 
  # if (!(GKgamma %in%  c(-1,1)))
  #   if (discord %in% c(-1,1))
