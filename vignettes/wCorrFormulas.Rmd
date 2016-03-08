@@ -13,13 +13,18 @@ require(lattice)
 require(doBy)
 load("Q:/Paul/wCorr/wCorr/vignettes/ntime.RData")
 load("Q:/Paul/wCorr/wCorr/vignettes/bias.RData")
+load("Q:/Paul/wCorr/wCorr/vignettes/wgtvrho.RData")
+load("Q:/Paul/wCorr/wCorr/vignettes/wgtvn.RData")
 ```
 
 This document shows the methodology used in computing the correlations in wCorr for the weighted Pearson, Spearman, polyserial, and polychoric correlations. For the polyserial and polychoric correlations the coefficient is estimated using a numerical likelihood maximization. The weighted likelihood functions that are used are motivated and described.
 
-Additionally, for the polyserial and polychoric evidence is offered for the correctness of the methods, including a sketch of a proof of the consistency of both methods and numerical simulations to show:
+Additionally, for the polyserial and polychoric evidence, is offered for the correctness of the methods, including a sketch of a proof of the consistency of both methods and numerical simulations to show:
+
 * The bias of the methods as a function of the true correlation coefficient ($\rho$) and the number of observations ($n$)
-* The root mean square error (RMSE) of the methods as a function of $\rho$ and $n$
+* The root mean square error (RMSE) of the methods as a function of $\rho$ and $n$ in the weighted and unweighed cases
+
+The *wCorr Arguments* vignette describes the effects the `ML` and `fast` arguments have on computation.
 
 # Methodology
 Here we focus on measurement of the correlation coefficients between two vectors of random variables that are jointly bivariate normal--call the vectors ***X*** and ***Y***.^[The Spearman correlation coefficient can be motivated by a much more broad class of random variables but that is not dealt with in this document.] The $i^{th}$ members of the vectors are then called $x_i$ and $y_i$.
@@ -34,7 +39,7 @@ where $\bar{x}=\frac{1}{\sum w_i}\sum_i w_i x_i$, $\bar{y}=\frac{1}{\sum w_i}\su
 The Spearman correlation coefficient is calculated by first taking the rank of the data before the same formula is applied. When data are ranked ties must be handled in some way. The chosen method is to assign the average of all tied ranks. For example, if the second and third rank units are tied then both units would receive a rank of 2.5 (the average of 2 and 3).
 
 ##Polyserial methodology
-For the polyserial correlation, it is again imagined that there are two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution.^[For a more complete treatment of the polyserial correlation, see Cox, N. R., "Estimation of the Correlation between a Continuous and a Discrete Variable" *Biometrics*, **50** (March), 171-187, 1974.]
+For the polyserial correlation, it is again assumed that there are two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution.^[For a more complete treatment of the polyserial correlation, see Cox, N. R., "Estimation of the Correlation between a Continuous and a Discrete Variable" *Biometrics*, **50** (March), 171-187, 1974.]
 
 $$\begin{pmatrix} X \\ Y \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \end{pmatrix}, \Sigma \right] $$
 
@@ -89,17 +94,17 @@ where $w_i$ is the weight of the $i^{th}$ case.
 The value of the nusiance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall.
 
 ###Polyserial computation
-The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`. As is shown below, the difference between these two is slight, if present, and so the default value of `ML` is recomended.
+The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`. As is shown below, the difference between these two is slight, if present, and so the default value of `ML` is recommended.
 
 Because the optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply seeing if the values of ***X*** and ***M*** have exactly the same order.
 
 ##Polychoric methodology
 
-Similar to the polyserial, the polychoric is a simple case of two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution. In the case of the polyserial the continious (latent) varialbe ***Y*** was observed as a discretized variable ***M***. For the polychoric this is again true but now the continious (latent) variable ***X*** is observed as a discrete variable ***P*** according to
+Similar to the polyserial, the polychoric is a simple case of two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution. In the case of the polyserial the continuous (latent) variable ***Y*** was observed as a discretized variable ***M***. For the polychoric this is again true but now the continuous (latent) variable ***X*** is observed as a discrete variable ***P*** according to
 
 $$p_i= \begin{cases} 1 \quad \mathrm{if}  \theta'_2 < x_i < \theta'_3 \\ 2 \quad \mathrm{if} \theta'_3 < x_i < \theta'_4 \\ \vdots \\ t \quad \mathrm{if} \theta'_{t+1} < x_i < \theta'_{t+2} \end{cases}$$
 
-where $\boldsymbol{\theta}$ remains the cut points for the distibution defining the transformation of ***Y*** to ***M*** and $\boldsymbol{\theta}'$ is the cut points for the tramsofmation from ***X*** to ***P***. Similar to $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$ has $\theta_2' \equiv -\infty$ and $\theta_{t+2}' \equiv \infty$.
+where $\boldsymbol{\theta}$ remains the cut points for the distibution defining the transformation of ***Y*** to ***M*** and $\boldsymbol{\theta}'$ is the cut points for the transformation from ***X*** to ***P***. Similar to $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$ has $\theta_2' \equiv -\infty$ and $\theta_{t+2}' \equiv \infty$.
 
 Similar to in the polyserial, $\mu_y$ is not identifed (or is irrelevant) because setting $\tilde{\mu}_y = \mu_y + a$ and $\tilde{\boldsymbol{\theta}}=\boldsymbol{\theta} + a$ lead to exactly the same values of $\mathbf{M}$ and so one of the two must be artibrary assigned. The same is true for $\mu_x$. A convenient decision is to decide $\mu_y = \mu_x \equiv 0$. A similar argument holds for $\sigma_y$ and $\sigma_x$ so that  $\sigma_y = \sigma_x \equiv 1$
 
@@ -113,9 +118,9 @@ Using this function as an objective, the log-likelihood is then maximized.
 $$\ell(\rho;p,m) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r ; P=p_i, M=m_i \right) \right] $$
 
 ###Polychoric computation
-This again mirrors the treatment of the polyserial. The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using `minqa::bobyqa`. As is shown below, the difference between these two is slight, if present, and so the default value of `ML` is recomended.
+This again mirrors the treatment of the polyserial. The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argument is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using `minqa::bobyqa`. As is shown below, the difference between these two is slight, if present, and so the default value of `ML` is recommended.
 
-Because the optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply seeing if the values of ***P*** and ***M*** have a Goodman-Kruskal correlation coefficient of -1 or 1. When this is the case, the MLE of -1 or 1, respectivly, is returned.
+Because the optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply seeing if the values of ***P*** and ***M*** have a Goodman-Kruskal correlation coefficient of -1 or 1. When this is the case, the MLE of -1 or 1, respectively, is returned.
 
 # Correctness
 
@@ -125,24 +130,29 @@ This does not speak to the small sample properties of these correlation coeffici
 
 ## General setup for the unweighted case
 
-A simulation is run several times using the following method:
+A simulation is run several times. For each itteration, the following procedure is used:
 
-* selecting a value of $n$ (the number of observations)
-* selecting a true correlation coefficient $\rho$
-* generating ***X*** and ***Y*** 
-* selecting the value of $t$ and $t'$ (the number of bins for ***M*** and ***P***)
-* selecting $\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$
-* confirming that at least 2 levels of ***M*** and ***P*** are occupied (if not, retrun to generating ***X*** and ***Y***)
-* calculating and recording relevant statistics
+* select the number of observations ($n$)
+* select a true correlation coefficient $\rho$
+* generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG)
+* using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\}
+* select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG 
+* confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, retrun to generating ***X*** and ***Y***)
+* calculate and record relevant statistics
+
+When the exact method of selecting a parameter (such as $n$) is not noted in the above description it is described as part of each simulation.
 
 ## bias of the correlations
-This sections shows the bias of the correlations as a function of the true correlation coefficient, $\rho$. These simulations were carried out using (junk about true $\rho$ and $n$ grids and number of reps).
+
+This sections shows the bias of the correlations as a function of the true correlation coefficient, $\rho$. To that end, a simulation was done at each level of the cartesian product of  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each iteration is run fifty times. The bias is the mean difference between the true correlation coefficient ($\rho_i$) and estimate correlation coefficient ($r$). the RMSE is the squareroot of the mean square error.
+
+$$\mathrm{RMSE}= \sqrt{ \frac{1}{n} \sum_i \left( r_i - \rho_i \right)^2 }$$ 
 
 ## RMSE of the correlations as a function of $n$ and $\rho$
 
-This plot shows the bias as a function of the true correlation $\rho$
+This plot shows the bias as a function of the true correlation $\rho$. Only the Spearman correlation shows a clear trend with a positive bias below 0 and a negative bias above zero.
 
-```{r, echo=FALSE}
+```{r bias vs rho, echo=FALSE,fig.width=6, fig.height=2.5}
 bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
 bias$bias <- bias$est - bias$rho
 agg <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
@@ -151,15 +161,15 @@ xyplot(bias.mean ~ rho|type,
       data=agg,
       groups=n,
       type="l",
-      ylab="bias",
+      ylab="Bias",
       xlab=expression(rho),
-      auto.key=list(lines=TRUE, points=FALSE),
+      auto.key=list(lines=TRUE, points=FALSE, space="right"),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
-this plot shows the RMSE as a function of $\rho$
+this plot shows the RMSE as a function of $\rho$. All of the correlation coefficients have a uniform RMSE as a function of $\rho$ near $\rho=0$ that decreases near $|\rho|=1$. All plots also show a decrease in RMSE as $n$ increases. That is further shown in the next plot.
 
-```{r, echo=FALSE}
+```{r rmse vs rho, echo=FALSE,fig.width=6, fig.height=2.5}
 xyplot(rmse.mean ~ rho|type,
       data=agg,
       groups=n,
@@ -167,14 +177,14 @@ xyplot(rmse.mean ~ rho|type,
       ylab="RMSE",
       xlab=expression(rho),
       type="l",
-      auto.key=list(lines=TRUE, points=FALSE),
+      auto.key=list(lines=TRUE, points=FALSE, space="right"),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
 
-This plot shows the RMSE as a function of $n$
+This plot shows the RMSE as a function of $n$. The plot shows a slope of about $-\frac{1}{2}$, which suggests first order consistency. 
 
-```{r, echo=FALSE}
+```{r rmse vs n, echo=FALSE,fig.width=6, fig.height=2.5}
 agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(rmse.mean ~ n,
      groups=type,
@@ -183,55 +193,82 @@ xyplot(rmse.mean ~ n,
       xlab="n",
       scales=list(y=list(log=10), x=list(log=10)),
       type="l",
-      auto.key=list(lines=TRUE, points=FALSE),
+      auto.key=list(lines=TRUE, points=FALSE, space="right"),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
+Finally, this plot shows the mean time to compute a single correlation coefficient as a function of $\rho$ by $n$ size.
 
-This plot shows the mean time to compute a single correlation coefficient as a function of $\rho$ by $n$ size.
-
-```{r, echo=FALSE}
+```{r time vs n, echo=FALSE,fig.width=6, fig.height=2.5}
 agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
 agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
-xyplot(t.mean ~ n|type,
+xyplot(t.mean ~ n,
        data=agg,
        scales=list(y=list(log=10), x=list(log=10)),
+       groups=type,
        type="l",
-       ylab="compute time",
+       ylab="Compute time",
        xlab="n",
-       auto.key=list(lines=TRUE, points=FALSE),
+       auto.key=list(lines=TRUE, points=FALSE, space="right"),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
 ## General setup for the weighted case
-For the weighted case the unweighted result would be consistent if there were not something about the higher weight cases that makes them diffeent from the lower weight cases. Thus, while it is not reasonable to always assume that thee is a difference between the high and low weight cases, boht are possible and it serves as a more robust test of the methods in this package to consider a cases where they are associated.
+In this section the consistency of the weighted coefficients is explored.
 
-There are many possible ways to associate the higher and lower weight cases. For the purposes of this document it is assumed that there is a third variable ***W*** that is correlated with ***X*** and ***Y*** and that the varible ***W*** is also the weight. While in a pratical cases it is unlikely that the weight itself would be causing changes in the relationship between ***X*** and ***Y***, this is a simplifying assumption that is used as a conveniance--averting the need for a fourth variable. 
+For the weighted case the unweighted result would be consistent if there were not something about the higher weight cases that makes them diffeent from the lower weight cases. Thus, while it is not reasonable to always assume that thee is a difference between the high and low weight cases, boht are possible and it serves as a more robust test of the methods in this package to consider a cases where they are associated. So, when sampling (other than simple random sampling with replacement) is used unweighted correlations may be consistent or may not be. The simulations below expore a case where the unweighted are not expected to be consistent to see if the weighted results are consistent. 
 
-Thus, the general setup is this:
+##Weighted simulation study
 
-$$\begin{pmatrix} \mathbf{X} \\ \mathbf{Y} \\ \mathbf{W} \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \\ \mu_w \end{pmatrix}, \Sigma \right] $$
+Simulations are carred out in the same fashion as before with a few extra steps to accomodate weights. The following changes were made:
 
-for conveniance, and without loss of generality, it is assumed that $\mu_x = \mu_y = \mu_w \equiv 0$ and that
+* to find the correlation between $n$ values, $5n$ values were generated
+* weights are assigned according to $w_i = (x-y)^2 + 1$ and the probability of inclusion in the sample was proportional to $Pr_i = \frac{\sum_j w_j}{w_i}$.
+* a sample of size $n$ was then selected from the $5n$ values according to the proabilities and weighted as well as unweighted correlation coefficients were calculated.
 
-$$\Sigma \equiv \begin{pmatrix} 1 & \rho & a \\ \rho & 1 & b \\ a & b &  1 \end{pmatrix} $$
+Two simulations were run. The first shows the MAD as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, with 100 iterations run for each value of $\rho$. 
 
-where $\rho$ remails the parameter of interest and $a\in [0,1]$ and $b \in [0,1]$ are the correlation between ***X*** and ***W*** and the correlation between ***Y*** and ***W***, respectively.
+The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$.
 
-Simulations are carred out in the same fashion as before, except that after $\rho$ is elected, $a$ and $b$ are aslo selected.
+```{r wgt vs rho plot, echo=FALSE,fig.width=6, fig.height=2.5}
+wgt <- wgtvrho
+wgt$absdrho <- abs(wgt$est - wgt$rho)
 
-##Polyserial simulation study, weighted
+agg <- summaryBy(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 
-* method(s) of selecting $n$, $\rho$, $\rho$, $a$, $b$, $t$, $t'$,  $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$.
+xyplot(absdrho.mean ~ rho|type,
+       data=agg,
+       groups=weight,
+       scales=list(y=list(log=10)),
+       type="l", 
+       ylab="MAD",
+       xlab=expression(rho),
+       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
+```
 
-then make these plots (note: include Pearson and Spearman):
-* Compare weighted and unweighted bias as a function of $\rho$ and $a=b$, all $n=$ something reasonable based on the final bias chart . 
-* Compare weighted and unweighted RMSE as a function of $\rho$ and $a=b$, all $n=$ something reasonable based on the final bias chart. 
+The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSD and sample size are related. In particular, it shows first order convergence of the weighted correlation coefficient. Again, the fact that the simulations show that the unweighted correlation coefficient is not consistent is not meant to imply that it will always be that way--only that this is possible.
 
-* Compare weighted and unweighted bias as a function of $\rho$ and $a$ while $b=0$, all $n=$ something reasonable based on the final bias chart. 
-* Compare weighted and unweighted RMSE as a function of $\rho$ and $a$ while $b=0$, all $n=$ something reasonable based on the final bias chart. 
+```{r wgt v n plot, echo=FALSE,fig.width=6, fig.height=2.5}
+wgt <- wgtvn
+wgt$mserho <- (wgt$est - wgt$rho)^2
 
-##Polychoric simulation study, weighted
+agg <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+agg$rmserho <- sqrt(agg$mserho)
+agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
+
+xyplot(rmserho ~ n|type,
+       data=agg,
+       groups=weight,
+       scales=list(y=list(log=10), x=list(log=10)),
+       type="l",
+       ylab="RMSE",
+       xlab="n",
+       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
+```
+
 
 
