@@ -19,8 +19,6 @@ load("Q:/Paul/wCorr/wCorr/vignettes/speed.RData")
 
 This vignette explores two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nusiance parameters that define the binning process to be used (`ML=FALSE`) or for the nusiance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
 
-Numerical simulations in this vignette show that differences in the results are essentially unaffected by either of these switches.
-
 The *wCorr Formulas* vignette describes the statistical properties of the correlation estimators in the package and has a more complete derivation of the likelihood functions.
 
 # The `ML` switch
@@ -32,29 +30,29 @@ where $N(\mathbf{A},\boldsymbol{\Sigma})$ is the bivariate normal distribution w
 
 ## Polyserial computation
 
-the likelihood function for an individual observation of the polyserial is^[See the "wCorr Formulas" vignette for a more complete description and motivation for the polyserial correlations's likelihood function.]
+the likelihood function for an individual observation of the polyserial is^[See the *wCorr Formulas* vignette for a more complete description and motivation for the polyserial correlations's likelihood function.]
 
 $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
 
-where $\rho$ is the correlation between ***X*** and ***Y***, ***Z*** is the normalized version of ***X***, and ***M*** is a discretized version of ***Y***, using $\boldsymbol{\theta}$ as cut points as described in the "*Corr Formulas* vignette.
+where $\rho$ is the correlation between ***X*** and ***Y***, ***Z*** is the normalized version of ***X***, and ***M*** is a discretized version of ***Y***, using $\boldsymbol{\theta}$ as cut points as described in the *wCorr Formulas* vignette.
 
 The log-likelihood is then
 
 $$\ell(\rho, \boldsymbol{\theta};z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 
-The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`.
+The derivatives of $\ell$ can be written down but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`.
 
 ## Polychoric computation
-the likelihood function for the polychoric is^[See the "wCorr Formulas" vignette for a more complete description and motivation for the polychoric correlations's likelihood function.]
+For the polychoric the observed data is discreteized for both variables. Here the discretized version of ***X*** is ***P*** and the discretized version of ***Y*** remains ***M***.^[See the "wCorr Formulas" vignette for a more complete description and motivation for the polychoric correlations's likelihood function.] The likelihood function for the polychoric is
 
 $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta}, \boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta_{p_i+1}'}^{\theta_{p_i+2}'} dx \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu dy f(x,y|\rho=r)$$
 
-where $f(x,y|r)$ is the noramlzied bivariate normal distribution with correlation $\rho$.
+where $f(x,y|r)$ is the noramlzied bivariate normal distribution with correlation $\rho$, and  $\boldsymbol{\theta'}$ are the cut points used to discretize ***X*** into ***P***.
 
 The log-likelihood is then
-$$\ell(\rho, \boldsymbol{\theta}, \boldsymbol{\theta}' ;p,m) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta}, \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho, \boldsymbol{\theta}, \boldsymbol{\theta}' ;\mathbf{p},\mathbf{m}) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta}, \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
 
-The derivatives of $\ell$ can be computed but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using `minqa::bobyqa`.
+The derivatives of $\ell$ can be written down but are not readily computed and so when the `ML` argumet is set to `FALSE` (the default) a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using `minqa::bobyqa`.
 
 # General setup for the unweighted case
 
@@ -64,23 +62,23 @@ A simulation is run several times. For each itteration, the following procedure 
 * select a true correlation coefficient $\rho$
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG)
 * using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\}
-* select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $t$ and $t'$ draws, respectively, from a normal distribution using a pseudo-RNG 
+* select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG 
 * confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, retrun to generating ***X*** and ***Y***)
 * calculate and record relevant statistics
 
-when the exact method of selecting a parameter (such as $n$) is not noted in the above description it is described as part of each simulation.
+When the exact method of selecting a parameter (such as $n$) is not noted in the above description it is described as part of each simulation.
 
 # ML switch
 
-A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each iteration is run three times. The compulation is run so that the same values of the variables are used for `ML=TRUE` as `ML=FALSE` and then the statistics are comared between the two sets of results. where $MAD$ is the mean absolute difference and is given by
+A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, \newline $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each iteration is run three times. The compulation is run so that the same values of the variables are used for `ML=TRUE` as `ML=FALSE` and then the statistics are compared between the two sets of results. where $MAD$ is the mean absolute difference and is given by
 
 $$MAD= | r_{ML=TRUE} - r_{ML=FALSE} |  $$
 
 where $r_{ML=TRUE}$ is the estimated correlation when `ML=TRUE` and  $r_{ML=FALSE}$ is the estimated correlation when `ML=FALSE`.
 
-This is a plot of the $MAD$ as a function of the true correlation coefficnet. 
+This is a plot of the $MAD$ as a function of the true correlation coefficnet. It shows a decrease in MAD as $n$ increases (change from line to line), a decrease when the correlations are in the neighborhood of zero that is more pronounced for larger $n$ and a dip then the correlation is exactly 1 or -1.
 
-```{r, echo=FALSE,fig.width=6, fig.height=2.5}
+```{r ML MAD plot, echo=FALSE,fig.width=6, fig.height=2.5}
 ml <- subset(ML, type %in% c("Polychoric", "Polyserial"))
 ml$i <- rep(1:(nrow(ml)/2),each=2)
 mml <- merge(subset(ml,ML),
@@ -105,19 +103,23 @@ xyplot(absdrho.mean ~ rho|type,
 ```
 
 This table shows the $MAD$ by $n$ and correlation type.
-```{r}
+```{r ML MAD table, echo=FALSE}
 agg <- summaryBy(absdrho ~ type+n, data=mml, FUN=mean, na.rm=TRUE)
 colnames(agg) <- c("Correlation type", "n", "MAD")
 kable(agg)
 ```
 
+These resuls show that the side of the MAD decreases as $n$ incrreases. When $n=10$, the MAD is less than 0.02 for the polyserial and 0.002 for the polychoric.
+
 # fast switch
 
 This section looks at the agreement between the pure R implementation of the optimizations and the `Rcpp` and `RcppArmadillo` impelemntation. The code can compute with either option by setting `fast=FALSE` (pure R) or `fast=TRUE` (Rcpp).
 
-This is the summary of all differences between the `fast=TRUE` and `fast=FALSE runs` for the polyserial
+A simulation was done at each level of the cartesian product of  $\mathtt{fast} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, \newline $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. Each iteration was run 100 times. The compulation is run so that the same values of the variables are used for `fast=TRUE` as `fast=FALSE` and then the statistics are compared between the two sets of results.
 
-```{r, echo=FALSE,fig.width=6, fig.height=3.5}
+This is the summary of all differences between the `fast=TRUE` and `fast=FALSE runs` for the polyserial. Note that differences smaller than $10^{-16}$ are indistinguishable from 0 by the machine. However, a factor of $10^{-17}$ was added to the results so that they could all be shown on a log scale. Thus the Spearman never shows differences that are different from zero. 
+
+```{r fast MAD plot, echo=FALSE,fig.width=6, fig.height=3.5}
 fast$i <- rep(1:(nrow(fast)/2),each=2)
 mfast <- merge(subset(fast,fast),
                subset(fast,!fast, c("i", "est")),
@@ -140,16 +142,11 @@ xyplot(absdrho.mean ~ rho|type,
        )
 ```
 
-This table shows the $MAD$ by $n$ and correlation type.
-```{r, echo=FALSE}
-agg <- summaryBy(absdrho ~ type+n, data=mfast, FUN=mean, na.rm=TRUE)
-colnames(agg) <- c("Correlation type", "n", "MAD")
-kable(agg)
-```
+The above shows that differences as a result of the `fast` argument are never larger than $10^{-8}$ for any type.
 
 # Implications for speed
 
-A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\mathtt{fast} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10^1, 10^{1.25}, 10^{1.5}, ..., 10^7\}$. For precision, each iteration is run three times. The compulation is run so that the same values of the variables are used all four levels of `ML` and `fast`. The variety of correlations is chosen so that the results represent an average of possible values of $\rho$.
+A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\mathtt{fast} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10^1, 10^{1.25}, 10^{1.5}, ..., 10^7\}$. For precision, each iteration is run 80 times when $n<10^5$ and 20 times when $n\geq 10^5$. The compulation is run so that the same values of the variables are used all four levels of `ML` and `fast`. The variety of correlations is chosen so that the results represent an average of possible values of $\rho$.
 
 The following plot shows the mean compute time versus $n$.
 
@@ -169,3 +166,8 @@ xyplot(t.mean ~ n|type,
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2))
        )
 ```
+
+#Conclusion
+Using tables presented in this vignette, users who wish to use the more accurate `ML=TRUE` argument can compare the difference in compuation time and the difference in results.
+
+the `fast` argument is provided primarily for comparison of the `Rcpp` and pure R code and shows agreement to within $10^{-8}$.

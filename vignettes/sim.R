@@ -1,6 +1,6 @@
-wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=0, coryw=0) {
-  len <- max(c(length(n), length(rho), length(ML), length(fast), length(reset), length(usew), length(corxw), length(coryw)))
-  vec <- c("n", "rho", "ML", "fast", "reset", "usew", "corxw", "coryw")
+wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
+  len <- max(c(length(n), length(rho), length(ML), length(fast), length(reset), length(usew)))
+  vec <- c("n", "rho", "ML", "fast", "reset", "usew")
   for(i in 1:length(vec)) {
     var <- get(vec[i])
     if(length(var) != len) {
@@ -12,17 +12,19 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=
     }
     assign(vec[i],var)
   }
+  everusew <- sum(usew)>0
   
   ns <- n
   cor0 <- rho
-  df <- data.frame(n=n,rho=rho, ML=ML, fast=fast, reset=reset, usew=usew, corxw=corxw, coryw=coryw)
+  df <- data.frame(n=n,rho=rho, ML=ML, fast=fast, reset=reset, usew=usew)
   
 
   df$spear <- df$speart <- NA
+  df$Q <- df$M <- NA
   df$pear <- df$peart <- NA
   df$pc <- df$pct <- NA
   df$ps <- df$pst <- NA
-
+  
   ii <- 1
   while(ii <= nrow(df)) {
     cori <- df$rho[ii]
@@ -31,13 +33,10 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=
     fast <- df$fast[ii]
     reset <- df$reset[ii]
     usew <- df$usew[ii]
-    corxw <- df$corxw[ii]
-    coryw <- df$coryw[ii]
-    
+
     if(interactive()) {
       cat("n=",n,"cori=",cori,"\n")
     }
-    
     if(reset) {
       M <- 1  
       Q <- 1
@@ -45,6 +44,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=
       tm <- sort(rnorm(nm))
       nq <- sample(2:5,1)
       tq <- sort(rnorm(nq))
+      n <- ifelse(everusew, df$n[ii]*100, df$n[ii])
       while( (length(unique(M)) < 2) | (length(unique(Q)) < 2) ) {
         theta <- c(NA,-Inf,tq,Inf)
         x <- rnorm(n)
@@ -65,10 +65,23 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=
         theta <- c(NA,-Inf,tq,Inf)
         
         M <- as.numeric(as.factor(M))
+        if(everusew) {
+          w <- (x-y)^2+1
+          #w <- x*corxw + (coryw + cori*corxw)/sqrt(1-cori^2)*y + sqrt(1-corxw^2 - ((coryw + cori*corxw)/sqrt(1-cori^2))^2) * rnorm(n)
+          #w <- w - min(w) + 2
+          
+          pr <- 1/w
+          pr <- pr/sum(pr)
+          w <- 1/df$n[ii] * 1/pr
+          samp <- sample(1:n, size=df$n[ii], replace=FALSE, prob=pr)
+          M <- M[samp]
+          x <- x[samp]
+          Q <- Q[samp]
+          y <- y[samp]
+          w <- w[samp]
+        }
+        
       }
-      w <- x*corxw + (coryw - cori*corxw)/sqrt(1-cori^2)*y + sqrt(1-corxw^2 - (coryw - cori*corxw)/sqrt(1-cori^2)) * rnorm(n)
-      
-      df$cor[ii] <- cor(x,y)
       df$M[ii] <- length(unique(M))
       df$Q[ii] <- length(unique(Q))
     } else {
@@ -82,6 +95,10 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, corxw=
     } else {
       wu <- rep(1,length(x))
     }
+    #cat("usew=",usew,"ii=",ii,"\n")
+    #save(x,wu,y,Q,M,file="tmp.RData")
+    #print(wu)
+    
     
     st0 <- system.time(fcorp <- weightedCorr(x,y, method="Pearson", weights=wu, fast=fast, ML=ML))
     df$peart[ii] <- st0[3]
