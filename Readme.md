@@ -1,1 +1,0 @@
-Computes weighted correlations
