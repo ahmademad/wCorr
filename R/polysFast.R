@@ -14,8 +14,8 @@ polysFast <- function(x, M, w, ML=FALSE) {
     temp = w/sum(w)
     temp2 = fixxFast(x, temp)
     temp3 = sum(temp*dnorm(temp2,log=TRUE))
-    bob <- bobyqa(par=c(atanh(cor(x,M)),imapThetaFast2(theta0)),
-                  fn=optFFast, x=temp2,  w=temp, M=M, temp3 = temp3)
+    bob <- suppressWarnings(bobyqa(par=c(atanh(cor(x,M)),imapThetaFast2(theta0)),
+                  fn=optFFast, x=temp2,  w=temp, M=M, temp3 = temp3))
     return(  tanh(bob$par[1]))
   } else {
     temp = w/sum(w)
@@ -24,9 +24,9 @@ polysFast <- function(x, M, w, ML=FALSE) {
 
     values = mainF(x, M, w, theta0)
      #opt <- optimize(mainF, interval = imapCorFast(cor(x,M)) + c(-3,3), x,w,temp1, temp2, temp3)
-    opt <- optimize(optFcFast, interval=unlist(values[1]),
+    opt <- suppressWarnings(optimize(optFcFast, interval=unlist(values[1]),
                     x=temp2, w=temp, theta0=(imapThetaFast2(theta0)),
-                    M=M, temp3= temp3)
+                    M=M, temp3= temp3))
     return( tanh(opt$minimum) )
   }
 }
