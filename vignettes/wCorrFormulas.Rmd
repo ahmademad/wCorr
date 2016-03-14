@@ -7,14 +7,14 @@ vignette: |
   %\VignetteIndexEntry{wCorr Formulas} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
-```{r packages and data, echo=FALSE, results="hide", message=FALSE}
+```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 require(wCorr)
 require(lattice)
 require(doBy)
-load("Q:/Paul/wCorr/wCorr/vignettes/ntime.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/bias.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/wgtvrho.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/wgtvn.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/ntime.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/bias.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/wgtvrho.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/wgtvn.RData")
 ```
 
 This document introduces the methodology used in the wCorr package for computing the weighted Pearson, Spearman, polyserial, and polychoric correlations. For the polyserial and polychoric correlations, the coefficient is estimated using a numerical likelihood maximization. The weighted likelihood functions that are used are motivated and described.
@@ -162,7 +162,8 @@ xyplot(bias.mean ~ rho|type,
       type="l",
       ylab="Bias",
       xlab=expression(rho),
-      auto.key=list(lines=TRUE, points=FALSE, space="right"),
+      scales=list(x=list(cex=0.7), y=list(cex=0.7)),
+      auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -172,11 +173,11 @@ This plot shows the RMSE as a function of $\rho$. All of the correlation coeffic
 xyplot(rmse.mean ~ rho|type,
       data=agg,
       groups=n,
-      scales=list(y=list(log=10)),
+      scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
       ylab="RMSE",
       xlab=expression(rho),
       type="l",
-      auto.key=list(lines=TRUE, points=FALSE, space="right"),
+      auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -191,9 +192,9 @@ xyplot(rmse.mean ~ n,
       data=agg,
       ylab="RMSE",
       xlab="n",
-      scales=list(y=list(log=10), x=list(log=10)),
+      scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
       type="l",
-      auto.key=list(lines=TRUE, points=FALSE, space="right"),
+      auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -207,12 +208,12 @@ agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
 xyplot(t.mean ~ n,
        data=agg,
-       scales=list(y=list(log=10), x=list(log=10)),
+       scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        groups=type,
        type="l",
        ylab="Computing time",
        xlab="n",
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -243,11 +244,11 @@ agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 xyplot(absdrho.mean ~ rho|type,
        data=agg,
        groups=weight,
-       scales=list(y=list(log=10)),
+       scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
        type="l", 
        ylab="MAD",
        xlab=expression(rho),
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -264,11 +265,11 @@ agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 xyplot(rmserho ~ n|type,
        data=agg,
        groups=weight,
-       scales=list(y=list(log=10), x=list(log=10)),
+       scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        type="l",
        ylab="RMSE",
        xlab="n",
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 

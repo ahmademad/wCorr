@@ -7,14 +7,14 @@ vignette: |
   %\VignetteIndexEntry{wCorr Formulas} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
-```{r packages and data, echo=FALSE, results="hide", message=FALSE}
+```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
 require(knitr)
 require(wCorr)
 require(lattice)
 require(doBy)
-load("Q:/Paul/wCorr/wCorr/vignettes/ML.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/fast.RData")
-load("Q:/Paul/wCorr/wCorr/vignettes/speed.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/ML.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/fast.RData")
+load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/speed.RData")
 ```
 
 This vignette introduces two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
@@ -94,11 +94,11 @@ agg <- summaryBy(absdrho ~ n + rho + type, data=mml, FUN=mean, na.rm=TRUE)
 xyplot(absdrho.mean ~ rho|type,
        data=agg,
        groups=n,
-       scales=list(y=list(log=10, cex=1.2), x = list(cex=1.2)),
+       scales=list(y=list(log=10, cex=0.7), x = list(cex=0.7)),
        type="l",
        ylab="MAD",
        xlab=expression(rho),
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
@@ -135,9 +135,9 @@ xyplot(absdrho.mean ~ rho|type,
        groups=n,
        type="l",
        ylab="MAD",
-       scales=list(y=list(log=10, cex=1.2), x=list(cex=1.2)),
+       scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
        xlab=expression(rho),
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2))
        )
 ```
@@ -146,7 +146,7 @@ The above shows that differences as a result of the `fast` argument are never la
 
 # Implications for speed
 
-A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\mathtt{fast} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10^1, 10^{1.25}, 10^{1.5}, ..., 10^7\}$. For precision, each iteration is run 80 times when $n<10^5$ and 20 times when $n\geq 10^5$. The same values of the variables are used in the computations at all four combinations of `ML` and `fast`. A variety of correlations are chosen so that the results represent an average of possible values of $\rho$.
+A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\mathtt{fast} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10^1, 10^{0.75}, 10^{1.5}, ..., 10^7\}$. For precision, each iteration is run 80 times when $n<10^5$ and 20 times when $n\geq 10^5$. The same values of the variables are used in the computations at all four combinations of `ML` and `fast`. A variety of correlations are chosen so that the results represent an average of possible values of $\rho$.
 
 The following plot shows the mean computing time versus $n$.
 
@@ -159,10 +159,10 @@ xyplot(t.mean ~ n|type,
        data=agg,
        type="l",
        ylab="Computing Time",
-       scales=list(y=list(log=10, cex=1.2), x=list(log=10, cex=1.2)),
+       scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        xlab="n",
        groups=class,
-       auto.key=list(lines=TRUE, points=FALSE, space="right"),
+       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2))
        )
 ```
