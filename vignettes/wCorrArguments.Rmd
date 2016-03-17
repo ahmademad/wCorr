@@ -3,8 +3,10 @@ title: "wCorr Arguments"
 author: "Paul Bailey, Ahmad Emad, (people who do QC for this product)"
 date: '`r Sys.Date()`'
 output: pdf_document
-vignette: |
-  %\VignetteIndexEntry{wCorr Formulas} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+vignette:  >
+  %\VignetteIndexEntry{wCorr Arguments} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
@@ -12,9 +14,9 @@ require(knitr)
 require(wCorr)
 require(lattice)
 require(doBy)
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/ML.RData")
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/fast.RData")
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/speed.RData")
+load("../vignettes/ML.RData")
+load("../vignettes/fast.RData")
+load("../vignettes/speed.RData")
 ```
 
 This vignette introduces two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).

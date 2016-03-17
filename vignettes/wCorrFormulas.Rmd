@@ -3,18 +3,20 @@ title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, (people who do QC for this product)"
 date: '`r Sys.Date()`'
 output: pdf_document
-vignette: |
-  %\VignetteIndexEntry{wCorr Formulas} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+vignette:  >
+  %\VignetteIndexEntry{wCorr Formulas} 
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 require(wCorr)
 require(lattice)
 require(doBy)
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/ntime.RData")
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/bias.RData")
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/wgtvrho.RData")
-load("//dc2fs/DC4Work/ESSIN Task 14/NAEP R Program/Paul/wCorr/wCorr/vignettes/wgtvn.RData")
+load("..//vignettes/ntime.RData")
+load("..//vignettes/bias.RData")
+load("..//vignettes/wgtvrho.RData")
+load("..//vignettes/wgtvn.RData")
 ```
 
 This document introduces the methodology used in the wCorr package for computing the weighted Pearson, Spearman, polyserial, and polychoric correlations. For the polyserial and polychoric correlations, the coefficient is estimated using a numerical likelihood maximization. The weighted likelihood functions that are used are motivated and described.
