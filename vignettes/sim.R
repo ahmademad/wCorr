@@ -44,43 +44,54 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
       tm <- sort(rnorm(nm))
       nq <- sample(2:5,1)
       tq <- sort(rnorm(nq))
-      n <- ifelse(everusew, df$n[ii]*100, df$n[ii])
+      n <- ifelse(everusew, 5*df$n[ii], df$n[ii])
       while( (length(unique(M)) < 2) | (length(unique(Q)) < 2) ) {
-        theta <- c(NA,-Inf,tq,Inf)
-        x <- rnorm(n)
+        theta1 <- c(NA,-Inf,tq,Inf)
+        theta2 <- c(NA,-Inf,tm,Inf)
         cr <- cori
-        Q <- rep(NA,n)
-        for(i in 2:length(theta)) {
-          Q <- ifelse(x>theta[i], i, Q)
-        }
-        Q <- Q - 1
-        
-        y <- sqrt(1-cr^2)*rnorm(n) + cr*x
-        theta <- c(NA,-Inf,tm,Inf)
-        M <- rep(NA,n)
-        for(i in 2:length(theta)) {
-          M <- ifelse(y>theta[i], i, M)
-        }
-        M <- M - 1
-        theta <- c(NA,-Inf,tq,Inf)
-        
-        M <- as.numeric(as.factor(M))
-        if(everusew) {
-          w <- (x-y)^2+1
-          #w <- x*corxw + (coryw + cori*corxw)/sqrt(1-cori^2)*y + sqrt(1-corxw^2 - ((coryw + cori*corxw)/sqrt(1-cori^2))^2) * rnorm(n)
-          #w <- w - min(w) + 2
+        x <- y <- w <- M <- Q <- c()
+        while(length(w) < df$n[ii]) {
+          xp <- rnorm(n)
+          Qp <- rep(NA,n)
+          for(i in 2:length(theta1)) {
+            Qp <- ifelse(xp>theta1[i], i, Qp)
+          }
+          Qp <- Qp - 1
           
-          pr <- 1/w
-          pr <- pr/sum(pr)
-          w <- 1/df$n[ii] * 1/pr
-          samp <- sample(1:n, size=df$n[ii], replace=FALSE, prob=pr)
-          M <- M[samp]
-          x <- x[samp]
-          Q <- Q[samp]
-          y <- y[samp]
-          w <- w[samp]
+          yp <- sqrt(1-cr^2)*rnorm(n) + cr*xp
+          Mp <- rep(NA,n)
+          for(i in 2:length(theta2)) {
+            Mp <- ifelse(yp>theta2[i], i, Mp)
+          }
+          Mp <- Mp - 1
+  
+          Mp <- as.numeric(as.factor(Mp))
+          if(everusew) {
+            wp <- (xp-yp)^2+1
+  
+            pr <- 1/wp
+            pr <- pr/(sum(pr) * 3)
+            wp <- 1/pr
+            #samp <- sample(1:n, size=df$n[ii], replace=FALSE, prob=pr)
+            samp <- (1:n)[runif(n)<pr]
+            M <- c(M,Mp[samp])
+            x <- c(x,xp[samp])
+            Q <- c(Q,Qp[samp])
+            y <- c(y,yp[samp])
+            w <- c(w,wp[samp])
+          } else {
+            M <- Mp
+            x <- xp
+            Q <- Qp
+            y <- yp
+            w <- rep(1/n, n)
+          }
         }
-        
+        M <- M[1:df$n[ii]]
+        x <- x[1:df$n[ii]]
+        Q <- Q[1:df$n[ii]]
+        y <- y[1:df$n[ii]]
+        w <- w[1:df$n[ii]]
       }
       df$M[ii] <- length(unique(M))
       df$Q[ii] <- length(unique(Q))
