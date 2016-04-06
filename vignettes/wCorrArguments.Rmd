@@ -12,9 +12,9 @@ require(knitr)
 require(wCorr)
 require(lattice)
 require(doBy)
-load("../vignettes/ML.RData")
-load("../vignettes/fast.RData")
-load("../vignettes/speed.RData")
+load("../vignettes/sim/ML.RData")
+load("../vignettes/sim/fast.RData")
+load("../vignettes/sim/speed.RData")
 ```
 
 The wCorr package can be used to calculate unweighted or weighted correlations of the Pearson, Spearman, polyserial, and polychoric types. By extension, the package also impelments the tetrachoric correlation as a specific case of the polychoric correlation and biserial as a specific case of the polyserial correlation. When weights are used the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comperable to `pweight` in Stata.]
