@@ -1,12 +1,10 @@
 ---
 title: "wCorr Arguments"
-author: "Paul Bailey, Ahmad Emad, (people who do QC for this product)"
+author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: pdf_document
-vignette:  >
-  %\VignetteIndexEntry{wCorr Arguments} 
-  %\VignetteEngine{knitr::rmarkdown} 
-  %\VignetteEncoding{UTF-8}
+output: word_document
+vignette: |
+  %\VignetteIndexEntry{wCorr Arguments}  %\VignetteEngine{knitr::rmarkdown}  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
@@ -19,7 +17,9 @@ load("../vignettes/fast.RData")
 load("../vignettes/speed.RData")
 ```
 
-This vignette introduces two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
+The wCorr package can be used to calculate unweighted or weighted correlations of the Pearson, Spearman, polyserial, and polychoric types. By extension, the package also impelments the tetrachoric correlation as a specific case of the polychoric correlation and biserial as a specific case of the polyserial correlation. When weights are used the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comperable to `pweight` in Stata.]
+
+This vignette describes the implications of two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
 
 The *wCorr Formulas* vignette describes the statistical properties of the correlation estimators in the package and has a more complete derivation of the likelihood functions.
 
@@ -60,8 +60,8 @@ The derivatives of $\ell$ can be written down but are not readily computed. When
 
 A simulation is run several times. For each itteration, the following procedure is used:
 
-* select the number of observations ($n$);
 * select a true correlation coefficient $\rho$;
+* select the number of observations ($n$);
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG);
 * using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\};
 * select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG; 
@@ -72,11 +72,11 @@ When the exact method of selecting a parameter (such as $n$) is not noted above,
 
 # ML switch
 
-A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, \newline $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each iteration is run three times. The same values of the variables are used in the computation for `ML=TRUE` as well as for `ML=FALSE`; and then the statistics are compared between the two sets of results. Mean absolute difference (MAD) is used as a measure for comparison of the two sets of results. It is given by
+A simulation was done at each level of the cartesian product of  $\mathtt{ML} \in \{\mathtt{TRUE}, \mathtt{FALSE} \}$, \newline $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each iteration is run three times. The same values of the variables are used in the computation for `ML=TRUE` as well as for `ML=FALSE`; and then the statistics are compared between the two sets of results. Mean absolute difference (MAD) between the maximum likelihood estimator (`ML=TRUE`) and the estimator that uses a consistent estimate of $\boldsymbol{\theta}$ (and potentially $\boldsymbol{\theta}'$) and then maximizes over $\rho$ only (`ML=FALSE`).  It is given by
 
 $$MAD= | r_{ML=TRUE} - r_{ML=FALSE} |  $$
 
-where $r_{ML=TRUE}$ is the estimated correlation when `ML=TRUE`; and  $r_{ML=FALSE}$ is the estimated correlation when `ML=FALSE`.
+where $r_{ML=TRUE}$ is the estimated correlation when `ML=TRUE`; and  $r_{ML=FALSE}$ is the estimated correlation when `ML=FALSE`. Thus, this MAD is not deviation from the true $\rho$ but the difference between the `ML` values.
 
 This is a plot of the $MAD$ as a function of the true correlation coefficnet. It shows a decrease in MAD with the increase of $n$ increases (change from line to line), a decrease when the correlations are in the neighborhood of zero that is more pronounced for larger $n$, and a dip when the correlation is exactly 1 or -1.
 
@@ -111,7 +111,7 @@ colnames(agg) <- c("Correlation type", "n", "MAD")
 kable(agg)
 ```
 
-These resuls show that the size of the MAD decreases as $n$ incrreases. Even when the sample size is small, the MAD is quite small. For example, when $n=10$, the MAD is less than 0.02 for the polyserial correlation and is less than  0.002 for the polychoric correlation.
+These resuls show that the size of the MAD decreases as $n$ incrreases. When the sample size is $n=10$, the MAD is less than 0.01 for the polyserial and 0.004 for the polychoric. 
 
 # fast switch
 
@@ -144,7 +144,7 @@ xyplot(absdrho.mean ~ rho|type,
        )
 ```
 
-The above shows that differences as a result of the `fast` argument are never larger than $10^{-8}$ for any type. As a matter of fact, Spearman never shows any difference that is different from zero.
+The above shows that differences as a result of the `fast` argument are never larger than $10^{-8}$ for any type. The Spearman never shows any difference that is different from zero and the Pearson show differences just larger than the smallest observable difference when using double precision floating point values (about $1 \times 10^{-16}$.
 
 # Implications for speed
 

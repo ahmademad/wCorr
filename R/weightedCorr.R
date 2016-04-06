@@ -1,36 +1,55 @@
-#' @title Calculates bivariate correlation on diescrete or continious variables
+#' @title Calculates bivariate Pearson, Spearman, polychoric, and polyserial correlation coefficients
 #'
-#' @description Implements weighted polyserial, weighted polychoric, weighted spearman, and weighted pearson correlations
+#' @description Calculates bivariate Pearson, Spearman, polychoric, and polyserial correlation
+#' coefficients in weighed or unweighted form, on diescrete or continious variables. Also 
+#' calculates tetrachoric and biserial correlation coefficients as described below.
 #'
-#' @param x          a numeric (or numeric factor in case of polychoric) vector or an object can be forced to a numeric or factor vector
-#' @param y          a numeric vector (or factor in case of polychoric and polyserial) or an object can be forced to a numeric or factor vector
-#' @param method     a character string indicating which correlation coefficient (or covariance) is to be computed. One of "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
-#' @param weights    a numeric vector of weights
-#' @param ML         a boolean value indicating if full ML is to be used (polyserial and polychoric only, has no effect on Pearson or Spearman results). This substantially increases the compute time and has a very small change in the the result.
-#' @param fast       a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE uses the pure R implementation and is included primarily for comparing the implementations to eachother.
+#' @param x          a numeric (or numeric factor in case of polychoric) vector or an object can be
+#'                   coerced to a numeric or factor vector.
+#' @param y          a numeric vector (or factor in case of polychoric and polyserial) or an object
+#'                   can be coerced to a numeric or factor vector.
+#' @param method     a character string indicating which correlation coefficient (or covariance) is
+#'                   to be computed. These include "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
+#'                   For tetrachoric use "Polychoric" and for biserial use "Polyserial".
+#' @param weights    a numeric vector of weights. Set to 1 for unweighted correlation (the default).
+#' @param ML         a boolean value indicating if full ML is to be used (polyserial and polychoric only,
+#'                   has no effect on Pearson or Spearman results). This substantially increases the
+#'                   compute time. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
+#' @param fast       a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
+#'                   uses the pure R implementation and is included primarily for comparing the implementations
+#'                   to eachother. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
 #'
 #' @details 
-#' In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For polychoric, both must be categorical.
-#' the correlation methods are calculated as described in seperate documentaiton. For Spearman the data is first ranked and then a Pearson type correlation
-#' coefficient is calculated on the result. The ranking method gives averages for ties.
+#' In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For
+#' polychoric, both must be categorical. the correlation methods are calculated as described in the 'wCorr Formulas'
+#' vignette.
 #'
-#' The details of computation are given in the vignette.
+#' For Spearman the data is first ranked and then a Pearson type correlation coefficient is calculated on
+#' the result. The ranking method gives averages for ties.
+#'
+#' The details of computation are given in the 'wCorr Formulas' vignette.
 #'
 #' @return
 #' A scalar that is the estimated correlation.
 #'
 #' @examples
+#' require(wCorr)
 #' # run a polyserial correlation
 #' attach(mtcars)
 #' weightedCorr(gear, x=cyl, method="polyserial")
 #' # weight by MPG
 #' weightedCorr(y=gear, x=cyl, method="polyserial", weights=mpg)
+#' # unweight
+#' weightedCorr(y=gear, x=cyl, method="polyserial")
 #'
 #' # run a polychoric correlation
 #' weightedCorr(gear, x=cyl, method="polychoric")
 #' # weight by MPG
 #' weightedCorr(y=gear, x=cyl, method="polychoric", weights=mpg)
+#' # unwiehgted
+#' weightedCorr(y=gear, x=cyl, method="polychoric")
 #' detach(mtcars)
+#'
 #' @seealso \ifelse{latex}{\code{cor}}{\code{\link[stats]{cor}}}
 #'
 #' @export
