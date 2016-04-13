@@ -66,6 +66,13 @@ weightedCorr(y=gear, x=cyl, method="polychoric")
 detach(mtcars)
 
 }
+\references{
+Polyserial computation based on the likelihood function in Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." Biometrics, 30 (1), pp 171-178.
+
+Polychoric computation based on the likelihood function in Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." Psyhometrika, 44 (4), pp 443-460.
+
+The weighted Pearson formula appears in many places, including the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.
+}
 \seealso{
 \ifelse{latex}{\code{cor}}{\code{\link[stats]{cor}}}
 }
