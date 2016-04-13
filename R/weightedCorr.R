@@ -11,7 +11,8 @@
 #' @param method     a character string indicating which correlation coefficient is
 #'                   to be computed. These include "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 #'                   For tetrachoric use "Polychoric" and for biserial use "Polyserial".
-#' @param weights    a numeric vector of weights. Set to 1 for unweighted correlation (the default).
+#' @param weights    a numeric vector of weights. By default, the unweighted correlation coefficient is calculated
+#'                   by setting the weights to a vector of all 1s.
 #' @param ML         a Boolean value indicating if full Maximum Likelihood (ML) is to be used (polyserial and polychoric only,
 #'                   has no effect on Pearson or Spearman results). This substantially increases the
 #'                   compute time. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
@@ -31,6 +32,14 @@
 #'
 #' @return
 #' A scalar that is the estimated correlation.
+#'
+#' @references
+#'  Polyserial computation based on the likelihood function in Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." Biometrics, 30 (1), pp 171-178.
+#'
+#' Polychoric computation based on the likelihood function in Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." Psyhometrika, 44 (4), pp 443-460.
+#' 
+#' The weighted Pearson formula appears in many places, including the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.
+#' 
 #'
 #' @examples
 #' require(wCorr)

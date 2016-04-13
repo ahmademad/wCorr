@@ -1,10 +1,12 @@
 ---
 title: "wCorr Arguments"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
-date: '`r Sys.Date()`'
-output: word_document
-vignette: |
-  %\VignetteIndexEntry{wCorr Arguments}  %\VignetteEngine{knitr::rmarkdown}  %\VignetteEncoding{UTF-8}
+date: "`r Sys.Date()`"
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{wCorr Arguments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
@@ -17,9 +19,11 @@ load("../vignettes/sim/fast.RData")
 load("../vignettes/sim/speed.RData")
 ```
 
-The wCorr package can be used to calculate unweighted or weighted correlations of the Pearson, Spearman, polyserial, and polychoric types. By extension, the package also impelments the tetrachoric correlation as a specific case of the polychoric correlation and biserial as a specific case of the polyserial correlation. When weights are used the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comperable to `pweight` in Stata.]
+The wCorr package can be used to calculate Pearson, Spearman, polyserial, and polychoric correlations, in weighted or unweighted form.^[The estimation procedure used by the wCorr package for the polyserial is based on the likelihood function in by Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." *Biometrics*, **30** (1), pp 171-178. The likelihood function for polychoric is from Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." *Psyhometrika*, **44** (4), pp 443-460. The likelihood used for Pearson and Spearman is written down many places. One is the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.] The package implements the tetrachoric correlation as a specific case of the polychoric correlation and biserial correlation as a specific case of the polyserial correlation. When weights are used, the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comparable to `pweight` in Stata.]
 
-This vignette describes the implications of two Boolean switches in the wCorr package. First, the `ML` switch allows for either a non-MLE (but consistent) esitimate of the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
+This vignette describes the use of applying different options for computation and impact on resulting correlations of two Boolean switches in the wCorr package. First, the Maximum Likelihood, or `ML` switch uses   either a consistent but non-Maximum-Likelihood Estimator (MLE) for the nuisance parameters that define the binning process to be used (`ML=FALSE`) or for the nuisance parameters to be estimated using the MLE (`ML=TRUE`). Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`).
+
+The results show that setting the `fast` argument to `TRUE` changes results by less than $10^{-8}$ but can speed up computation for large data sets, especially for the polychoric correlation where a speed up hundreds of seconds to seconds can be achieved. The `ML` option speeds up both computations--polychoric most noticably for small $n$ size and polyserial most noticably for large $n$ size. The difference between the two estimates can be as large as in the second or third digit of a correlation coefficient when $n=10$ but is noticable only in the fourth digit once $n=1,000$.
 
 The *wCorr Formulas* vignette describes the statistical properties of the correlation estimators in the package and has a more complete derivation of the likelihood functions.
 

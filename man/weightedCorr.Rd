@@ -18,15 +18,16 @@ can be coerced to a numeric or factor vector.}
 to be computed. These include "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 For tetrachoric use "Polychoric" and for biserial use "Polyserial".}
 
-\item{weights}{a numeric vector of weights. Set to 1 for unweighted correlation (the default).}
+\item{weights}{a numeric vector of weights. By default, the unweighted correlation coefficient is calculated
+by setting the weights to a vector of all 1s.}
 
-\item{ML}{a boolean value indicating if full ML is to be used (polyserial and polychoric only,
+\item{ML}{a Boolean value indicating if full Maximum Likelihood (ML) is to be used (polyserial and polychoric only,
 has no effect on Pearson or Spearman results). This substantially increases the
 compute time. See the 'wCorr Arguments' vignette for a description of the effect of this argument.}
 
-\item{fast}{a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
+\item{fast}{a Boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
 uses the pure R implementation and is included primarily for comparing the implementations
-to eachother. See the 'wCorr Arguments' vignette for a description of the effect of this argument.}
+to each other. See the 'wCorr Arguments' vignette for a description of the effect of this argument.}
 }
 \value{
 A scalar that is the estimated correlation.
@@ -38,7 +39,7 @@ calculates tetrachoric and biserial correlation coefficients as described below.
 }
 \details{
 In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For
-polychoric, both must be categorical. the correlation methods are calculated as described in the 'wCorr Formulas'
+polychoric, both must be categorical. The correlation methods are calculated as described in the 'wCorr Formulas'
 vignette.
 
 For Spearman the data is first ranked and then a Pearson type correlation coefficient is calculated on

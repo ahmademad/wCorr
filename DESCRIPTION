@@ -1,7 +1,7 @@
 Package: wCorr
 Type: Package
 Title: Weighted Correlations
-Version: 1.6
+Version: 1.7.0
 Date: 2016-03-02
 Author: Ahmad Emad & Paul Bailey
 Maintainer: Paul Bailey <pbailey@air.org>
@@ -10,6 +10,6 @@ License: GPL-2
 Imports: minqa, mnormt, Rcpp 
 Depends: R (>= 3.0.0) 
 RoxygenNote: 5.0.1
-Suggests: knitr, rmarkdown
+Suggests: knitr, rmarkdown, doBy, lattice
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppArmadillo

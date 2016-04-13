@@ -2,10 +2,10 @@
 require(wCorr)
 require(lattice)
 require(doBy)
-load("..//vignettes/ntime.RData")
-load("..//vignettes/bias.RData")
-load("..//vignettes/wgtvrho.RData")
-load("..//vignettes/wgtvn.RData")
+load("..//vignettes/sim/ntime.RData")
+load("..//vignettes/sim/bias.RData")
+load("..//vignettes/sim/wgtvrho.RData")
+load("..//vignettes/sim/wgtvn.RData")
 
 ## ----theta,echo=FALSE,results="hide",fig.show="hold",fig.width=6, fig.height=2.5----
 x <- seq(-3,3,by=0.01) 
@@ -13,7 +13,7 @@ y <- dnorm(x)
 par0 <- par(no.readonly=TRUE)
 par(ann=FALSE)
 par(mar=c(5,2,1,1)+0.1)
-plot(x,y,type="l",xlab="y",ylab="density", xaxt="n", yaxt="n")
+plot(x,y,type="l",xlab="y",ylab="Density", xaxt="n", yaxt="n")
 axis(1,at=c(-2,-0.5,1.6), labels=expression(theta[3],theta[4],theta[5]))
 text(x=c(-2.5,-1.25,0.55,2.3),y=0.05, labels=paste0("m=",1:4))
 theta <- c(-2,-0.5,1.6)
@@ -74,7 +74,7 @@ xyplot(t.mean ~ n,
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        groups=type,
        type="l",
-       ylab="Computing time",
+       ylab="Computing time (s)",
        xlab="n",
        auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))

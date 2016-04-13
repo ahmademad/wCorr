@@ -3,9 +3,9 @@ require(knitr)
 require(wCorr)
 require(lattice)
 require(doBy)
-load("../vignettes/ML.RData")
-load("../vignettes/fast.RData")
-load("../vignettes/speed.RData")
+load("../vignettes/sim/ML.RData")
+load("../vignettes/sim/fast.RData")
+load("../vignettes/sim/speed.RData")
 
 ## ----ML MAD plot, echo=FALSE,fig.width=6, fig.height=2.5-----------------
 ml <- subset(ML, type %in% c("Polychoric", "Polyserial"))

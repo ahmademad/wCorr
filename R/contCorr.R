@@ -10,8 +10,10 @@ contCorr <- function(x,y,w, method=c("Pearson", "Spearman")) {
   }
   pm <- pmatch(tolower(method[[1]]), tolower(c("Pearson", "Spearman")))
   if(pm == 2) {
-    x <- rank(x) # rank gives averages for ties
-    y <- rank(y)
+    #x <- rank(x) # rank gives averages for ties
+    #y <- rank(y)
+    x <- wrank(x,w)
+    y <- wrank(y,w)
   }
   xb <- sum(w*x)/sum(w)
   yb <- sum(w*y)/sum(w)
