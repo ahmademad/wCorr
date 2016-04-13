@@ -57,9 +57,10 @@ polycFast <- function(x,y,w,ML=FALSE) {
      return(temp)
 
   ux <- sort(unique(x))
-  cut1 <- imapThetaFast( sapply(ux[-length(ux)],function(z) qnorm(mean(x<=z)) ))
+  
+  cut1 <- imapThetaFast( sapply(ux[-length(ux)],function(z) qnorm(sum(w[x<=z])/sum(w)) ))
   uy <- sort(unique(y))
-  cut2 <- imapThetaFast( sapply(uy[-length(uy)],function(z) qnorm(mean(y<=z)) ))
+  cut2 <- imapThetaFast( sapply(uy[-length(uy)],function(z) qnorm(sum(w[y<=z])/sum(w)) ))
   cor0 <- atanh(cor(as.numeric(x),as.numeric(y)))
   #bob <- bobyqa(c(cut1,cut2,cor0), fn=optf_all, xytab=xytab)
   if(ML) {

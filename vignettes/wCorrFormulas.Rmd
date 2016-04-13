@@ -2,19 +2,21 @@
 title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: word_document
-vignette: |
-  %\VignetteIndexEntry{wCorr Formulas}  %\VignetteEngine{knitr::rmarkdown}  %\VignetteEncoding{UTF-8}
+output: pdf_document
+vignette: >
+  %\VignetteIndexEntry{wCorr Formulas}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 require(wCorr)
 require(lattice)
 require(doBy)
-load("..//vignettes/ntime.RData")
-load("..//vignettes/bias.RData")
-load("..//vignettes/wgtvrho.RData")
-load("..//vignettes/wgtvn.RData")
+load("..//vignettes/sim/ntime.RData")
+load("..//vignettes/sim/bias.RData")
+load("..//vignettes/sim/wgtvrho.RData")
+load("..//vignettes/sim/wgtvn.RData")
 ```
 
 The wCorr package can be used to calculate unweighted or weighted correlations of the Pearson, Spearman, polyserial, and polychoric types. By extension, the package also impelments the tetrachoric correlation as a specific case of the polychoric correlation and biserial as a specific case of the polyserial correlation. When weights are used the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comperable to `pweight` in Stata.]

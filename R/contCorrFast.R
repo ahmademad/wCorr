@@ -9,8 +9,10 @@ contCorrFast <- function(x,y,w, method=c("Pearson", "Spearman")) {
     w <- as.numeric(w)
     }
   if(tolower(method[[1]])=="spearman") {
-    x <- rank(x) # rank gives averages for ties
-    y <- rank(y)
+    #x <- rank(x) # rank gives averages for ties
+    #y <- rank(y)
+    x <- wrank(x,w)
+    y <- wrank(y,w)
   }
   cont(x,y,w)
 }

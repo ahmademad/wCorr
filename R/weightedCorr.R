@@ -1,27 +1,28 @@
 #' @title Calculates bivariate Pearson, Spearman, polychoric, and polyserial correlation coefficients
 #'
 #' @description Calculates bivariate Pearson, Spearman, polychoric, and polyserial correlation
-#' coefficients in weighed or unweighted form, on diescrete or continious variables. Also 
+#' coefficients in weighted or unweighted form, on discrete or continuous variables. Also 
 #' calculates tetrachoric and biserial correlation coefficients as described below.
 #'
-#' @param x          a numeric (or numeric factor in case of polychoric) vector or an object can be
+#' @param x          a numeric (or numeric factor in case of polychoric) vector or an object that can be
 #'                   coerced to a numeric or factor vector.
-#' @param y          a numeric vector (or factor in case of polychoric and polyserial) or an object
+#' @param y          a numeric vector (or factor in case of polychoric and polyserial) or an object that
 #'                   can be coerced to a numeric or factor vector.
-#' @param method     a character string indicating which correlation coefficient (or covariance) is
+#' @param method     a character string indicating which correlation coefficient is
 #'                   to be computed. These include "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
 #'                   For tetrachoric use "Polychoric" and for biserial use "Polyserial".
-#' @param weights    a numeric vector of weights. Set to 1 for unweighted correlation (the default).
-#' @param ML         a boolean value indicating if full ML is to be used (polyserial and polychoric only,
+#' @param weights    a numeric vector of weights. By default, the unweighted correlation coefficient is calculated
+#'                   by setting the weights to a vector of all 1s.
+#' @param ML         a Boolean value indicating if full Maximum Likelihood (ML) is to be used (polyserial and polychoric only,
 #'                   has no effect on Pearson or Spearman results). This substantially increases the
 #'                   compute time. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
-#' @param fast       a boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
+#' @param fast       a Boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
 #'                   uses the pure R implementation and is included primarily for comparing the implementations
-#'                   to eachother. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
+#'                   to each other. See the 'wCorr Arguments' vignette for a description of the effect of this argument.
 #'
 #' @details 
 #' In case of polyserial, x must be the observed ordinal variable, and y the observed continuous variable. For
-#' polychoric, both must be categorical. the correlation methods are calculated as described in the 'wCorr Formulas'
+#' polychoric, both must be categorical. The correlation methods are calculated as described in the 'wCorr Formulas'
 #' vignette.
 #'
 #' For Spearman the data is first ranked and then a Pearson type correlation coefficient is calculated on
@@ -31,6 +32,14 @@
 #'
 #' @return
 #' A scalar that is the estimated correlation.
+#'
+#' @references
+#'  Polyserial computation based on the likelihood function in Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." Biometrics, 30 (1), pp 171-178.
+#'
+#' Polychoric computation based on the likelihood function in Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." Psyhometrika, 44 (4), pp 443-460.
+#' 
+#' The weighted Pearson formula appears in many places, including the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.
+#' 
 #'
 #' @examples
 #' require(wCorr)
@@ -73,13 +82,13 @@ weightedCorr <- function(x, y, method = c("Pearson", "Spearman", "Polyserial", "
 
   if(method == "polyserial") {
     if(length(unique(y)) == length(y) & length(unique(x)) < length(x)) {
-      stop(paste0("Check argument definitions for ", sQuote("y"), " and ", sQuote("x") ,". The number of levels in the discrete variable ",sQuote("y")," is equal to the number of observations while the number of levels in continious variable ",  sQuote("x")," is less than the number of observations. Try transposing these two arguments."))
+      stop(paste0("Check argument definitions for ", sQuote("y"), " and ", sQuote("x") ,". The number of levels in the discrete variable ",sQuote("y")," is equal to the number of observations while the number of levels in continuous variable ",  sQuote("x")," is less than the number of observations. Try transposing these two arguments."))
     }
     if(length(unique(y)) > length(unique(x))) {
-      warning(paste0("Check argument definitions for ", sQuote("y"), " and ", sQuote("x") ,". The number of levels in the discrete variable ",sQuote("y")," is larger than the number of levels in continious variable ",  sQuote("x")," indicating a possible transposition of the arguments."))
+      warning(paste0("Check argument definitions for ", sQuote("y"), " and ", sQuote("x") ,". The number of levels in the discrete variable ",sQuote("y")," is larger than the number of levels in continuous variable ",  sQuote("x")," indicating a possible transposition of the arguments."))
     }
     if(is.factor(x)) {
-      stop(paste0("The argument ", sQuote("X"), " is a factor but must be continious in the Polyserial correlation."))
+      stop(paste0("The argument ", sQuote("X"), " is a factor but must be continuous in the Polyserial correlation."))
     }
     if(fast){
       value <- polysFast(x, y, weights, ML=ML)
