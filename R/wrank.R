@@ -19,7 +19,7 @@
 
 
 wrank <- function(x, w=rep(1,length(x))) {
-  sapply(1:n, function(i) {
+  sapply(1:length(x), function(i) {
     t1 <- sum(w[x<x[i]]) # ranked below every unit below it
     t2 <- w[x==x[i]] #  ties
     # Note: when selecting the range to average over you have to figure out which unit is first.
