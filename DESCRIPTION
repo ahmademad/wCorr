@@ -10,6 +10,6 @@ License: GPL-2
 Imports: minqa, mnormt, Rcpp 
 Depends: R (>= 3.0.0) 
 RoxygenNote: 5.0.1
-Suggests: knitr, rmarkdown, doBy, lattice
+Suggests: knitr, rmarkdown, doBy, lattice, captioner
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppArmadillo
