@@ -126,9 +126,10 @@ polycSlow <- function(x,y,w,ML=FALSE) {
   #op <- optim(par=c(log(1:(ncol(xytab)-1)), log(1:(nrow(xytab)-1)),cor(x,y)), optf_all, xytab=xytab, control=list(fnscale=-1), method="BFGS")
   #fscale_corr(op$par[length(op$par)])
   ux <- sort(unique(x))
-  cut1 <- imapTheta( sapply(ux[-length(ux)],function(z) qnorm(mean(x<=z)) ))
+  cut1 <- imapTheta( sapply(ux[-length(ux)],function(z) qnorm(sum(w[x<=z])/sum(w)) ))
   uy <- sort(unique(y))
-  cut2 <- imapTheta( sapply(uy[-length(uy)],function(z) qnorm(mean(y<=z)) ))
+  cut2 <- imapTheta( sapply(uy[-length(uy)],function(z) qnorm(sum(w[y<=z])/sum(w)) ))
+  
   cor0 <- atanh(cor(as.numeric(x),as.numeric(y)))
   #bob <- bobyqa(c(cut1,cut2,cor0), fn=optf_all, xytab=xytab)
   if(ML) {
