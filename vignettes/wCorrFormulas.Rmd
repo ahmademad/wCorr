@@ -19,11 +19,11 @@ load("..//vignettes/sim/wgtvrho.RData")
 load("..//vignettes/sim/wgtvn.RData")
 ```
 
-The wCorr package can be used to calculate unweighted or weighted correlations of the Pearson, Spearman, polyserial, and polychoric types. By extension, the package also impelments the tetrachoric correlation as a specific case of the polychoric correlation and biserial as a specific case of the polyserial correlation. When weights are used the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comperable to `pweight` in Stata.]
+The wCorr package can be used to calculate Pearson, Spearman, polyserial, and polychoric correlations, in weighted or unweighted form.^[The estimation procedure used by the wCorr package for the polyserial is based on the likelihood function in by Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." *Biometrics*, **30** (1), pp 171-178. The likelihood function for polychoric is from Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." *Psyhometrika*, **44** (4), pp 443-460. The likelihood used for Pearson and Spearman is written down many places. One is the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.] The package implements the tetrachoric correlation as a specific case of the polychoric correlation and biserial correlation as a specific case of the polyserial correlation. When weights are used, the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comparable to `pweight` in Stata.]
  
 This vignette introduces the methodology used in the wCorr package for computing the Pearson, Spearman, polyserial, and polychoric correlations, with and without weights applied. For the polyserial and polychoric correlations, the coefficient is estimated using a numerical likelihood maximization. The weighted (and unweighted) likelihood functions that are used are described.
 
-For the polyserial and polychoric correlations, evidence is offered for the correctness of the methods, including an examination of the bias and consistency of both methods. This is done seperately for unweighted and weighted correlations. For this exercise, numerical simulations are used to show:
+We present formulas that are used to compute correlations and then present simulation evidence to showcorrectness of the methods, including an examination of the bias and consistency of both methods. This is done seperately for unweighted and weighted correlations. For this exercise, numerical simulations are used to show:
 
 * the bias of the methods as a function of the true correlation coefficient ($\rho$) and the number of observations ($n$) in the unweighted and weighted cases; and
 * the accuracy [measured with root mean squared error (RMSE) and mean absolute deviation (MAD)] of the methods as a function of $\rho$ and $n$ in the unweighted and weighed cases.
@@ -32,15 +32,15 @@ Note that here "bias" is used to mean the mean difference between true correlati
 
 The *wCorr Arguments* vignette describes the effects the `ML` and `fast` arguments have on computation and gives examples of calls to wCorr.
 
-# Methodology
-Here we focus on measurement of the correlation coefficients between two vectors of random variables that are jointly bivariate normal. We call the two vectors ***X*** and ***Y***.^[The Spearman correlation coefficient can be derived by assuming a much more broad class of random variables, but that is not dealt with in this document.] The $i^{th}$ members of the vectors are then called $x_i$ and $y_i$.
+# Specification of estimation formulas 
+Here we focus on specification of the correlation coefficients between two vectors of random variables that are jointly bivariate normal. We call the two vectors ***X*** and ***Y***. The $i^{th}$ members of the vectors are then called $x_i$ and $y_i$.
 
-##Methodology for Pearson and Spearman correlations 
+## Computation for Pearson and Spearman correlations 
 
 The weighted Pearson correlation is computed using the formula
 $$\rho_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
 
-where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum w_i}\sum_i w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** varaible ($\bar{y}=\frac{1}{\sum w_i}\sum_i w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
+where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum w_i}\sum_i w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** variable ($\bar{y}=\frac{1}{\sum w_i}\sum_i w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
 
 The unweighted Pearson correlation is calculated by setting all of the weights to one.
 
@@ -146,7 +146,7 @@ This does not speak to the small sample properties of these correlation coeffici
 
 In what follows, when the exact method of selecting a parameter (such as $n$) is not noted in the above descriptions it is described as part of each simulation.
 
-A simulation is run several times (the exact number of times will be stated for each simulation). For each iteration, the following procedure is used:
+Across a number of iterations (the exact number of times will be stated for each simulation), the following procedure is used:
 
 * select a true correlation coefficient $\rho$;
 * select the number of observations ($n$);
@@ -202,7 +202,7 @@ xyplot(rmse.mean ~ rho|type,
 
 #### Consistency of the correlations  
 
-This plot shows the RMSE as a function of $n$. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation.
+This plot shows the RMSE as a function of $n$. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. Thus, the RMSE is  small for n > 100. 
 
 ```{r rmse vs n, echo=FALSE,fig.width=6, fig.height=2.5}
 agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
@@ -239,7 +239,7 @@ xyplot(t.mean ~ n,
 ## Simulation study of weighted correlations
 When complex sampling (other than simple random sampling with replacement) is used, unweighted correlations may or may not be consistent. In this section the consistency of the weighted coefficients is examined.
 
-When generating simulated data, decisinos about the generating functions have to be made. These decisions affect how the results are interpreted. For the weighted case, if these decisions lead to something about the higher weight cases being different from the lower weight cases then the test will be more informative about the role of weights. Thus, while it is not reasonable to always assume that there is a difference between the high and low weight cases, the assumption (used in the simulations below) that there is an association between weight and the correlaiton serves as a more robust test of the methods in this package.
+When generating simulated data, decisions about the generating functions have to be made. These decisions affect how the results are interpreted. For the weighted case, if these decisions lead to something about the higher weight cases being different from the lower weight cases then the test will be more informative about the role of weights. Thus, while it is not reasonable to always assume that there is a difference between the high and low weight cases, the assumption (used in the simulations below) that there is an association between weight and the correlaiton serves as a more robust test of the methods in this package.
 
 ##Results of weighted correlation simulations
 
@@ -256,7 +256,7 @@ $$MAD=\frac{1}{n}\sum_i |r_i - \rho_i|$$
 
 as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, with 100 iterations run for each value of $\rho$. 
 
-The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions, the weighted correlation performs better than (has lowe MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD.
+The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD.
 
 ```{r wgt vs rho plot, echo=FALSE,fig.width=6, fig.height=2.5}
 wgt <- wgtvrho
