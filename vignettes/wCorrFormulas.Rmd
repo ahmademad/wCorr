@@ -103,7 +103,7 @@ Where $\Phi(\cdot)$ is the standard normal cumulative density function. Using th
 $$\ell(\rho, \theta;z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) \right]$$
 where $w_i$ is the weight of the $i^{th}$ members of the vectors ***Z*** and ***Y***. For the unweighted case, all of the weights are set to one.
 
-The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall.
+The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.
 
 ###Computation of polyserial correlation
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using `stats::optimize` at the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`. See the *wCorr Arguments* vignette for a comparison of these two methods.
