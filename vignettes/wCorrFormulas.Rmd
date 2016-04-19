@@ -13,10 +13,29 @@ vignette: >
 require(wCorr)
 require(lattice)
 require(doBy)
+require(captioner)
+# set layout so a figure label appears to go with the figure
+trellis.device()
+trellis.par.set(list(layout.widths  = list(left.padding = 3, right.padding = 3),
+                     layout.heights = list(top.padding = -1, bottom.padding = 3)))
 load("..//vignettes/sim/ntime.RData")
 load("..//vignettes/sim/bias.RData")
 load("..//vignettes/sim/wgtvrho.RData")
 load("..//vignettes/sim/wgtvn.RData")
+```
+
+
+```{r tables and figures, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
+fig_nums <- captioner()
+table_nums <- captioner(prefix = "Table")
+
+theta <- fig_nums("theta", "")
+biasVsRho <- table_nums("biasVsRho", "")
+rmseVsRho <- table_nums("rmseVsRho", "")
+rmseVsRho2 <- table_nums("rmseVsN", "")
+speedi <- table_nums("speedi", "")
+rmseVsRho3 <- table_nums("rmseVsRho2", "")
+rmseVsN <- table_nums("rmseVsN2", "")
 ```
 
 The wCorr package can be used to calculate Pearson, Spearman, polyserial, and polychoric correlations, in weighted or unweighted form.^[The estimation procedure used by the wCorr package for the polyserial is based on the likelihood function in by Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." *Biometrics*, **30** (1), pp 171-178. The likelihood function for polychoric is from Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." *Psyhometrika*, **44** (4), pp 443-460. The likelihood used for Pearson and Spearman is written down many places. One is the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.] The package implements the tetrachoric correlation as a specific case of the polychoric correlation and biserial correlation as a specific case of the polyserial correlation. When weights are used, the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comparable to `pweight` in Stata.]
@@ -63,7 +82,10 @@ where, $\theta$ are the cut points used to discretize ***Y*** into ***M***, and 
 
 To give a concrete example, the following figure shows the density of ***Y*** when the cuts points are, for this example, $\theta=\left(-\infty,-2,-0.5,1.6,\infty\right)$. In this example, any value of $-2 < y_i < -0.5$ would have $m_i=2$.
 
-```{r theta,echo=FALSE,results="hide",fig.show="hold",fig.width=6, fig.height=2.5}
+\newpage
+  
+**`r fig_nums("theta", display="cite")`.** *Density of Y for cutpoints $\theta \in (-\infty, -2, -0.5, 1.6, \infty$).*    
+```{r theta,echo=FALSE,results="hide",fig.width=7, fig.height=5.5}
 x <- seq(-3,3,by=0.01) 
 y <- dnorm(x)
 par0 <- par(no.readonly=TRUE)
@@ -170,7 +192,8 @@ $$bias=\frac{1}{n}\sum_i \left(r_i - \rho_i \right)$$
 
 This plot shows the bias as a function of the true correlation $\rho$. Only the Spearman correlation shows a clear trend with a positive bias below 0 (negative correlation) and a negative bias above 0 (positive correlation). The other estimators show no clear bias.
 
-```{r bias vs rho, echo=FALSE,fig.width=6, fig.height=2.5}
+**`r fig_nums("biasVsRho", display="cite")`.** *Mean Absolute Deviance vs $\rho$ (Unweighted).*    
+```{r bias vs rho, echo=FALSE,fig.width=7, fig.height=5}
 bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
 bias$bias <- bias$est - bias$rho
 agg <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
@@ -188,7 +211,8 @@ xyplot(bias.mean ~ rho|type,
 
 This plot shows the RMSE as a function of $\rho$. All of the correlation coefficients have a uniform RMSE as a function of $\rho$ near $\rho=0$ that decreases near $|\rho|=1$. All plots also show a decrease in RMSE as $n$ increases. This plot shows that there is no appreciable RMSE differences as a functions of $\rho$. In addition, it show that our attention to the MLE correlation of -1 or 1 at edge cases did not make the RMSE much worse in the neighborhood of the edges ($|\rho| \sim 1$).
 
-```{r rmse vs rho, echo=FALSE,fig.width=6, fig.height=2.5}
+**`r fig_nums("rmseVsRho", display="cite")`.** *Root Mean Square Error vs $\rho$ (Unweighted).*   
+```{r rmse vs rho, echo=FALSE,fig.width=7, fig.height=5.5}
 xyplot(rmse.mean ~ rho|type,
       data=agg,
       groups=n,
@@ -204,7 +228,10 @@ xyplot(rmse.mean ~ rho|type,
 
 This plot shows the RMSE as a function of $n$. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. Thus, the RMSE is  small for n > 100. 
 
-```{r rmse vs n, echo=FALSE,fig.width=6, fig.height=2.5}
+\newpage 
+
+**`r fig_nums("rmseVsN", display="cite")`.** *Root Mean Square Error vs sample size (Unweighted).*   
+```{r rmse vs n, echo=FALSE,fig.width=7, fig.height=5.5}
 agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(rmse.mean ~ n,
      groups=type,
@@ -221,7 +248,10 @@ xyplot(rmse.mean ~ n,
 
 This plot shows the mean time (in seconds) to compute a single correlation coefficient as a function of $\rho$ by $n$ size. The plot shows linearly rising computation times with slopes of about one. This is consistent with a linear computation cost. Using Big O notation, the computation cost is, in the range shown, O($n$).
 
-```{r time vs n, echo=FALSE,fig.width=6, fig.height=2.5}
+\newpage
+  
+**`r fig_nums("speedi", display="cite")`.** *Computation time.*    
+```{r time vs n, echo=FALSE,fig.width=7, fig.height=5.5}
 agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
 agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
@@ -258,7 +288,8 @@ as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.
 
 The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD.
 
-```{r wgt vs rho plot, echo=FALSE,fig.width=6, fig.height=2.5}
+**`r fig_nums("rmseVsRho2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
+```{r wgt vs rho plot, echo=FALSE,fig.width=7, fig.height=5.5}
 wgt <- wgtvrho
 wgt$absdrho <- abs(wgt$est - wgt$rho)
 
@@ -276,9 +307,11 @@ xyplot(absdrho.mean ~ rho|type,
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
+
 The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson and polyserial correlation coefficient. The polychoric and Spearman are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent is not meant to imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
-```{r wgt v n plot, echo=FALSE,fig.width=6, fig.height=2.5}
+**`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
+```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
 wgt <- wgtvn
 wgt$mserho <- (wgt$est - wgt$rho)^2
 
@@ -297,3 +330,7 @@ xyplot(rmserho ~ n|type,
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
+#Conclusion
+Overall the simulations show first order convergence for each unweighted correlation coefficient with a linear computation cost. Further, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients.
+
+We show the first order convergence of the weighted Pearson and polyserial correlation coefficient. The polychoric and Spearman are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted.
