@@ -1,6 +1,6 @@
 require(wCorr)
 setwd("Q:/Paul/wCorr/vignettes/sim")
-source("sim.R")
+source("sim2.R")
 
 grid1 <- expand.grid(fast=c(TRUE,FALSE),
                      ML=c(TRUE,FALSE),
