@@ -5,6 +5,10 @@ cont <- function(x, y, w) {
     .Call('wCorr_cont', PACKAGE = 'wCorr', x, y, w)
 }
 
+wrankFast <- function(x, w) {
+    .Call('wCorr_wrankFast', PACKAGE = 'wCorr', x, w)
+}
+
 fixxFast <- function(x, w) {
     .Call('wCorr_fixxFast', PACKAGE = 'wCorr', x, w)
 }
