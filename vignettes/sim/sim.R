@@ -18,7 +18,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
   cor0 <- rho
   df <- data.frame(n=n,rho=rho, ML=ML, fast=fast, reset=reset, usew=usew)
   
-
+  
   df$spear <- df$speart <- NA
   df$Q <- df$M <- NA
   df$pear <- df$peart <- NA
@@ -33,7 +33,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
     fast <- df$fast[ii]
     reset <- df$reset[ii]
     usew <- df$usew[ii]
-
+    
     if(interactive()) {
       cat("n=",n,"cori=",cori,"\n")
     }
@@ -64,11 +64,11 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
             Mp <- ifelse(yp>theta2[i], i, Mp)
           }
           Mp <- Mp - 1
-  
+          
           Mp <- as.numeric(as.factor(Mp))
           if(everusew) {
             wp <- (xp-yp)^2+1
-  
+            
             pr <- 1/wp
             pr <- pr/(sum(pr) * 3)
             wp <- 1/pr
@@ -114,7 +114,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
     st0 <- system.time(fcorp <- weightedCorr(x,y, method="Pearson", weights=wu, fast=fast, ML=ML))
     df$peart[ii] <- st0[3]
     df$pear[ii] <- fcorp
-
+    
     st0 <- system.time(fcorp <- weightedCorr(x,y, method="Spearman", weights=wu, fast=fast, ML=ML))
     df$speart[ii] <- st0[3]
     df$spear[ii] <- fcorp
@@ -139,6 +139,3 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
                       type=rep(c("Pearson", "Spearman", "Polyserial", "Polychoric"),each=nrow(df)))
   dfout
 }
-
-
-
