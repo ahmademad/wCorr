@@ -19,6 +19,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// wrankFast
+arma::vec wrankFast(arma::vec x, const arma::vec& w);
+RcppExport SEXP wCorr_wrankFast(SEXP xSEXP, SEXP wSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::vec >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type w(wSEXP);
+    __result = Rcpp::wrap(wrankFast(x, w));
+    return __result;
+END_RCPP
+}
 // fixxFast
 const arma::vec fixxFast(const arma::vec x, const arma::vec w);
 RcppExport SEXP wCorr_fixxFast(SEXP xSEXP, SEXP wSEXP) {
