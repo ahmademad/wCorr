@@ -59,7 +59,7 @@ Here we focus on specification of the correlation coefficients between two vecto
 The weighted Pearson correlation is computed using the formula
 $$\rho_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
 
-where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum w_i}\sum_i w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** variable ($\bar{y}=\frac{1}{\sum w_i}\sum_i w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
+where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** variable ($\bar{y}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
 
 The unweighted Pearson correlation is calculated by setting all of the weights to one.
 
@@ -78,7 +78,7 @@ Where $N(A, \Sigma)$ is a bivariate normal distribution with mean vector $A$ and
 
 $$m_i= \begin{cases} 1 \quad \mathrm{if}  \theta_2 < y_i < \theta_3 \\ 2 \quad \mathrm{if} \theta_3 < y_i < \theta_4 \\ \vdots \\ t \quad \mathrm{if} \theta_{t+1} < y_i < \theta_{t+2} \end{cases}$$
 
-where, $\theta$ are the cut points used to discretize ***Y*** into ***M***, and %i% is the number of bins. For notational convenience, $\theta_2 \equiv -\infty$ and $\theta_{t+2} \equiv \infty$.^[The indexing is somewhat odd to be consistent with Cox (1974). Nevertheless, this treatment does not use the Cox definition of $\theta_0$, $\theta_1$ or $\theta_2$ which are either not estimated (as is the case for $\theta_0$, and $\theta_1$) or are reappopriated (as is the case for $\theta_2$). Cox calls the correlation coefficient $\theta_2$ while this document uses $\rho$ and uses $\theta_2$ to store $-\infty$ as a convenience so that the vector $\boldsymbol{\theta}$ includes the (infinite) bounds as well as the interior points.]
+where, $\theta$ are the cut points used to discretize ***Y*** into ***M***, and $t$ is the number of bins. For notational convenience, $\theta_2 \equiv -\infty$ and $\theta_{t+2} \equiv \infty$.^[The indexing is somewhat odd to be consistent with Cox (1974). Nevertheless, this treatment does not use the Cox definition of $\theta_0$, $\theta_1$ or $\theta_2$ which are either not estimated (as is the case for $\theta_0$, and $\theta_1$) or are reappopriated (as is the case for $\theta_2$). Cox calls the correlation coefficient $\theta_2$ while this document uses $\rho$ and uses $\theta_2$ to store $-\infty$ as a convenience so that the vector $\boldsymbol{\theta}$ includes the (infinite) bounds as well as the interior points.]
 
 To give a concrete example, the following figure shows the density of ***Y*** when the cuts points are, for this example, $\theta=\left(-\infty,-2,-0.5,1.6,\infty\right)$. In this example, any value of $-2 < y_i < -0.5$ would have $m_i=2$.
 
@@ -114,7 +114,7 @@ Combining these simplifications, the probability of any given $x_i$, $m_i$ pair 
 
 $$\mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z,\rho=r)dy$$
 
-where $\mathrm{Pr}\left( \rho=r, \theta; Z=z, M=m \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z$ and $m$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
+where $\mathrm{Pr}\left( \rho=r, \theta; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
 $$f(y|Z=z,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
 because both ***Z*** and ***Y*** are standard normals
 $$f(y|Z=z,\rho=r) =N\left(r \cdot z, (1-r^2) \right)$$
@@ -122,7 +122,7 @@ now, define $w \equiv \frac{y-r\cdot z}{\sqrt{1-r^2}}$ and $w$ has a standard no
 $$\mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
 
 Where $\Phi(\cdot)$ is the standard normal cumulative density function. Using the above probability function as an objective, the log-likelihood is then maximized.
-$$\ell(\rho, \theta;z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) \right]$$
+$$\ell(\rho, \theta;z,m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) \right]$$
 where $w_i$ is the weight of the $i^{th}$ members of the vectors ***Z*** and ***Y***. For the unweighted case, all of the weights are set to one.
 
 The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.
@@ -149,7 +149,7 @@ $$\mathrm{Pr}\left( \rho=r, \theta, \theta' ; P=p_i, M=m_i \right) = \int_{\thet
 where $\rho$ is the correlation coefficient.
 
 Using this function as an objective, the log-likelihood is then maximized.
-$$\ell(\rho, \theta, \theta';p,m) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \theta, \theta' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho, \theta, \theta';p,m) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \theta, \theta' ; P=p_i, M=m_i \right) \right] $$
 
 This is the weighted log-likelihood function. For the unweighted cause all of the weights are set to one.
 
@@ -184,11 +184,11 @@ Across a number of iterations (the exact number of times will be stated for each
 
 This sections shows the bias of the correlations as a function of the true correlation coefficient, $\rho$. To that end, a simulation was done at each level of the cartesian product of  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, and $n \in \{10, 100, 1000\}$. For precision, each level of $\rho$ and $n$ was run fifty times. The bias is the mean difference between the true correlation coefficient ($\rho_i$) and estimate correlation coefficient ($r$). The RMSE is the square root of the mean squared error.
 
-$$\mathrm{RMSE}= \sqrt{ \frac{1}{n} \sum_i \left( r_i - \rho_i \right)^2 }$$ 
+$$\mathrm{RMSE}= \sqrt{ \frac{1}{n} \sum_{i=1}^n \left( r_i - \rho_i \right)^2 }$$ 
 
 And the bias is given by
 
-$$bias=\frac{1}{n}\sum_i \left(r_i - \rho_i \right)$$
+$$bias=\frac{1}{n}\sum_{i=1}^n \left(r_i - \rho_i \right)$$
 
 This plot shows the bias as a function of the true correlation $\rho$. Only the Spearman correlation shows a clear trend with a positive bias below 0 (negative correlation) and a negative bias above 0 (positive correlation). The other estimators show no clear bias.
 
@@ -276,13 +276,13 @@ When generating simulated data, decisions about the generating functions have to
 Simulations are carried out in the same fashion as previously described but include a few extra steps to accomodate weights. The following changes were made:
 
 * weights are assigned according to $w_i = (x-y)^2 + 1$, and the probability of inclusion in the sample was then ${\rm Pr}_i = \frac{1}{w_i}$.
-* For each unit, a uniformily distributed random number was drawn. When that value was less than the probability of inclusion (${\rm Pr}_i$) the unit was included.
+* For each unit, a uniformily distributed random number was drawn. When that value was less than the probability of inclusion (${\rm Pr}_i$), the unit was included.
 
 Units were generated until $n$ units were in the sample.
 
 Two simulations were run. The first shows the mean absolute deviation (MAD)
 
-$$MAD=\frac{1}{n}\sum_i |r_i - \rho_i|$$
+$$MAD=\frac{1}{n}\sum_{i=1}^n |r_i - \rho_i|$$
 
 as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, with 100 iterations run for each value of $\rho$. 
 
@@ -308,7 +308,7 @@ xyplot(absdrho.mean ~ rho|type,
 ```
 
 
-The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson and polyserial correlation coefficient. The polychoric and Spearman are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent is not meant to imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
+The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson and polyserial correlation coefficient. The polychoric and Spearman correlations are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
 **`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
