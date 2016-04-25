@@ -4,7 +4,6 @@ author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
 output: 
   pdf_document: 
-    keep_tex: yes
 vignette: >
   %\VignetteIndexEntry{wCorr Formulas}
   %\VignetteEncoding{UTF-8}
