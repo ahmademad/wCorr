@@ -53,7 +53,7 @@ The wCorr package can be used to calculate Pearson, Spearman, polyserial, and po
 
 This vignette describes the use of applying two Boolean switches in the wCorr package. It describes the implications and uses simulation to show the impact of these switches on resulting correlation estimates.
 
-First, the Maximum Likelihood, or `ML` switch uses either uses the Maximum Likelihood Estimator (MLE) when `ML=TRUE` or uses a consistent but non-MLE estimator for the nuisance parameters when `ML=FALSE`. The simulations show that using `ML=FALSE` is preferable because it speeds computation and decreases the root mean square error (RMSE) of the estimator.
+First, the Maximum Likelihood, or `ML` switch uses the Maximum Likelihood Estimator (MLE) when `ML=TRUE` or uses a consistent but non-MLE estimator for the nuisance parameters when `ML=FALSE`. The simulations show that using `ML=FALSE` is preferable because it speeds computation and decreases the root mean square error (RMSE) of the estimator.
 
 Second the `fast` argument gives the option to use a pure R implementation (`fast=FALSE`) or an implementation that relies on the `Rcpp` and `RcppArmadillo` packages (`fast=TRUE`). The simulations show agreement to within $10^{`r fmax10`}$, showing the implementations agree. At the same time the `fast=TRUE` option is always as fast or faster.
 
@@ -70,25 +70,25 @@ where $N(\mathbf{A},\boldsymbol{\Sigma})$ is the bivariate normal distribution w
 
 The likelihood function for an individual observation of the polyserial correlation is^[See the *wCorr Formulas* vignette for a more complete description of the polyserial correlations' likelihood function.]
 
-$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
 
 where $\rho$ is the correlation between ***X*** and ***Y***, ***Z*** is the normalized version of ***X***, and ***M*** is a discretized version of ***Y***, using $\boldsymbol{\theta}$ as cut points as described in the *wCorr Formulas* vignette. Here an *i* is used to index the observed units.
 
 The log-likelihood function ($\ell$) is then
 
-$$\ell(\rho, \boldsymbol{\theta};z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ are computed using a consistent estimator^[The value of the nuisance parameter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.] and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the `minqa` package.
 
 ## Computation of polychoric correlation  
 For the polychoric correlation the observed data is expressed in ordinal form for both variables. Here the discretized version of ***X*** is ***P*** and the discretized version of ***Y*** remains ***M***.^[See the "wCorr Formulas" vignette for a more complete description of the polychoric correlations' likelihood function.] The likelihood function for the polychoric is
 
-$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta}, \boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta_{p_i+1}'}^{\theta_{p_i+2}'}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(x,y|\rho=r) dy dx$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta_{p_i+1}'}^{\theta_{p_i+2}'}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(x,y|\rho=r) dy dx$$
 
-where $f(x,y|r)$ is the normalized bivariate normal distribution with correlation $\rho$,  $\boldsymbol{\theta}$  are the cut points used to discretize Y into M, and  $\boldsymbol{\theta'}$ are the cut points used to discretize ***X*** into ***P***.
+where $f(x,y|r)$ is the normalized bivariate normal distribution with correlation $\rho$,  $\boldsymbol{\theta}$  are the cut points used to discretize ***Y*** into ***M***, and  $\boldsymbol{\theta'}$ are the cut points used to discretize ***X*** into ***P***.
 
 The log-likelihood is then
-$$\ell(\rho, \boldsymbol{\theta}, \boldsymbol{\theta}' ;\mathbf{p},\mathbf{m}) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\theta}, \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ;\mathbf{p},\mathbf{m}) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta},\boldsymbol{\Theta}'= \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
 
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$ are computed using a consistent estimator and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$ using the `bobyqa` function in the `minqa` package.
 
@@ -107,7 +107,7 @@ A simulation is run several times.^[The exact number is noted for each specific 
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG);
 * using a pseudo-RNG, select the number of bins for ***M*** and ***P*** ($t$ and $t'$) independently from the set \{2, 3, 4, 5\};
 * select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG; 
-* confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, return to generating ***X*** and ***Y***); and
+* confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, return to the previous step); and
 * calculate and record the correlation coefficients.
 
 One of a few possible statistics is then calculated. To compare two levels of a switch the Relative Mean Absolute Deviation may be used
@@ -116,7 +116,7 @@ $$RMAD= \frac{1}{m} \sum_{j=1}^m | r_{j, \mathtt{TRUE}} - r_{j, \mathtt{FALSE}} 
 
 where there are $m$ simulations run, $r_{j, \mathtt{TRUE}}$ and $r_{j, \mathtt{FALSE}}$ are the estimated correlation coefficient for the $j$th simulated dataset when the switch is set to `TRUE` and `FALSE`, respectively. This statistic is called "relative" because it is compared to the other method of computing the statistic, not the true value.
 
-To compare both levels to the true correlation coefficient the Root Mean Square Error is used
+To compare either level to the true correlation coefficient the Root Mean Square Error is used
 
 $$RMSE= \sqrt{ \frac{1}{m} \sum_{j=1}^m (r_j - \rho_j)^2 }   $$
 
