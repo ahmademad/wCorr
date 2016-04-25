@@ -2,11 +2,13 @@
 title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: pdf_document
+output: 
+  pdf_document: 
+    keep_tex: yes
 vignette: >
   %\VignetteIndexEntry{wCorr Formulas}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -40,21 +42,23 @@ rmseVsN <- table_nums("rmseVsN2", "")
 
 The wCorr package can be used to calculate Pearson, Spearman, polyserial, and polychoric correlations, in weighted or unweighted form.^[The estimation procedure used by the wCorr package for the polyserial is based on the likelihood function in by Cox, N. R. (1974), "Estimation of the Correlation between a Continuous and a Discrete Variable." *Biometrics*, **30** (1), pp 171-178. The likelihood function for polychoric is from Olsson, U. (1979) "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient." *Psyhometrika*, **44** (4), pp 443-460. The likelihood used for Pearson and Spearman is written down many places. One is the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.] The package implements the tetrachoric correlation as a specific case of the polychoric correlation and biserial correlation as a specific case of the polyserial correlation. When weights are used, the correlation coefficients are calculated with so called sample weights or inverse probability weights.^[Sample weights are comparable to `pweight` in Stata.]
  
-This vignette introduces the methodology used in the wCorr package for computing the Pearson, Spearman, polyserial, and polychoric correlations, with and without weights applied. For the polyserial and polychoric correlations, the coefficient is estimated using a numerical likelihood maximization. The weighted (and unweighted) likelihood functions that are used are described.
+This vignette introduces the methodology used in the wCorr package for computing the Pearson, Spearman, polyserial, and polychoric correlations, with and without weights applied. For the polyserial and polychoric correlations, the coefficient is estimated using a numerical likelihood maximization.
 
-We present formulas that are used to compute correlations and then present simulation evidence to showcorrectness of the methods, including an examination of the bias and consistency of both methods. This is done seperately for unweighted and weighted correlations. For this exercise, numerical simulations are used to show:
+The weighted (and unweighted) likelihood functions are presented. Then simulation evidence is presented to show correctness of the methods, including an examination of the bias and consistency. This is done seperately for unweighted and weighted correlations. 
 
-* the bias of the methods as a function of the true correlation coefficient ($\rho$) and the number of observations ($n$) in the unweighted and weighted cases; and
-* the accuracy [measured with root mean squared error (RMSE) and mean absolute deviation (MAD)] of the methods as a function of $\rho$ and $n$ in the unweighted and weighed cases.
+Numerical simulations are used to show:
 
-Note that here "bias" is used to mean the mean difference between true correlation and estimated correlation.
+* The bias of the methods as a function of the true correlation coefficient ($\rho$) and the number of observations ($n$) in the unweighted and weighted cases; and
+* The accuracy [measured with root mean squared error (RMSE) and mean absolute deviation (MAD)] of the methods as a function of $\rho$ and $n$ in the unweighted and weighed cases.
+
+Note that here "bias" is used for the mean difference between true correlation and estimated correlation.
 
 The *wCorr Arguments* vignette describes the effects the `ML` and `fast` arguments have on computation and gives examples of calls to wCorr.
 
 # Specification of estimation formulas 
 Here we focus on specification of the correlation coefficients between two vectors of random variables that are jointly bivariate normal. We call the two vectors ***X*** and ***Y***. The $i^{th}$ members of the vectors are then called $x_i$ and $y_i$.
 
-## Computation for Pearson and Spearman correlations 
+## Formulas for Pearson correlations with and without weights
 
 The weighted Pearson correlation is computed using the formula
 $$\rho_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
@@ -63,16 +67,40 @@ where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variab
 
 The unweighted Pearson correlation is calculated by setting all of the weights to one.
 
+## Formulas for Spearman correlations with and without weights
+
 For the Spearman correlation coefficient the unweighted coefficient is calculated by ranking the data and then using those ranks to calculate the Pearson correlation coefficient--so the ranks stand in for the $x$ and $y$ data. Again, similar to the Pearson, for the unweighted case the weights are all set to one.
 
-There is no commonly accepted weighted Spearman correlation coefficient. Nevertheless, we implement one possible weighted Spearman correlation coefficient as follows. First, the rank scores of the data are calculated (this ranking is unweighted) and then the ranks are passed to the Pearson correlation coefficient formula shown above, and this Pearson correlation coefficient does use the weights.  
+For the unweighted case the highest value recieves a value of 1 and the second highest 2, and so on down to the $n$th value. In addition, when data are ranked, ties must be handled in some way. The chosen method is to assign the average of all tied ranks. For example, if the second and third rank units are tied then both units would receive a rank of 2.5 (the average of 2 and 3).
 
-For both cases the same ranking formula is used so that the highest value recieves a value of 1 and the second highest 2, and so on down to the $n$th value. In addition, when data are ranked, ties must be handled in some way. The chosen method is to assign the average of all tied ranks. For example, if the second and third rank units are tied then both units would receive a rank of 2.5 (the average of 2 and 3).
+For the weighted case there is no commonly accepted weighted Spearman correlation coefficient. Stata does not estimated a weighted Spearman and SAS does not document their methodology in either of the corr or freq procedures. 
 
-##Methodology for polyserial correlation with and without weights
+The weighted case presents two issues. First, the ranks must be calculated. Second, the correlation coefficient must be calculated.
+
+To calculate the weighted rank for an individual level is done via two terms. The first term ***A*** is the sum of all weights ***W*** less than or equal to this value of the outcome being ranked ($\boldsymbol{\xi}$)
+
+$$a_j = \sum_i w_i{\rm 1\kern -2.85 pxI}\left( \xi_i < \xi_j \right)$$
+
+where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $a_j$ is the $j$th value of ***A***, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively. When there are no ties in the ranks the vecor of ranks is simply $a_j + 1$.
+
+When there are ties what is typically done is that each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector is then
+
+$$\frac{1}{n} \left( \sum_i^n a_j i \right)$$
+$$=\frac{1}{n} \left( n a_j +  \frac{n^2}{2}  \right)$$
+$$=a_j +  \frac{n}{2}$$
+
+For the weighted case this could be $\mathbf{v}=\left(a_j+w_1', a_j+w_1'+w_2', \dots, a_j+\sum_{k=1}^n w_k' \right)^T$ where ***W'*** is a vector containing the weights of the tied units. It is readily apparent that the mean of this vector value will depend on the ordering of the weights. To avoid this the mean overall all possible permutations of the weights is calculated. The following formula does just that
+
+$$b_j = \bar{w}_j + \frac{n-1}{2}\bar{w}_j$$
+
+where $\bar{w}_j$  is the mean weight of all of the tied units.
+
+After the ***X*** and ***Y*** vectors are ranked they are plugged into the Pearson correlation coefficient formula shown above, and this Pearson correlation coefficient uses the weights.
+
+##Formulas for polyserial correlation with and without weights
 For the polyserial correlation, it is again assumed that there are two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution.^[For a more complete treatment of the polyserial correlation, see Cox, N. R., "Estimation of the Correlation between a Continuous and a Discrete Variable" *Biometrics*, **50** (March), 171-187, 1974.]
 
-$$\begin{pmatrix} X \\ Y \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \end{pmatrix}, \Sigma \right] $$
+$$\begin{pmatrix} X \\ Y \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \end{pmatrix}, \Sigma \right]$$
 
 Where $N(A, \Sigma)$ is a bivariate normal distribution with mean vector $A$ and covariance matrix $\Sigma$. For the polyserial correlation, ***Y*** is discretized into the random variable ***M*** according to
 
@@ -82,10 +110,8 @@ where, $\theta$ are the cut points used to discretize ***Y*** into ***M***, and 
 
 To give a concrete example, the following figure shows the density of ***Y*** when the cuts points are, for this example, $\theta=\left(-\infty,-2,-0.5,1.6,\infty\right)$. In this example, any value of $-2 < y_i < -0.5$ would have $m_i=2$.
 
-\newpage
-  
 **`r fig_nums("theta", display="cite")`.** *Density of Y for cutpoints $\theta \in (-\infty, -2, -0.5, 1.6, \infty$).*    
-```{r theta,echo=FALSE,results="hide",fig.width=7, fig.height=5.5}
+```{r theta,echo=FALSE,results="hide",fig.width=7, fig.height=3}
 x <- seq(-3,3,by=0.01) 
 y <- dnorm(x)
 par0 <- par(no.readonly=TRUE)
@@ -125,10 +151,12 @@ Where $\Phi(\cdot)$ is the standard normal cumulative density function. Using th
 $$\ell(\rho, \theta;z,m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) \right]$$
 where $w_i$ is the weight of the $i^{th}$ members of the vectors ***Z*** and ***Y***. For the unweighted case, all of the weights are set to one.
 
-The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.
+The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all unit
+
+$$\hat{theta}_{j+2} = Phi^{-1}\left( \frac{\sum_i^N w_i {\rm 1\kern -2.85 pxI}(M_i < j) }{\sum_i^N w_i} \right)$$
 
 ###Computation of polyserial correlation
-The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using `stats::optimize` at the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using `minqa::bobyqa`. See the *wCorr Arguments* vignette for a comparison of these two methods.
+The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package and the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the ``minqa`` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
 
 Because the numerical optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply examining if the values of ***X*** and ***M*** have agreeing order (or opposite but agreeing order) and then the MLE correlation of 1 (or -1) is returned.
 
@@ -154,15 +182,15 @@ $$\ell(\rho, \theta, \theta';p,m) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( 
 This is the weighted log-likelihood function. For the unweighted cause all of the weights are set to one.
 
 ###Computation of polychoric correlation
-This again mirrors the treatment of the polyserial. The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using `stats::optimize`. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using `minqa::bobyqa`. See the *wCorr Arguments* vignette for a comparison of these two methods.
+This again mirrors the treatment of the polyserial. The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function from the `stats` package. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using the `bobyqa` function in the `minqa` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
 
 Because the optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply examining if the values of ***P*** and ***M*** have a Goodman-Kruskal correlation coefficient of -1 or 1. When this is the case, the MLE of -1 or 1, respectively, is returned.
 
-# Correctness of the estimating methods
+#Simulation evidence on the correctness of the estimating methods
 
 It is easy to prove the consistency of the $\boldsymbol{\theta}$ for the polyserial correlation and $\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$ for the polychoric correlation using the non-ML case. Similarly, for $\rho$, because it is an MLE that can be obtained by taking a derivative and setting it equal to zero, the results are asymtotically unbiased and obtain the Cramer-Rao lower bound.
 
-This does not speak to the small sample properties of these correlation coefficients. Previous work has described their properties by simulation; and that tradition is continued below.
+This does not speak to the small sample properties of these correlation coefficients. Previous work has described their properties by simulation; and that tradition is continued below.^[See, e.g. the introduction to Rigdon, E. E. and Ferguson C. E., "The Performance of the Polychoric Correlation Coefficient and Selected Fitting Functions in Confirmatory Factor Analysis With Ordinal Data" *Journal of Marketing Research* **28** (4), pp. 491-497.]
 
 ## Simulation study of unweighted correlations
 
@@ -171,7 +199,7 @@ In what follows, when the exact method of selecting a parameter (such as $n$) is
 Across a number of iterations (the exact number of times will be stated for each simulation), the following procedure is used:
 
 * select a true correlation coefficient $\rho$;
-* select the number of observations ($n$);
+* select the number of observations $n$;
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG);
 * using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\};
 * select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG; 
@@ -190,7 +218,10 @@ And the bias is given by
 
 $$bias=\frac{1}{n}\sum_{i=1}^n \left(r_i - \rho_i \right)$$
 
-This plot shows the bias as a function of the true correlation $\rho$. Only the Spearman correlation shows a clear trend with a positive bias below 0 (negative correlation) and a negative bias above 0 (positive correlation). The other estimators show no clear bias.
+This plot shows the bias as a function of the true correlation $\rho$. Only the polyserial shows no bias at any level of $n$, shown by no clear deviation from 0 at any level of $\rho$. For the Pearson correlation there is bias when $n=10$ that is not present when $n=100$ or 1,000. This is a well known property of the estimator.^[see, e.g. Olkin I. and Pratt, J. W. (1958), "Unbiased Estimation of Certain Correlation Coefficients." *The Annals of Mathematical Statistics*, **29** (1) , pp 201-211.] Similarly, the polychoric shows bias when $n=10$.
+
+The Spearman correlation shows bias at all of the tested levels of $n$. The bias is is zero when the true correlation is 1, 0, or -1 and is positive when $\rho$ is below 0 (negative correlation) and a negative bias whe $\rho$ is above 0 (positive correlation). This is not expected because the Spearman correlation is not intended to recover a Pearson type correlation coefficient; it is designed to measure a seperate quantity.
+
 
 **`r fig_nums("biasVsRho", display="cite")`.** *Mean Absolute Deviance vs $\rho$ (Unweighted).*    
 ```{r bias vs rho, echo=FALSE,fig.width=7, fig.height=5}
@@ -226,7 +257,9 @@ xyplot(rmse.mean ~ rho|type,
 
 #### Consistency of the correlations  
 
-This plot shows the RMSE as a function of $n$. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. Thus, the RMSE is  small for n > 100. 
+This plot shows the RMSE as a function of $n$. The purpose of this plot is not to show an individual value but to show that the estimator is consistent. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. 
+
+The plot also shows that the RMSE is less than 0.1 for all methods when $n>100$.
 
 \newpage 
 
@@ -286,7 +319,7 @@ $$MAD=\frac{1}{n}\sum_{i=1}^n |r_i - \rho_i|$$
 
 as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.95, -0.90, -0.85, ..., 0.95, 0.99 \right)$, with 100 iterations run for each value of $\rho$. 
 
-The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD.
+The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD. Thus, under the simulated conditions at least, the weighted correlation has lower or approximably equal MAD for every value of the true correlation coefficient ($\rho$).
 
 **`r fig_nums("rmseVsRho2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
 ```{r wgt vs rho plot, echo=FALSE,fig.width=7, fig.height=5.5}
