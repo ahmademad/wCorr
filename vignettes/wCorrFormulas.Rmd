@@ -139,7 +139,7 @@ Combining these simplifications, the probability of any given $x_i$, $m_i$ pair 
 
 $$\mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z,\rho=r)dy$$
 
-where $\mathrm{Pr}\left( \rho=r, \theta; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
+where $\mathrm{Pr}\left( \rho=r, \theta; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
 $$f(y|Z=z,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
 because both ***Z*** and ***Y*** are standard normals
 $$f(y|Z=z,\rho=r) =N\left(r \cdot z, (1-r^2) \right)$$
