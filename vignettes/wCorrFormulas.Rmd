@@ -60,7 +60,7 @@ Here we focus on specification of the correlation coefficients between two vecto
 ## Formulas for Pearson correlations with and without weights
 
 The weighted Pearson correlation is computed using the formula
-$$\rho_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
+$$r_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
 
 where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** variable ($\bar{y}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
 
@@ -76,25 +76,29 @@ For the weighted case there is no commonly accepted weighted Spearman correlatio
 
 The weighted case presents two issues. First, the ranks must be calculated. Second, the correlation coefficient must be calculated.
 
-To calculate the weighted rank for an individual level is done via two terms. The first term ***A*** is the sum of all weights ***W*** less than or equal to this value of the outcome being ranked ($\boldsymbol{\xi}$)
+To calculate the weighted rank for an individual level is done via two terms. For the $j$th element the rank is
+
+$$rank_j = a_j + b_j$$
+
+The first term $a_j$ is the sum of all weights ***W*** less than or equal to this value of the outcome being ranked ($\xi_j$)
 
 $$a_j = \sum_i w_i{\rm 1\kern -2.85 pxI}\left( \xi_i < \xi_j \right)$$
 
-where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $a_j$ is the $j$th value of ***A***, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively. When there are no ties in the ranks the vecor of ranks is simply $a_j + 1$.
+where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively.
 
-When there are ties what is typically done is that each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector is then
+The value $b_j$ then deals with ties. When there are ties each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector (here called $rank^1$ to indicate it is a specific case of $rank$ when the weights are all one) is then
 
-$$\frac{1}{n} \left( \sum_i^n a_j i \right)$$
+$$rank_j^1=\frac{1}{n} \left( \sum_{i=1}^n a_j i \right)$$
 $$=\frac{1}{n} \left( n a_j +  \frac{n^2}{2}  \right)$$
 $$=a_j +  \frac{n}{2}$$
 
-For the weighted case this could be $\mathbf{v}=\left(a_j+w_1', a_j+w_1'+w_2', \dots, a_j+\sum_{k=1}^n w_k' \right)^T$ where ***W'*** is a vector containing the weights of the tied units. It is readily apparent that the mean of this vector value will depend on the ordering of the weights. To avoid this the mean overall all possible permutations of the weights is calculated. The following formula does just that
+For the weighted case this could be $\mathbf{v}=\left(a_j+w_1', a_j+w_1'+w_2', \dots, a_j+\sum_{k=1}^n w_k' \right)^T$ where ***W'*** is a vector containing the weights of the tied units. It is readily apparent that the mean of this vector value will depend on the ordering of the weights. To avoid this, the mean overall all possible permutations of the weights is calculated. The following formula does just that
 
-$$b_j = \bar{w}_j + \frac{n-1}{2}\bar{w}_j$$
+$$b_j = \frac{n+1}{2}\bar{w}_j$$
 
-where $\bar{w}_j$  is the mean weight of all of the tied units.
+where $\bar{w}_j$  is the mean weight of all of the tied units. This, general formula, is then used for all cases.
 
-After the ***X*** and ***Y*** vectors are ranked they are plugged into the Pearson correlation coefficient formula shown above, and this Pearson correlation coefficient uses the weights.
+After the ***X*** and ***Y*** vectors are ranked they are plugged into the weighted Pearson correlation coefficient formula shown above.
 
 ##Formulas for polyserial correlation with and without weights
 For the polyserial correlation, it is again assumed that there are two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution.^[For a more complete treatment of the polyserial correlation, see Cox, N. R., "Estimation of the Correlation between a Continuous and a Discrete Variable" *Biometrics*, **50** (March), 171-187, 1974.]
@@ -137,22 +141,22 @@ For ***X***, Cox (1974) observes that the MLE mean and standard deviation of ***
 
 Combining these simplifications, the probability of any given $x_i$, $m_i$ pair is
 
-$$\mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z,\rho=r)dy$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z,\rho=r)dy$$
 
-where $\mathrm{Pr}\left( \rho=r, \theta; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
+where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
 $$f(y|Z=z,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
 because both ***Z*** and ***Y*** are standard normals
 $$f(y|Z=z,\rho=r) =N\left(r \cdot z, (1-r^2) \right)$$
 now, define $w \equiv \frac{y-r\cdot z}{\sqrt{1-r^2}}$ and $w$ has a standard normal distribution. Plugging this in
-$$\mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
 
 Where $\Phi(\cdot)$ is the standard normal cumulative density function. Using the above probability function as an objective, the log-likelihood is then maximized.
-$$\ell(\rho, \theta;z,m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \theta ; Z=z_i, M=m_i \right) \right]$$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};z,m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 where $w_i$ is the weight of the $i^{th}$ members of the vectors ***Z*** and ***Y***. For the unweighted case, all of the weights are set to one.
 
 The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all unit
 
-$$\hat{theta}_{j+2} = Phi^{-1}\left( \frac{\sum_i^N w_i {\rm 1\kern -2.85 pxI}(M_i < j) }{\sum_i^N w_i} \right)$$
+$$\hat{\theta}_{j+2} = \Phi^{-1}\left( \frac{\sum_{i=1}^N w_i {\rm 1\kern -2.85 pxI}(M_i < j) }{\sum_{i=1}^N w_i} \right)$$
 
 ###Computation of polyserial correlation
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package and the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the ``minqa`` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
@@ -171,12 +175,12 @@ As in the polyserial correlation, $\mu_y$ is not identifed (or is irrelevant) be
 
 Then the probability of any given $m_i$, $p_i$ pair is 
 
-$$\mathrm{Pr}\left( \rho=r, \theta, \theta' ; P=p_i, M=m_i \right) = \int_{\theta_{p_i+1}'}^{\theta_{p_i+2}}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(x,y|\rho=r)dydx$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta_{p_i+1}'}^{\theta_{p_i+2}}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(x,y|\rho=r)dydx$$
 
 where $\rho$ is the correlation coefficient.
 
 Using this function as an objective, the log-likelihood is then maximized.
-$$\ell(\rho, \theta, \theta';p,m) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \theta, \theta' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}';p,m) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
 
 This is the weighted log-likelihood function. For the unweighted cause all of the weights are set to one.
 
@@ -202,7 +206,7 @@ Across a number of iterations (the exact number of times will be stated for each
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG);
 * using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\};
 * select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG; 
-* confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, retrun to generating ***X*** and ***Y***); and
+* confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, return to previous step); and
 * calculate and record relevant statistics.
 
 
@@ -231,7 +235,7 @@ agg <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(bias.mean ~ rho|type,
       data=agg,
       groups=n,
-      type="l",
+            type=c("l","g"),
       ylab="Bias",
       xlab=expression(rho),
       scales=list(x=list(cex=0.7), y=list(cex=0.7)),
@@ -241,29 +245,29 @@ xyplot(bias.mean ~ rho|type,
 
 This plot shows the RMSE as a function of $\rho$. All of the correlation coefficients have a uniform RMSE as a function of $\rho$ near $\rho=0$ that decreases near $|\rho|=1$. All plots also show a decrease in RMSE as $n$ increases. This plot shows that there is no appreciable RMSE differences as a functions of $\rho$. In addition, it show that our attention to the MLE correlation of -1 or 1 at edge cases did not make the RMSE much worse in the neighborhood of the edges ($|\rho| \sim 1$).
 
+\newpage
+
 **`r fig_nums("rmseVsRho", display="cite")`.** *Root Mean Square Error vs $\rho$ (Unweighted).*   
-```{r rmse vs rho, echo=FALSE,fig.width=7, fig.height=5.5}
+```{r rmse vs rho, echo=FALSE,fig.width=7, fig.height=3.5}
 xyplot(rmse.mean ~ rho|type,
       data=agg,
       groups=n,
       scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
       ylab="RMSE",
       xlab=expression(rho),
-      type="l",
+            type=c("l","g"),
       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
 #### Consistency of the correlations  
 
-This plot shows the RMSE as a function of $n$. The purpose of this plot is not to show an individual value but to show that the estimator is consistent. The plot shows a slope of about $-\frac{1}{2}$, which is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. 
+This plot shows the RMSE as a function of $n$. The purpose of this plot is not to show an individual value but to show that the estimator is consistent. The plot shows a slope of about $-\frac{1}{2}$ for the Pearson, polychoric, and polyserial correlations. This is consistent with the expected first order convergence for each correlation coefficient under the assumptions of this simulation. Again, the Spearman is not estimating the same quantity as the Pearson and so is expected to diverge.
 
 The plot also shows that the RMSE is less than 0.1 for all methods when $n>100$.
 
-\newpage 
-
 **`r fig_nums("rmseVsN", display="cite")`.** *Root Mean Square Error vs sample size (Unweighted).*   
-```{r rmse vs n, echo=FALSE,fig.width=7, fig.height=5.5}
+```{r rmse vs n, echo=FALSE,fig.width=7, fig.height=3.5}
 agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(rmse.mean ~ n,
      groups=type,
@@ -271,7 +275,7 @@ xyplot(rmse.mean ~ n,
       ylab="RMSE",
       xlab="n",
       scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
-      type="l",
+      type=c("l","g"),
       auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
       par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
@@ -280,10 +284,8 @@ xyplot(rmse.mean ~ n,
 
 This plot shows the mean time (in seconds) to compute a single correlation coefficient as a function of $\rho$ by $n$ size. The plot shows linearly rising computation times with slopes of about one. This is consistent with a linear computation cost. Using Big O notation, the computation cost is, in the range shown, O($n$).
 
-\newpage
-  
 **`r fig_nums("speedi", display="cite")`.** *Computation time.*    
-```{r time vs n, echo=FALSE,fig.width=7, fig.height=5.5}
+```{r time vs n, echo=FALSE,fig.width=7, fig.height=4}
 agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
 agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
@@ -291,7 +293,7 @@ xyplot(t.mean ~ n,
        data=agg,
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        groups=type,
-       type="l",
+       type=c("l","g"),
        ylab="Computing time (s)",
        xlab="n",
        auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
@@ -332,7 +334,7 @@ xyplot(absdrho.mean ~ rho|type,
        data=agg,
        groups=weight,
        scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
-       type="l", 
+             type=c("l","g"), 
        ylab="MAD",
        xlab=expression(rho),
        auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
@@ -340,7 +342,7 @@ xyplot(absdrho.mean ~ rho|type,
 ```
 
 
-The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson and polyserial correlation coefficient. The polychoric and Spearman correlations are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
+The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient. The Spearman correlations are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
 **`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
@@ -355,7 +357,7 @@ xyplot(rmserho ~ n|type,
        data=agg,
        groups=weight,
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
-       type="l",
+             type=c("l","g"),
        ylab="RMSE",
        xlab="n",
        auto.key=list(lines=TRUE, points=FALSE, space="right", cex=0.7),
