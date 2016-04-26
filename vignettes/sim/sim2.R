@@ -36,6 +36,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
 
     if(interactive()) {
       cat("n=",n,"cori=",cori,"pct=",100*ii/nrow(df),"\n")
+      cat("  fast=",fast,"ml=",ML,"reset=",reset,"\n")
     }
     if(reset) {
       n <- ifelse(everusew, 5*df$n[ii], df$n[ii])
@@ -64,15 +65,15 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
       M <- 1  
       Q <- 1
       nm <- sample(2:5,1)
-      tm <- sort(rnorm(nm))
       nq <- sample(2:5,1)
-      tq <- sort(rnorm(nq))
       x <- x[1:df$n[ii]]
       y <- y[1:df$n[ii]]
       w <- w[1:df$n[ii]]
       iter <- 1
-      while( (length(unique(M)) < 2) & (length(unique(Q)) < 2) & iter < 100) {
+      while(  ((length(unique(M)) < 2) | (length(unique(Q)) < 2)) & (iter < 100)) {
         iter <- iter + 1
+        tm <- sort(rnorm(nm))
+        tq <- sort(rnorm(nq))
         theta1 <- c(NA,-Inf,tq,Inf)
         theta2 <- c(NA,-Inf,tm,Inf)
 
@@ -90,9 +91,12 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
         M <- M - 1
         M <- as.numeric(as.factor(M))
       }
-      if(iter >99) {
-        cat("x=",x,"\n")
-        cat("y=",y,"\n")
+      if(iter >=99) {
+        cat("could not get multiple bins\n")
+        cat("x <- c(",paste(x,collapse=","),")\n")
+        cat("y <- c(",paste(y,collapse=","),")\n")
+        cat("M <- c(",paste(M,collapse=","),")\n")
+        cat("Q <- c(",paste(Q,collapse=","),")\n")
       }
       df$M[ii] <- length(unique(M))
       df$Q[ii] <- length(unique(Q))
@@ -111,7 +115,9 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
     #cat("meanw=",mean(w),"\n")
     #cat("w=",w,"\n")
     #cat("x=",x,"\n")
-    #cat("x=",y,"\n")
+    #cat("y=",y,"\n")
+    #cat("M=",M,"\n")
+    #cat("Q=",Q,"\n")
     #save(x,wu,y,Q,M,file="tmp.RData")
     #print(wu)
     
@@ -124,11 +130,11 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
     df$speart[ii] <- sum(st0[1:2])
     df$spear[ii] <- cor(x,y)
     
-    #st0 <- system.time(fcorp <- weightedCorr(x,M, method="Polyserial", weights=wu, fast=fast, ML=ML))
+    st0 <- system.time(fcorp <- weightedCorr(x,M, method="Polyserial", weights=wu, fast=fast, ML=ML))
     df$pst[ii] <- sum(st0[1:2])
     df$ps[ii] <- fcorp
     
-    #st1 <- system.time(fpolyc <- weightedCorr(M, Q, method="Polychoric", weights=wu, fast=fast, ML=ML))
+    st0 <- system.time(fcorp <- weightedCorr(M, Q, method="Polychoric", weights=wu, fast=fast, ML=ML))
     df$pct[ii] <- sum(st0[1:2])
     df$pc[ii] <- fcorp
     
