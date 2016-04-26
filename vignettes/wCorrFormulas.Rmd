@@ -60,7 +60,7 @@ Here we focus on specification of the correlation coefficients between two vecto
 ## Formulas for Pearson correlations with and without weights
 
 The weighted Pearson correlation is computed using the formula
-$$r_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y-\bar{y})^2 \right) }} $$
+$$r_{Pearson}=\frac{\sum_{i=1}^n \left[ w_i (x_i-\bar{x})(y_i-\bar{y}) \right]}{\sqrt{\sum_{i=1}^n \left( w_i  (x_i-\bar{x})^2 \right)\sum_{i=1}^n \left( w_i  (y_i-\bar{y})^2 \right) }} $$
 
 where $w_i$ is the weights, $\bar{x}$ is the weighted mean of the ***X*** variable ($\bar{x}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i x_i$), $\bar{y}$ is the weighted mean of the ***Y*** variable ($\bar{y}=\frac{1}{\sum_{i=1}^n w_i}\sum_{i=1}^n w_i y_i$), and $n$ is the number of elements in ***X*** and ***Y***.^[See the "correlate" function in Stata Corp, Stata Statistical Software: Release 8. College Station, TX: Stata Corp LP, 2003.]
 
@@ -143,8 +143,8 @@ Combining these simplifications, the probability of any given $x_i$, $m_i$ pair 
 
 $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z,\rho=r)dy$$
 
-where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(y|z,\rho)$ is the distribution of $y$ conditional on $z$ and $\rho$. Because $y$ and $z$ are jointly normally distributed (by assumption)
-$$f(y|Z=z,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
+where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\theta$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(Y|Z,\rho)$ is the distribution of $Y$ conditional on $Z$ and $\rho$. Because $Y$ and $Z$ are jointly normally distributed (by assumption)
+$$f(Y|Z=z,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
 because both ***Z*** and ***Y*** are standard normals
 $$f(y|Z=z,\rho=r) =N\left(r \cdot z, (1-r^2) \right)$$
 now, define $w \equiv \frac{y-r\cdot z}{\sqrt{1-r^2}}$ and $w$ has a standard normal distribution. Plugging this in
