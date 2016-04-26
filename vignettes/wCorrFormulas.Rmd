@@ -171,7 +171,7 @@ $$p_i= \begin{cases} 1 \quad \mathrm{if}  \theta'_2 < x_i < \theta'_3 \\ 2 \quad
 
 where $\boldsymbol{\theta}$ remains the cut points for the distibution defining the transformation of ***Y*** to ***M*** and $\boldsymbol{\theta}'$ is the cut points for the transformation from ***X*** to ***P***. Similar to $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$ has $\theta_2' \equiv -\infty$ and $\theta_{t+2}' \equiv \infty$.
 
-As in the polyserial correlation, $\mu_y$ is not identifed (or is irrelevant) because, for any $a \in {\rm I\!R}$, setting $\tilde{\mu}_y = \mu_y + a$ and $\tilde{\boldsymbol{\theta}}'=\boldsymbol{\theta}' + a$ lead to exactly the same values of $\mathbf{M}$ and so one of the two must be arbitrarily assigned. The same is true for $\mu_x$. A convenient decision is to decide $\mu_y = \mu_x \equiv 0$. A similar argument holds for $\sigma_y$ and $\sigma_x$ so that  $\sigma_y = \sigma_x \equiv 1$
+As in the polyserial correlation, $\mu_y$ is not identifed (or is irrelevant) because, for any $a \in {\rm I\!R}$, setting $\tilde{\mu}_y = \mu_y + a$ and $\tilde{\boldsymbol{\theta}}=\boldsymbol{\theta} + a$ lead to exactly the same values of $\mathbf{M}$ and so one of the two must be arbitrarily assigned. The same is true for $\mu_x$. A convenient decision is to decide $\mu_y = \mu_x \equiv 0$. A similar argument holds for $\sigma_y$ and $\sigma_x$ so that  $\sigma_y = \sigma_x \equiv 1$
 
 Then the probability of any given $m_i$, $p_i$ pair is 
 
