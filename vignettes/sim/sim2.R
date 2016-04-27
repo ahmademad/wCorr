@@ -1,4 +1,4 @@
-wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
+wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, outstr="") {
   len <- max(c(length(n), length(rho), length(ML), length(fast), length(reset), length(usew)))
   vec <- c("n", "rho", "ML", "fast", "reset", "usew")
   for(i in 1:length(vec)) {
@@ -35,7 +35,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE) {
     usew <- df$usew[ii]
 
     if(interactive()) {
-      cat("n=",n,"cori=",cori,"pct=",100*ii/nrow(df),"\n")
+      cat(outstr,"n=",n,"cori=",cori,"pct=",100*ii/nrow(df),"\n")
       cat("  fast=",fast,"ml=",ML,"reset=",reset,"\n")
     }
     if(reset) {

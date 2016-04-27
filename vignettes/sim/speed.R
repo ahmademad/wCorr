@@ -16,6 +16,6 @@ grid2 <- expand.grid(fast=c(TRUE,FALSE),
 grid <- rbind(grid1, grid2)
 
 grid$reset <- (grid$ML) & (grid$fast)
-speed <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=grid$reset, usew=FALSE)
+speed <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=grid$reset, usew=FALSE,outstr="speed")
 
 save(speed, file="speed.RData")
