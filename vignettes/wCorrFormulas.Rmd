@@ -2,12 +2,11 @@
 title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: 
-  pdf_document: 
-vignette: >
-  %\VignetteIndexEntry{wCorr Formulas}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteEngine{knitr::rmarkdown}
+output:
+  pdf_document: null
+  word_document: default
+vignette: |
+  %\VignetteIndexEntry{wCorr Formulas} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}

@@ -1,12 +1,10 @@
 ---
 title: "wCorr Arguments"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
-date: "`r Sys.Date()`"
+date: '`r Sys.Date()`'
 output: pdf_document
-vignette: >
-  %\VignetteIndexEntry{wCorr Arguments}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+vignette: |
+  %\VignetteIndexEntry{wCorr Arguments} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
