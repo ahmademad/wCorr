@@ -89,6 +89,7 @@ speed4 <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=gri
 save(speed4, file="speed4.RData")
 
 ####
+setwd("Q:/Paul/wCorr/vignettes/sim")
 load("speed1.RData")
 load("speed2.RData")
 speed <- rbind(speed1, speed2)
