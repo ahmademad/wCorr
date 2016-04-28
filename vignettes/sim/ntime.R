@@ -25,6 +25,8 @@ ntime2 <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=TRU
 save(ntime2, file="ntime2.RData")
 
 ###### 
-load("ntime.RData")
-ntime <- rbind(ntime, ntime2)
+setwd("Q:/Paul/wCorr/vignettes/sim")
+load("ntime1.RData")
+load("ntime2.RData")
+ntime <- rbind(ntime1, ntime2)
 save(ntime, file="ntime.RData")
