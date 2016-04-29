@@ -22,6 +22,10 @@ load("..//vignettes/sim/ntime.RData")
 load("..//vignettes/sim/bias.RData")
 load("..//vignettes/sim/wgtvrho.RData")
 load("..//vignettes/sim/wgtvn.RData")
+load("..//vignettes/sim/spear.RData")
+spear$rho <- spear$SpearmanOrig
+spear$SpearmanOrig <- NULL
+spear$N <- NULL
 ```
 
 
@@ -341,11 +345,13 @@ xyplot(absdrho.mean ~ rho|type,
 ```
 
 
-The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient. The Spearman correlations are not consistent and have minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient (and some of the weighted correlation coefficients) is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
+The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, Spearman, polyserial, and polychoric correlation coefficient. For the Spearman correlation, the coefficient is not attempting to estimate the Pearson correlation. Because of this, the RMSE is calculated by generating a population of data,  calculating the true Spearman correlation coefficient as the population coefficient, sampling from the population with varying probability as described in the weighted simulation section to calculate sample Spearman correlation coefficient, and then taking the root mean squared difference between the sample and population coefficients. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
 **`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
-wgt <- wgtvn
+wgtvn <- wgtvn[wgtvn$type!= "Spearman",]
+
+wgt <- rbind(wgtvn, spear)
 wgt$mserho <- (wgt$est - wgt$rho)^2
 
 agg <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
