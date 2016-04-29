@@ -51,7 +51,6 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, outstr
           pr <- 1/wp
           pr <- pr/(sum(pr) * 3)
           wp <- 1/pr
-          #samp <- sample(1:n, size=df$n[ii], replace=FALSE, prob=pr)
           samp <- (1:n)[runif(n)<pr]
           x <- c(x,xp[samp])
           y <- c(y,yp[samp])
@@ -111,16 +110,6 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, outstr
     } else {
       wu <- rep(1,length(x))
     }
-    #cat("everusew=",everusew," usew=",usew," ii=",ii,"\n")
-    #cat("meanw=",mean(w),"\n")
-    #cat("w=",w,"\n")
-    #cat("x=",x,"\n")
-    #cat("y=",y,"\n")
-    #cat("M=",M,"\n")
-    #cat("Q=",Q,"\n")
-    #save(x,wu,y,Q,M,file="tmp.RData")
-    #print(wu)
-    
     
     st0 <- system.time(fcorp <- weightedCorr(x,y, method="Pearson", weights=wu, fast=fast, ML=ML))
     df$peart[ii] <- sum(st0[1:2])
