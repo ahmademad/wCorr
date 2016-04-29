@@ -81,7 +81,7 @@ spearmanSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=TRUE, outs
     
     st0 <- system.time(fcorp <- weightedCorr(x,y, method="Spearman", weights=wu, fast=fast, ML=ML))
     df$speart[ii] <- sum(st0[1:2])
-    df$spear[ii] <- cor(x,y)
+    df$spear[ii] <- fcorp
     
     
     ii <- ii + 1

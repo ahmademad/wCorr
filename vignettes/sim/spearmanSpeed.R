@@ -9,7 +9,7 @@ grid <- expand.grid(usew=c(FALSE,TRUE),
                     rho = c(-0.99,seq(-0.95,0,by=0.05)))
 
 grid$reset <- !grid$usew
-spear1 <- spearmanSim(n=grid$n, rho=grid$rho, outstr="spear1")
+spear1 <- spearmanSim(n=grid$n, rho=grid$rho, usew=grid$usew, outstr="spear1")
 save(spear1, file="spear1.RData")
 
 ###################
