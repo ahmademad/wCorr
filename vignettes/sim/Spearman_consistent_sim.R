@@ -49,7 +49,7 @@ spearmanSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=TRUE, outs
         if(everusew) {
           wp <- (xp-yp)^2+1
           pr <- 1/wp
-          pr <- pr*100/(sum(pr))
+          pr <- pr*df$n[ii]/(sum(pr))
           wp <- 1/pr
           #samp <- sample(1:n, size=df$n[ii], replace=FALSE, prob=pr)
           samp <- (1:n)[runif(n)<pr]
