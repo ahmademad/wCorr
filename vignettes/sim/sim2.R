@@ -39,7 +39,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, outstr
       cat("  fast=",fast,"ml=",ML,"reset=",reset,"\n")
     }
     if(reset) {
-      n <- ifelse(everusew, 5*df$n[ii], df$n[ii])
+      n <- ifelse(everusew, 10*df$n[ii], df$n[ii])
 
       cr <- cori
       x <- y <- w <- M <- Q <- c()
@@ -49,7 +49,7 @@ wCorrSim <- function(n, rho, ML=FALSE, fast=TRUE, reset=TRUE, usew=FALSE, outstr
         if(everusew) {
           wp <- (xp-yp)^2+1
           pr <- 1/wp
-          pr <- pr/(sum(pr) * 3)
+          pr <- df$n[ii] * pr/(sum(pr) * 100)
           wp <- 1/pr
           samp <- (1:n)[runif(n)<pr]
           x <- c(x,xp[samp])
