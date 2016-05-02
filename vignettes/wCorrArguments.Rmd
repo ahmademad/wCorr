@@ -2,7 +2,7 @@
 title: "wCorr Arguments"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: word_document
+output: pdf_document
 vignette: |
   %\VignetteIndexEntry{wCorr Arguments} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
