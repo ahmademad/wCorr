@@ -85,30 +85,36 @@ $$rank_j = a_j + b_j$$
 
 The first term $a_j$ is the sum of all weights ***W*** less than or equal to this value of the outcome being ranked ($\xi_j$)
 
-$$a_j = \sum_i w_i{\rm 1\kern -2.85 pxI}\left( \xi_i < \xi_j \right)$$
+$$a_j = \sum_{i=1}^n w_i{\rm 1\kern -2.85 pxI}\left( \xi_i < \xi_j \right)$$
 
 where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively.
 
 The value $b_j$ then deals with ties. When there are ties each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector (here called $rank^1$ to indicate it is a specific case of $rank$ when the weights are all one) is then
 
-$$rank_j^1=\frac{1}{n} \left( \sum_{i=1}^n a_j i \right)$$
-$$=\frac{1}{n} \left( n a_j +  \frac{n^2}{2}  \right)$$
-$$=a_j +  \frac{n}{2}$$
+$$rank_j^1=\frac{1}{n} \left( \sum_{i=1}^n a_j + i \right)$$
+$$=\frac{1}{n} \left( n a_j +  \frac{n(n+1)}{2}  \right)$$
+$$=a_j +  \frac{n+1}{2}$$
+
+thus 
+
+$$b_j^1=\frac{n+1}{2}$$
+
+where the superscript one is again used to indicate that this is only for the unweighted case where all weights are set to one.
 
 For the weighted case this could be $\mathbf{v}=\left(a_j+w_1', a_j+w_1'+w_2', \dots, a_j+\sum_{k=1}^n w_k' \right)^T$ where ***W'*** is a vector containing the weights of the tied units. It is readily apparent that the mean of this vector value will depend on the ordering of the weights. To avoid this, the mean overall all possible permutations of the weights is calculated. The following formula does just that
 
 $$b_j = \frac{n+1}{2}\bar{w}_j$$
 
-where $\bar{w}_j$  is the mean weight of all of the tied units. This, general formula, is then used for all cases.
+where $\bar{w}_j$  is the mean weight of all of the tied units. It is easy to see that when the weights are all one $\bar{w}_j=1$ and $b_j = b_j^1$. The latter (more general) formula is used for all cases.
 
 After the ***X*** and ***Y*** vectors are ranked they are plugged into the weighted Pearson correlation coefficient formula shown above.
 
 ##Formulas for polyserial correlation with and without weights
 For the polyserial correlation, it is again assumed that there are two continuous variables ***X*** and ***Y*** that have a bivariate normal distribution.^[For a more complete treatment of the polyserial correlation, see Cox, N. R., "Estimation of the Correlation between a Continuous and a Discrete Variable" *Biometrics*, **50** (March), 171-187, 1974.]
 
-$$\begin{pmatrix} X \\ Y \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \end{pmatrix}, \Sigma \right]$$
+$$\begin{pmatrix} X \\ Y \end{pmatrix} \sim N \left[ \begin{pmatrix} \mu_x \\ \mu_y \end{pmatrix}, \boldsymbol{\Sigma} \right]$$
 
-Where $N(A, \Sigma)$ is a bivariate normal distribution with mean vector $A$ and covariance matrix $\Sigma$. For the polyserial correlation, ***Y*** is discretized into the random variable ***M*** according to
+Where $N(\mathbf{A},\boldsymbol{\Sigma})$ is a bivariate normal distribution with mean vector ***A*** and covariance matrix $\boldsymbol{\Sigma}$. For the polyserial correlation, ***Y*** is discretized into the random variable ***M*** according to
 
 $$m_i= \begin{cases} 1 \quad \mathrm{if}  \theta_2 < y_i < \theta_3 \\ 2 \quad \mathrm{if} \theta_3 < y_i < \theta_4 \\ \vdots \\ t \quad \mathrm{if} \theta_{t+1} < y_i < \theta_{t+2} \end{cases}$$
 
@@ -116,7 +122,7 @@ where, $\theta$ are the cut points used to discretize ***Y*** into ***M***, and 
 
 To give a concrete example, the following figure shows the density of ***Y*** when the cuts points are, for this example, $\theta=\left(-\infty,-2,-0.5,1.6,\infty\right)$. In this example, any value of $-2 < y_i < -0.5$ would have $m_i=2$.
 
-**`r fig_nums("theta", display="cite")`.** *Density of Y for cutpoints $\theta \in (-\infty, -2, -0.5, 1.6, \infty$).*    
+**`r fig_nums("theta", display="cite")`.** *Density of Y for cutpoints $\theta = (-\infty, -2, -0.5, 1.6, \infty$).*    
 ```{r theta,echo=FALSE,results="hide",fig.width=7, fig.height=3}
 x <- seq(-3,3,by=0.01) 
 y <- dnorm(x)
@@ -146,25 +152,29 @@ Combining these simplifications, the probability of any given $x_i$, $m_i$ pair 
 
 $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z_i,\rho=r)dy$$
 
-where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\boldsymbol{\theta}$, given the data $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(Y|Z,\rho)$ is the distribution of ***Y*** conditional on ***Z*** and $\rho$. Because ***Y*** and ***Z*** are jointly normally distributed (by assumption)
+where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\boldsymbol{\theta}$, given the $i$th data point $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(Y|Z,\rho)$ is the distribution of ***Y*** conditional on ***Z*** and $\rho$. Because ***Y*** and ***Z*** are jointly normally distributed (by assumption)
 $$f(Y|Z=z_i,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z_i-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
 because both ***Z*** and ***Y*** are standard normals
 $$f(y|Z=z_i,\rho=r) =N\left(r \cdot z_i, (1-r^2) \right)$$
-now, define $w \equiv \frac{y-r\cdot z}{\sqrt{1-r^2}}$ and $w$ has a standard normal distribution. Plugging this in
+Noticing that $\frac{y-r\cdot z}{\sqrt{1-r^2}}$ has a standard normal distribution
 $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \left[ \Phi\left( \frac{\theta_{m_i+2} - r \cdot z_i}{\sqrt{1-r^2}} \right) - \Phi \left( \frac{\theta_{m_i+1} - r \cdot z_i}{\sqrt{1-r^2}} \right) \right]$$
 
 Where $\Phi(\cdot)$ is the standard normal cumulative density function. Using the above probability function as an objective, the log-likelihood is then maximized.
 $$\ell(\rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta};\mathbf{Z}=\mathbf{z},\mathbf{M}=\mathbf{m}) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 where $w_i$ is the weight of the $i^{th}$ members of the vectors ***Z*** and ***Y***. For the unweighted case, all of the weights are set to one.
 
-The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the $j$th cut point and $N$ is replaced by the total weight of all unit
+The value of the nuisance paramter $\boldsymbol{\theta}$ is chosen to be
+
+$$\hat{\theta}_{j+2} = \Phi^{-1}(n/N)$$
+
+where $n$ is the number of values to the left of the $j$th cut point ($\theta_{j+2}$ value) and $N$ is the number of data points overall. Here two is added to $j$ to make the indexing of $\theta$ agree with Cox (1974) as noted above. For the weighted cause $n$ is replaced by the sum of the weights to the left of the $j$th cut point and $N$ is replaced by the total weight of all unit
 
 $$\hat{\theta}_{j+2} = \Phi^{-1}\left( \frac{\sum_{i=1}^N w_i {\rm 1\kern -2.85 pxI}(m_i < j) }{\sum_{i=1}^N w_i} \right)$$
 
-where ${\rm 1\kern -2.85 pxI}$ is the indicator function that is one when the condition is true and zero otherwise. Here two is added to $j$ to make the indexing of $\theta$ agree with Cox (1974) as noted above.
+where ${\rm 1\kern -2.85 pxI}$ is the indicator function that is one when the condition is true and zero otherwise. 
 
 ###Computation of polyserial correlation
-The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package and the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the ``minqa`` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
+For the polyserial, derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argumet is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package and the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the ``minqa`` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
 
 Because the numerical optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply examining if the values of ***X*** and ***M*** have agreeing order (or opposite but agreeing order) and then the MLE correlation of 1 (or -1) is returned.
 
@@ -185,12 +195,12 @@ $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol
 where $\rho$ is the correlation coefficient.
 
 Using this function as an objective, the log-likelihood is then maximized.
-$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}';p,m) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}';\mathbf{P}=\mathbf{p},\mathbf{M}=\mathbf{m}) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
 
 This is the weighted log-likelihood function. For the unweighted case all of the weights are set to one.
 
 ###Computation of polychoric correlation
-This again mirrors the treatment of the polyserial. The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function from the `stats` package. When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using the `bobyqa` function in the `minqa` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
+This again mirrors the treatment of the polyserial. The derivatives of $\ell$ for the polychoric can be written down but are not readily computed. When the `ML` argument is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function from the `stats` package and values of $\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$ are computed using the last equation in the section titled, "Formulas for polyserial correlation with and without weights". When the `ML` argument is set to `TRUE` a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, and $\boldsymbol{\theta}'$ using the `bobyqa` function in the `minqa` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
 
 Because the optimization is not perfect when the correlation is in a boundary condition ($\rho \in \{-1,1\}$), a check for perfect correlation  is performed before the above optimization by simply examining if the values of ***P*** and ***M*** have a Goodman-Kruskal correlation coefficient of -1 or 1. When this is the case, the MLE of -1 or 1, respectively, is returned.
 
@@ -287,7 +297,7 @@ xyplot(rmse.mean ~ n,
 
 #### Computing Time
 
-`r fig_nums("speedi", display="cite")` shows the mean time (in seconds) to compute a single correlation coefficient as a function of $\rho$ by $n$ size. The plot shows linearly rising computation times with slopes of about one. This is consistent with a linear computation cost. Using Big O notation, the computation cost is, in the range shown, O($n$).
+`r fig_nums("speedi", display="cite")` shows the mean time (in seconds) to compute a single correlation coefficient as a function of $\rho$ by $n$ size. The plot shows linearly rising computation times with slopes of about one. This is consistent with a linear computation cost. Using Big O notation, the computation cost is, in the range shown, O($n$). The slope of the Spearman is slightly faster and the algorithm has a O($n \mathrm{lg}(n)$) sort involved, so this is, again, expected.
 
 **`r fig_nums("speedi", display="cite")`.** *Computation time.*    
 ```{r time vs n, echo=FALSE,fig.width=7, fig.height=4}
@@ -347,7 +357,13 @@ xyplot(absdrho.mean ~ rho|type,
 ```
 
 
-The second simulation used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000, 100000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, Spearman, polyserial, and polychoric correlation coefficient. For the Spearman correlation, the coefficient is not attempting to estimate the Pearson correlation. Because of this, the RMSE is calculated by generating a population of data,  calculating the true Spearman correlation coefficient as the population coefficient, sampling from the population with varying probability as described in the weighted simulation section to calculate sample Spearman correlation coefficient, and then taking the root mean squared difference between the sample and population coefficients. In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
+The second simulation (shown in `r fig_nums("rmseVsN2", display="cite")`) used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient.
+
+For the previous plots the calculated Spearman correlation coefficient was compared to the generating Pearson correlation coefficient. For this plot only, the Spearman correlation coefficient to the true Spearman correlation coefficient. This is because the Spearman coefficient is not attempting to estimate the Pearson correlation. To do this a the simulation is modified slightly. A population of data is generated and the true Spearman correlation coefficient is then calculated as the population coefficient.^[The R ``stats` package `cor` function is used to calculate the population Spearman correlation coefficient--this results in an unweighted coefficient, which is appropriate for the population parameter.] Then a sample from the population with varying probability as described in the weighted simulation section is used to calculate sample Spearman correlation coefficient. Then the root mean squared difference between the sample and population coefficients are calculated as with the Pearson--except that the population Spearman correlation coefficient is used in place of the Pearson correlation coefficient ($\rho$).
+
+Thus, the results in `r fig_nums("rmseVsN2", display="cite")` show that, when compared to the true Spearman correlation coefficient, the weighted Spearman correlation coefficient is consistent.
+
+In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
 **`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
@@ -372,6 +388,6 @@ xyplot(rmserho ~ n|type,
 ```
 
 #Conclusion
-Overall the simulations show first order convergence for each unweighted correlation coefficient with a linear computation cost. Further, under our simulation assumptions, the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients.
+Overall the simulations show first order convergence for each unweighted correlation coefficient with an approximately linear computation cost. Further, under our simulation assumptions, the weighted correlation performs better than (has lower MAD or RMSE than) the unweighted correlation for all correlation coefficients.
 
-We show the first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient. The Spearman is not consistent and has minimum RMSE values indicating that some residual error always exists--under the assumptions of our simulation. In all cases the RMSE is lower for the weighted than the unweighted.
+We show the first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient. The Spearman is shown to not consistently estimate the population Pearson correlation coefficient but is shown to consistently estimate the population  Spearman correlation coefficient--under the assumptions of our simulation.
