@@ -74,7 +74,7 @@ where $\rho$ is the correlation between ***X*** and ***Y***, ***Z*** is the norm
 
 The log-likelihood function ($\ell$) is then
 
-$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};z,m) = \sum_i w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};Z=z,M=m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ are computed using a consistent estimator^[The value of the nuisance parameter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.] and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the `minqa` package.
 
@@ -86,7 +86,7 @@ $$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol
 where $f(x,y|r)$ is the normalized bivariate normal distribution with correlation $\rho$,  $\boldsymbol{\theta}$  are the cut points used to discretize ***Y*** into ***M***, and  $\boldsymbol{\theta'}$ are the cut points used to discretize ***X*** into ***P***.
 
 The log-likelihood is then
-$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ;\mathbf{p},\mathbf{m}) = \sum_i w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta},\boldsymbol{\Theta}'= \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ;\mathbf{P}=\mathbf{p}, \mathbf{M}=\mathbf{m}) = \sum_{i=1}^n w_i \ln\left[\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta},\boldsymbol{\Theta}'= \boldsymbol{\theta}' ; P=p_i, M=m_i \right) \right] $$
 
 The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$ are computed using a consistent estimator and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$, $\boldsymbol{\theta}$, $\boldsymbol{\theta}'$ using the `bobyqa` function in the `minqa` package.
 
@@ -108,7 +108,7 @@ A simulation is run several times.^[The exact number is noted for each specific 
 * confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, return to the previous step); and
 * calculate and record the correlation coefficients.
 
-One of a few possible statistics is then calculated. To compare two levels of a switch the Relative Mean Absolute Deviation may be used
+One of a few possible statistics is then calculated. To compare two levels of a switch the Relative Mean Absolute Deviation is used
 
 $$RMAD= \frac{1}{m} \sum_{j=1}^m | r_{j, \mathtt{TRUE}} - r_{j, \mathtt{FALSE}} |  $$
 
@@ -260,6 +260,8 @@ For the Polychoric, when $n$ is a million observations ($n=10^7$), the speed of 
 For the Polyserial, when $n$ is a million observations, the speed of a correlation when `ML=TRUE` is `r round(with(subset(speed, ML==TRUE & n==1e7 & type=="Polyserial"), mean(t)))` seconds and when the `ML=FALSE` it is and `r round(with(subset(speed, ML==FALSE & n==1e7 & type=="Polyserial"), mean(t)))` seconds. When `ML=FALSE`, setting `fast=TRUE` speeds computation by `r round(with(subset(speed, fast==FALSE & ML==FALSE & n==1e7 & type=="Polyserial"), mean(t)) - with(subset(speed, fast==TRUE & ML==FALSE & n==1e7 & type=="Polyserial"), mean(t)))` seconds.
 
 #Conclusion
-Overall the simulations show that the `ML` option is not more accurate but does add computation burden and the the `fast=TRUE` and `fast=FALSE` option agree--with differences that are never larger than $1\times 10^{-6}$.
+Overall the simulations show that the `ML` option is not more accurate but does add computation burden.
 
-Thus users wishing for fastest and accurate computation speeds can use `ML=FALSE` and `fast=TRUE`.
+The `fast=TRUE` and `fast=FALSE` option are a `Rcpp` version of the correlation code and an `R` version, respectively and agree with each other--the differences are not expected to be larger than $10^{`r fmax10`}$.
+
+Thus users wishing for fastest computation speeds and accurate results can use `ML=FALSE` and `fast=TRUE`.
