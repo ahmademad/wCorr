@@ -3,8 +3,8 @@ title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
 output:
-  word_document: default
   pdf_document: null
+  word_document: default
 vignette: |
   %\VignetteIndexEntry{wCorr Formulas} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
 ---
