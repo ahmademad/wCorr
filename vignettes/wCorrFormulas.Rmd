@@ -91,7 +91,7 @@ where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when
 
 The value $b_j$ then deals with ties. When there are ties each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector (here called $rank^1$ to indicate it is a specific case of $rank$ when the weights are all one) is then
 
-$$rank_j^1=\frac{1}{n} \left( \sum_{i=1}^n a_j + i \right)$$
+$$rank_j^1=\frac{1}{n}  \sum_{i=1}^n \left(a_j + i \right)$$
 $$=\frac{1}{n} \left( n a_j +  \frac{n(n+1)}{2}  \right)$$
 $$=a_j +  \frac{n+1}{2}$$
 
@@ -216,10 +216,10 @@ In what follows, when the exact method of selecting a parameter (such as $n$) is
 
 Across a number of iterations (the exact number of times will be stated for each simulation), the following procedure is used:
 
-* select a true correlation coefficient $\rho$;
+* select a true Pearson correlation coefficient $\rho$;
 * select the number of observations $n$;
 * generate ***X*** and ***Y*** to be bivariate normally distributed using a pseudo-Random Number Generator (RNG);
-* using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\};
+* using a pseudo-RNG, select the the number of bins for ***M*** and ***P*** ($t$ and $t'$) independantly from the set \{2, 3, 4, 5\};^[This means that the simulation uses discrete ordinal variables (***M*** and ***P***) that have 2, 3, 4, or 5 discrete levels. Note that the number of levels in ***M*** and ***P*** are chosen independantly so that one could be 2 while the other is 5 (or any other possible combination).]
 * select the bin boundaries for ***M*** and ***P*** ($\boldsymbol{\theta}$ and $\boldsymbol{\theta}'$) by sorting the results of $(t-1)$ and $(t'-1)$ draws, respectively, from a normal distribution using a pseudo-RNG; 
 * confirm that at least 2 levels of each of ***M*** and ***P*** are occupied (if not, return to previous step); and
 * calculate and record relevant statistics.
@@ -238,10 +238,10 @@ $$bias=\frac{1}{n}\sum_{i=1}^n \left(r_i - \rho_i \right)$$
 
 `r fig_nums("biasVsRho", display="cite")` shows the bias as a function of the true correlation $\rho$. Only the polyserial shows no bias at any level of $n$, shown by no clear deviation from 0 at any level of $\rho$. For the Pearson correlation there is bias when $n=10$ that is not present when $n=100$ or 1,000. This is a well known property of the estimator.^[see, e.g. Olkin I. and Pratt, J. W. (1958), "Unbiased Estimation of Certain Correlation Coefficients." *The Annals of Mathematical Statistics*, **29** (1) , pp 201-211.] Similarly, the polychoric shows bias when $n=10$.
 
-The Spearman correlation shows bias at all of the tested levels of $n$. The bias is zero when the true correlation is 1, 0, or -1; is positive when $\rho$ is below 0 (negative correlation); and is negative when $\rho$ is above 0 (positive correlation). The bias is expected because the Spearman correlation is not intended to recover a Pearson type correlation coefficient; it is designed to measure a seperate quantity.
+The Spearman correlation shows bias at all of the tested levels of $n$. The bias is zero when the true correlation is 1, 0, or -1; is positive when $\rho$ is below 0 (negative correlation); and is negative when $\rho$ is above 0 (positive correlation). In this section, the Spearman correlation coefficient is compared with the true Pearson correlation coefficient. When this is done, the bias is expected because the Spearman correlation is not intended to recover a Pearson type correlation coefficient; it is designed to measure a seperate quantity.
 
 
-**`r fig_nums("biasVsRho", display="cite")`.** *Mean Absolute Deviance vs $\rho$ (Unweighted).*    
+**`r fig_nums("biasVsRho", display="cite")`.** *Bias vs $\rho$ for Unweighted Correlations.*    
 ```{r bias vs rho, echo=FALSE,fig.width=7, fig.height=5}
 bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
 bias$bias <- bias$est - bias$rho
@@ -262,7 +262,7 @@ xyplot(bias.mean ~ rho|type,
 
 \newpage
 
-**`r fig_nums("rmseVsRho", display="cite")`.** *Root Mean Square Error vs $\rho$ (Unweighted).*   
+**`r fig_nums("rmseVsRho", display="cite")`.** *Root Mean Square Error vs $\rho$ for Unweighted Correlations.*   
 ```{r rmse vs rho, echo=FALSE,fig.width=7, fig.height=3.5}
 xyplot(rmse.mean ~ rho|type,
       data=agg,
@@ -281,7 +281,7 @@ xyplot(rmse.mean ~ rho|type,
 
 The plot also shows that the RMSE is less than 0.1 for all methods when $n>100$.
 
-**`r fig_nums("rmseVsN", display="cite")`.** *Root Mean Square Error vs sample size (Unweighted).*   
+**`r fig_nums("rmseVsN", display="cite")`.** *Root Mean Square Error vs sample size for Unweighted Correlations.*   
 ```{r rmse vs n, echo=FALSE,fig.width=7, fig.height=3.5}
 agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(rmse.mean ~ n,
@@ -337,7 +337,7 @@ as a function of $\rho$ and was run for $n=100$ and  $\rho \in \left( -0.99, -0.
 
 The following plot shows the MAD for the weighted and unweighted results as a function of $\rho$ when $n=100$. This shows that for values of $\rho$ near zero, under our simulation assumptions (for all but the Spearman correlation) the weighted correlation performs better than (has lower MAD than) the unweighted correlation for all correlation coefficients. Over the entire range, the difference between the two is never such that the unweighted has a lower MAD. Thus, under the simulated conditions at least, the weighted correlation has lower or approximably equal MAD for every value of the true correlation coefficient ($\rho$).
 
-**`r fig_nums("rmseVsRho2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
+**`r fig_nums("rmseVsRho2", display="cite")`.** *Mean Absolute Deviation vs $\rho$ (Weighted).*   
 ```{r wgt vs rho plot, echo=FALSE,fig.width=7, fig.height=5.5}
 wgt <- wgtvrho
 wgt$absdrho <- abs(wgt$est - wgt$rho)
@@ -359,13 +359,13 @@ xyplot(absdrho.mean ~ rho|type,
 
 The second simulation (shown in `r fig_nums("rmseVsN2", display="cite")`) used the same values of $\rho$ and used $n \in \{10, 100, 1000, 10000 \}$ and shows how RMSE and sample size are related. In particular, it shows first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient.
 
-For the previous plots the calculated Spearman correlation coefficient was compared to the generating Pearson correlation coefficient. For this plot only, the Spearman correlation coefficient to the true Spearman correlation coefficient. This is because the Spearman coefficient is not attempting to estimate the Pearson correlation. To do this a the simulation is modified slightly. A population of data is generated and the true Spearman correlation coefficient is then calculated as the population coefficient.^[The R ``stats` package `cor` function is used to calculate the population Spearman correlation coefficient--this results in an unweighted coefficient, which is appropriate for the population parameter.] Then a sample from the population with varying probability as described in the weighted simulation section is used to calculate sample Spearman correlation coefficient. Then the root mean squared difference between the sample and population coefficients are calculated as with the Pearson--except that the population Spearman correlation coefficient is used in place of the Pearson correlation coefficient ($\rho$).
+For the previous plots the calculated Spearman correlation coefficient was compared to the generating Pearson correlation coefficient. For this plot only, the Spearman correlation coefficient to the true Spearman correlation coefficient. This is because the Spearman coefficient is not attempting to estimate the Pearson correlation. To do this the simulation is modified slightly. A population of data is generated and the true Spearman correlation coefficient is then calculated as the population coefficient.^[The R `stats` package `cor` function is used to calculate the population Spearman correlation coefficient--this results in an unweighted coefficient, which is appropriate for the population parameter.] Then a sample from the population with varying probability as described in the weighted simulation section is used to calculate sample Spearman correlation coefficient. Then the root mean squared difference between the sample and population coefficients are calculated as with the Pearson--except that the population Spearman correlation coefficient is used in place of the Pearson correlation coefficient ($\rho$).
 
 Thus, the results in `r fig_nums("rmseVsN2", display="cite")` show that, when compared to the true Spearman correlation coefficient, the weighted Spearman correlation coefficient is consistent.
 
 In all cases the RMSE is lower for the weighted than the unweighted. Again, the fact that the simulations show that the unweighted correlation coefficient is not consistent does not imply that it will always be that way--only that this is possible for these coefficients to not be consistent.
 
-**`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Weighted).*   
+**`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Polyserial, Pearson, Polychoric panels) or Population Spearman correlation coefficient (Spearman panel) for Weighted Correlations*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
 wgtvn <- wgtvn[wgtvn$type!= "Spearman",]
 

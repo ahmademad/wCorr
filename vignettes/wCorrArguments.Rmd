@@ -74,9 +74,9 @@ where $\rho$ is the correlation between ***X*** and ***Y***, ***Z*** is the norm
 
 The log-likelihood function ($\ell$) is then
 
-$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};Z=z,M=m) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
+$$\ell(\rho, \boldsymbol{\Theta}=\boldsymbol{\theta};\mathbf{Z}=\mathbf{z},\mathbf{M}=\mathbf{m}) = \sum_{i=1}^n w_i \ln\left[ \mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) \right]$$
 
-The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ are computed using a consistent estimator^[The value of the nuisance parameter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units.] and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the `minqa` package.
+The derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument  is set to `FALSE` (the default), the values of $\boldsymbol{\theta}$ are computed using a consistent estimator^[The value of the nuisance parameter $\boldsymbol{\theta}$ is chosen to be $\Phi^{-1}(n/N)$ where $n$ is the number of values to the left of the cut point ($\theta_i$ value) and $N$ is the number of data points overall. For the weighted cause $n$ is replaced by the sum of the weights to the left of the cut point and $N$ is replaced by the total weight of all units. See the **wCorr Formulas** vignette for a more complete description.] and a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the `minqa` package.
 
 ## Computation of polychoric correlation  
 For the polychoric correlation the observed data is expressed in ordinal form for both variables. Here the discretized version of ***X*** is ***P*** and the discretized version of ***Y*** remains ***M***.^[See the "wCorr Formulas" vignette for a more complete description of the polychoric correlations' likelihood function.] The likelihood function for the polychoric is
@@ -146,7 +146,7 @@ xyplot(rmse.mean ~ rho|type + nt,
        par.settings=list(superpose.line=list(lwd=2), plot.line=list(lwd=2)))
 ```
 
-The RMSE for these two options is so similar that the two lines cannot be distinguished for most of the plot. The exact differences are shown for Polychoric in (`r table_nums("Polychoric", display="cite")`.) and for Polyserial in (`r table_nums("Polyserial", display="cite")`). The column labeled, "RMSE difference" shows how much larger the RMSE is for `ML=TRUE` than `ML=FALSE`. Because this difference is always positive the RMSE of the `ML=FALSE` option is always lower. Because of this the `ML=TRUE` option is preferable only in situations where there is a reason to prefer MLE for some other reason.
+The RMSE for these two options is so similar that the two lines cannot be distinguished for most of the plot. The exact differences are shown for Polychoric in `r table_nums("Polychoric", display="cite")` and for Polyserial in `r table_nums("Polyserial", display="cite")`. The column labeled, "RMSE difference" shows how much larger the RMSE is for `ML=TRUE` than `ML=FALSE`. Because this difference is always positive the RMSE of the `ML=FALSE` option is always lower. Because of this the `ML=TRUE` option is preferable only in situations where there is a reason to prefer MLE for some other reason.
 
 \ 
 
