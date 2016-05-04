@@ -48,7 +48,6 @@ the result. The ranking method gives averages for ties.
 The details of computation are given in the 'wCorr Formulas' vignette.
 }
 \examples{
-require(wCorr)
 # run a polyserial correlation
 attach(mtcars)
 weightedCorr(gear, x=cyl, method="polyserial")

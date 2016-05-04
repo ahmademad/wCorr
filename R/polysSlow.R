@@ -1,4 +1,7 @@
 #' @importFrom minqa bobyqa
+#' @importFrom stats dnorm
+#' @importFrom stats optimize
+#' @importFrom stats cor
 polysSlow <- function(x, M, w, ML=FALSE) {
 
   polysLnL <- function(x,M,rho,theta,w) {

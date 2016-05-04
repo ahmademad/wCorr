@@ -2,11 +2,11 @@
 title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output:
-  pdf_document: null
-  word_document: default
-vignette: |
-  %\VignetteIndexEntry{wCorr Formulas} %\VignetteEncoding{UTF-8} %\VignetteEngine{knitr::rmarkdown}
+output: pdf_document
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{wCorr Formulas}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -18,11 +18,19 @@ require(captioner)
 trellis.device()
 trellis.par.set(list(layout.widths  = list(left.padding = 3, right.padding = 3),
                      layout.heights = list(top.padding = -1, bottom.padding = 3)))
-load("..//vignettes/sim/ntime.RData")
-load("..//vignettes/sim/bias.RData")
-load("..//vignettes/sim/wgtvrho.RData")
-load("..//vignettes/sim/wgtvn.RData")
-load("..//vignettes/sim/spear.RData")
+#load("..//vignettes/sim/ntime.RData")
+##load("..//vignettes/sim/bias.RData")
+#load("..//vignettes/sim/aggbias.RData")
+#load("..//vignettes/sim/wgtvrho.RData")
+#load("..//vignettes/sim/wgtvn.RData")
+#load("..//vignettes/sim/spear.RData")
+
+load("ntime.RData")
+load("aggbias.RData")
+load("wgtvrho.RData")
+load("wgtvn.RData")
+load("spear.RData")
+
 spear$rho <- spear$SpearmanOrig
 spear$SpearmanOrig <- NULL
 spear$N <- NULL
@@ -243,12 +251,12 @@ The Spearman correlation shows bias at all of the tested levels of $n$. The bias
 
 **`r fig_nums("biasVsRho", display="cite")`.** *Bias vs $\rho$ for Unweighted Correlations.*    
 ```{r bias vs rho, echo=FALSE,fig.width=7, fig.height=5}
-bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
-bias$bias <- bias$est - bias$rho
-agg <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
+#bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
+#bias$bias <- bias$est - bias$rho
+#aggbias <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
 
 xyplot(bias.mean ~ rho|type,
-      data=agg,
+      data=aggbias,
       groups=n,
             type=c("l","g"),
       ylab="Bias",
@@ -266,7 +274,7 @@ xyplot(bias.mean ~ rho|type,
 **`r fig_nums("rmseVsRho", display="cite")`.** *Root Mean Square Error vs $\rho$ for Unweighted Correlations.*   
 ```{r rmse vs rho, echo=FALSE,fig.width=7, fig.height=3.5}
 xyplot(rmse.mean ~ rho|type,
-      data=agg,
+      data=aggbias,
       groups=n,
       scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
       ylab="RMSE",
@@ -284,10 +292,10 @@ The plot also shows that the RMSE is less than 0.1 for all methods when $n>100$.
 
 **`r fig_nums("rmseVsN", display="cite")`.** *Root Mean Square Error vs sample size for Unweighted Correlations.*   
 ```{r rmse vs n, echo=FALSE,fig.width=7, fig.height=3.5}
-agg <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
+#aggbias2 <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
 xyplot(rmse.mean ~ n,
      groups=type,
-      data=agg,
+      data=aggbias2,
       ylab="RMSE",
       xlab="n",
       scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),

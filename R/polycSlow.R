@@ -1,6 +1,9 @@
 # based losely on Olsson, Ulf (1979), "Maximum Likelihood Estimation of the Polychoric Correlation Coefficient", Psychometrica, 44(4), 443-460.
 #' @importFrom mnormt biv.nt.prob
 #' @importFrom minqa bobyqa
+#' @importFrom stats qnorm
+#' @importFrom stats optimize
+#' @importFrom stats cor
 polycSlow <- function(x,y,w,ML=FALSE) {
 
   lnl <- function(xytab, cc, rc, corr) {
