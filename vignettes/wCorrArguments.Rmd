@@ -3,9 +3,12 @@ title: "wCorr Arguments"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
 output: pdf_document
-vignette: |
-  %\VignetteIndexEntry{wCorr Arguments} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{wCorr Arguments}
+  \usepackage[utf8]{inputenc}
 ---
+
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE,warning=FALSE}
 require(knitr)
@@ -18,9 +21,15 @@ require(captioner)
 trellis.device()
 trellis.par.set(list(layout.widths  = list(left.padding = 3, right.padding = 3),
                      layout.heights = list(top.padding = -1, bottom.padding = 3))) 
-load("../vignettes/sim/ML.RData")
-load("../vignettes/sim/fast.RData")
-load("../vignettes/sim/speed.RData")
+##load("../vignettes/sim/ML.RData")
+#load("../vignettes/sim/aggML.RData")
+#load("../vignettes/sim/fast.RData")
+#load("../vignettes/sim/speed.RData")
+
+load("aggML.RData")
+load("fast.RData")
+load("speed.RData")
+
 ```
 
 ```{r setup fast, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -128,15 +137,15 @@ A simulation was done using the Cartesian product (all possible combinations of)
 
 **`r fig_nums("MLRMSE", display="cite")`.** *Root Mean Square Error for `ML=TRUE` and `ML=FALSE`.*  
 ```{r ML RMSE plot, echo=FALSE,fig.width=7, fig.height=5.5}
-ml <- subset(ML, type %in% c("Polychoric", "Polyserial"))
-ml$rmse <- (ml$est - ml$rho)^2
+#ml <- subset(ML, type %in% c("Polychoric", "Polyserial"))
+#ml$rmse <- (ml$est - ml$rho)^2
 
-agg <- summaryBy(rmse ~ n + rho + type + ML, data=ml, FUN=mean, na.rm=TRUE)
-agg$rmse.mean <- sqrt(agg$rmse.mean)
-agg$ml <- ifelse(agg$ML==TRUE, "ML=TRUE", "ML=FALSE")
-agg$nt <- factor(paste("n=",agg$n))
+#aggml <- summaryBy(rmse ~ n + rho + type + ML, data=ml, FUN=mean, na.rm=TRUE)
+#aggml$rmse.mean <- sqrt(aggml$rmse.mean)
+#aggml$ml <- ifelse(aggml$ML==TRUE, "ML=TRUE", "ML=FALSE")
+#aggml$nt <- factor(paste("n=",aggml$n))
 xyplot(rmse.mean ~ rho|type + nt,
-       data=agg,
+       data=aggml,
        groups=ml,
        scales=list(y=list(log=10, cex=0.7), x = list(cex=0.7)),
        type=c("l", "g"),
@@ -152,22 +161,23 @@ The RMSE for these two options is so similar that the two lines cannot be distin
 
 **`r table_nums("Polychoric", display="cite")`.** *Relative Mean Absolute Deviation between `ML=TRUE` and `ML=FALSE` for Polychoric.*
 ```{r ML RMSE table polyc, echo=FALSE}
-ml$i <- rep(1:(nrow(ml)/2),each=2)
-mml <- merge(subset(ml,ML),
-               subset(ml,!ML, c("i", "est")),
-               by="i",
-               suffixes=c(".ml",".nonml"))
-mml$absd <- abs(mml$est.ml - mml$est.nonml)
-agg0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
-agg0$ML <- NULL
+#ml$i <- rep(1:(nrow(ml)/2),each=2)
+#mml <- merge(subset(ml,ML),
+#               subset(ml,!ML, c("i", "est")),
+#               by="i",
+#               suffixes=c(".ml",".nonml"))
+#mml$absd <- abs(mml$est.ml - mml$est.nonml)
+#aggt1_0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, #type=="Polychoric"), FUN=mean, na.rm=TRUE)
+#aggt1_0$ML <- NULL
 
-agg <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
-agg$rmse.mean <- sqrt(agg$rmse.mean)
-mg <- merge(subset(agg, ML==TRUE, c("type", "n", "rmse.mean")),
-            subset(agg, ML==FALSE, c("type", "n", "rmse.mean")),
+#aggt1 <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
+
+#aggt1$rmse.mean <- sqrt(aggt1$rmse.mean)
+mg <- merge(subset(aggt1, ML==TRUE, c("type", "n", "rmse.mean")),
+            subset(aggt1, ML==FALSE, c("type", "n", "rmse.mean")),
             by=c("type", "n"))
 mg$rmse.mean.diff <- mg$rmse.mean.x - mg$rmse.mean.y
-mg <- merge(mg, agg0, by=c("type", "n"))
+mg <- merge(mg, aggt1_0, by=c("type", "n"))
 colnames(mg) <- c("Correlation type", "n", "RMSE ML=TRUE", "RMSE ML=FALSE", "RMSE difference", "RMAD")
 mg[,3:6] <- round(mg[,3:5],4)
 kable(mg)
@@ -179,16 +189,18 @@ mg1 <- mg
 
 **`r table_nums("Polyserial", display="cite")`.** *Relative Mean Absolute Deviation between `ML=TRUE` and `ML=FALSE` for Polyserial.*
 ```{r ML RMSE table polys, echo=FALSE}
-agg0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
-agg0$ML <- NULL
+#aggt2_0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+#aggt2_0$ML <- NULL
 
-agg <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
-agg$rmse.mean <- sqrt(agg$rmse.mean)
-mg <- merge(subset(agg, ML==TRUE, c("n", "type", "rmse.mean")),
-            subset(agg, ML==FALSE, c("type", "n", "rmse.mean")),
+#aggt2 <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+#aggt2$rmse.mean <- sqrt(aggt2$rmse.mean)
+
+
+mg <- merge(subset(aggt2, ML==TRUE, c("n", "type", "rmse.mean")),
+            subset(aggt2, ML==FALSE, c("type", "n", "rmse.mean")),
             by=c("type", "n"))
 mg$rmse.mean.diff <- mg$rmse.mean.x - mg$rmse.mean.y
-mg <- merge(mg, agg0, by=c("type", "n"))
+mg <- merge(mg, aggt2_0, by=c("type", "n"))
 colnames(mg) <- c("Correlation type", "n", "RMSE ML=TRUE", "RMSE ML=FALSE", "RMSE difference", "RMAD")
 mg[,3:6] <- round(mg[,3:5],4)
 kable(mg)

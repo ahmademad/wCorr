@@ -1,3 +1,6 @@
-./git
-^.*\.Rproj$
-^\.Rproj\.user$
+[.]/git
+^.*[.]Rproj$
+^[.]Rproj[.]user$
+mcmc[.]R
+bias[.]RData
+ML[.]RData

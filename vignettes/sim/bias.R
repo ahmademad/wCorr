@@ -12,3 +12,12 @@ grid <- subset(grid, ! ( (iter > 100) & (n == 1000) | ( (iter > 1000) & (n==100)
 bias <- wCorrSim(n=grid$n, rho=grid$rho, ML=grid$ML, fast=grid$fast, reset=grid$reset, usew=FALSE)
 
 save(bias, file="bias.RData")
+
+require(doBy)
+
+bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
+bias$bias <- bias$est - bias$rho
+aggbias <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
+aggbias2 <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
+
+save(aggbias, aggbias2, file="aggbias.RData")

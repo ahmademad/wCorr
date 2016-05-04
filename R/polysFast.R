@@ -1,4 +1,8 @@
 #' @importFrom minqa bobyqa
+#' @importFrom stats dnorm
+#' @importFrom stats optimize
+#' @importFrom stats cor
+#' @importFrom stats weighted.mean
 polysFast <- function(x, M, w, ML=FALSE) {
   M <- as.numeric(as.factor(M))
   uM <- sort(unique(M))

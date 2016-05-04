@@ -42,7 +42,6 @@
 #' 
 #'
 #' @examples
-#' require(wCorr)
 #' # run a polyserial correlation
 #' attach(mtcars)
 #' weightedCorr(gear, x=cyl, method="polyserial")
