@@ -1,4 +1,5 @@
 #' @importFrom minqa bobyqa
+#' @importFrom stats pnorm
 #' @importFrom stats dnorm
 #' @importFrom stats optimize
 #' @importFrom stats cor
