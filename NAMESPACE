@@ -12,4 +12,6 @@ importFrom(stats, cor,
                   rnorm,
                   runif,
                   sd,
-                  weighted.mean)
+                  weighted.mean
+                  )
+importFrom(doBy, summaryBy)
