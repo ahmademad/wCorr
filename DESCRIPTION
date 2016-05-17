@@ -7,9 +7,10 @@ Author: Ahmad Emad & Paul Bailey
 Maintainer: Paul Bailey <pbailey@air.org>
 Description: Calculates Pearson, Spearman, polychoric, and polyserial correlation coefficients, in weighted or unweighted form. The package implements tetrachoric correlation as a special case of the polychoric and biserial correlation as a specific case of the polyserial.
 License: GPL-2
-Imports: minqa, mnormt, Rcpp, stats 
+BugReports: https://github.com/ahmademad/wCorr/issues
+Imports: minqa, mnormt, Rcpp, stats, doBy 
 Depends: R (>= 3.0.0) 
 RoxygenNote: 5.0.1
-Suggests: knitr, rmarkdown, doBy, lattice, captioner
+Suggests: knitr, rmarkdown, lattice, captioner
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppArmadillo

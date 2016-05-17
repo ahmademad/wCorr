@@ -25,15 +25,14 @@ trellis.par.set(list(layout.widths  = list(left.padding = 3, right.padding = 3),
 #load("..//vignettes/sim/wgtvn.RData")
 #load("..//vignettes/sim/spear.RData")
 
-load("ntime.RData")
-load("aggbias.RData")
-load("wgtvrho.RData")
-load("wgtvn.RData")
-load("spear.RData")
+# load("ntime.RData")
+# load("aggbias.RData")
+# load("wgtvrho.RData")
+# load("wgtvn.RData")
+# load("spear.RData")
+load("../R/sysdata.rda")
 
-spear$rho <- spear$SpearmanOrig
-spear$SpearmanOrig <- NULL
-spear$N <- NULL
+
 ```
 
 
@@ -310,11 +309,11 @@ xyplot(rmse.mean ~ n,
 
 **`r fig_nums("speedi", display="cite")`.** *Computation time.*    
 ```{r time vs n, echo=FALSE,fig.width=7, fig.height=4}
-agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
-agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
+# agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
+# agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
 
 xyplot(t.mean ~ n,
-       data=agg,
+       data=aggTime,
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
        groups=type,
        type=c("l","g"),
@@ -348,14 +347,14 @@ The following plot shows the MAD for the weighted and unweighted results as a fu
 
 **`r fig_nums("rmseVsRho2", display="cite")`.** *Mean Absolute Deviation vs $\rho$ (Weighted).*   
 ```{r wgt vs rho plot, echo=FALSE,fig.width=7, fig.height=5.5}
-wgt <- wgtvrho
-wgt$absdrho <- abs(wgt$est - wgt$rho)
-
-agg <- summaryBy(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
-agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
+# wgt <- wgtvrho
+# wgt$absdrho <- abs(wgt$est - wgt$rho)
+# 
+# agg <- summaryBy(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+# agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 
 xyplot(absdrho.mean ~ rho|type,
-       data=agg,
+       data=aggWgtvrho,
        groups=weight,
        scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
              type=c("l","g"), 
@@ -376,17 +375,17 @@ In all cases the RMSE is lower for the weighted than the unweighted. Again, the 
 
 **`r fig_nums("rmseVsN2", display="cite")`.** *Root Mean Square Error vs $\rho$ (Polyserial, Pearson, Polychoric panels) or Population Spearman correlation coefficient (Spearman panel) for Weighted Correlations*   
 ```{r wgt v n plot, echo=FALSE,fig.width=7, fig.height=5.5}
-wgtvn <- wgtvn[wgtvn$type!= "Spearman",]
-
-wgt <- rbind(wgtvn, spear)
-wgt$mserho <- (wgt$est - wgt$rho)^2
-
-agg <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
-agg$rmserho <- sqrt(agg$mserho)
-agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
+# wgtvn <- wgtvn[wgtvn$type!= "Spearman",]
+# 
+# wgt <- rbind(wgtvn, spear)
+# wgt$mserho <- (wgt$est - wgt$rho)^2
+# 
+# agg <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+# agg$rmserho <- sqrt(agg$mserho)
+# agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 
 xyplot(rmserho ~ n|type,
-       data=agg,
+       data=aggWgtvn,
        groups=weight,
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),
              type=c("l","g"),
