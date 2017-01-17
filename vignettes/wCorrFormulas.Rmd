@@ -399,3 +399,15 @@ xyplot(rmserho ~ n|type,
 Overall the simulations show first order convergence for each unweighted correlation coefficient with an approximately linear computation cost. Further, under our simulation assumptions, the weighted correlation performs better than (has lower MAD or RMSE than) the unweighted correlation for all correlation coefficients.
 
 We show the first order convergence of the weighted Pearson, polyserial, and polychoric correlation coefficient. The Spearman is shown to not consistently estimate the population Pearson correlation coefficient but is shown to consistently estimate the population  Spearman correlation coefficient--under the assumptions of our simulation.
+
+
+# Appendix
+
+Proof of consistency of Horvitz-Thompson (HT) estimator of a mean.
+
+An HT estimator of a sum takes the form
+$$\hat{Y} = \sum_{i=1}^n \frac{1}{\pi_i} y_i$$
+where there are $n$ sampled units from a population of $N$ units, each unit has a value $y\in R$, each unit is sampled with probability $\pi_i$, and  $\hat{Y}$ is the estimated of $Y$ in a population. Here there is no assumed covariance between sampling of unit $i$ and unit $j$ and the inverse probability is also the unit's weight $w_i$ so that an alternative specification of (1) is
+$$\hat{Y} = \sum_{i=1}^n w_i y_i \ .$$
+
+
