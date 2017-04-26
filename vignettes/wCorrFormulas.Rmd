@@ -2,11 +2,12 @@
 title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
-output: pdf_document
-vignette: >
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{wCorr Formulas}
-  \usepackage[utf8]{inputenc}
+output:
+  word_document:
+    reference_docx: format.docx  
+  pdf_document: default
+vignette: |
+  %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{wCorr Formulas} \usepackage[utf8]{inputenc}
 ---
 
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
@@ -92,9 +93,9 @@ $$rank_j = a_j + b_j$$
 
 The first term $a_j$ is the sum of all weights ***W*** less than or equal to this value of the outcome being ranked ($\xi_j$)
 
-$$a_j = \sum_{i=1}^n w_i{\rm 1\kern -2.85 pxI}\left( \xi_i < \xi_j \right)$$
+$$a_j = \sum_{i=1}^n w_i \mathbf{1}\left( \xi_i < \xi_j \right)$$
 
-where ${\rm 1\kern -2.85 pxI}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively.
+where $\mathbf{1}(\cdot)$ is the indicator function that is one when the condition is true and 0 when the condition is false, $w_i$ is the $i$th weight and $\xi_i$ and $\xi_j$ are the $i$th and $j$th value of the vector being ranked, respectively.
 
 The term $b_j$ then deals with ties. When there are ties each unit recieves the mean rank for all of the tied units. When the weights are all one and there are $n$ tied units the vector of tied ranks would be $\mathbf{v}=\left(a_j+1, a_j+2, \dots, a_j+n \right)$. The mean of this vector (here called $rank^1$ to indicate it is a specific case of $rank$ when the weights are all one) is then
 
@@ -157,7 +158,7 @@ For ***X***, Cox (1974) observes that the MLE mean and standard deviation of ***
 
 Combining these simplifications, the probability of any given $x_i$, $m_i$ pair is
 
-$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(y|Z=z_i,\rho=r)dy$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta} ; Z=z_i, M=m_i \right) = \phi(z_i) \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \!\!\!\!\!\!\!\!\!\!\!\!  f(y|Z=z_i,\rho=r)dy$$
 
 where $\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}; Z=z_i, M=m_i \right)$ is the probability of the event $\rho=r$ and the cuts points are $\boldsymbol{\theta}$, given the $i$th data point $z_i$ and $m_i$; $\phi(\cdot)$ is the standard normal; and $f(Y|Z,\rho)$ is the distribution of ***Y*** conditional on ***Z*** and $\rho$. Because ***Y*** and ***Z*** are jointly normally distributed (by assumption)
 $$f(Y|Z=z_i,\rho=r) =N\left(\mu_y + \frac{\sigma_y}{\sigma_z}r(z_i-\mu_z), (1-r^2){\sigma_y}^2 \right)$$
@@ -176,9 +177,9 @@ $$\hat{\theta}_{j+2} = \Phi^{-1}(n/N)$$
 
 where $n$ is the number of values to the left of the $j$th cut point ($\theta_{j+2}$ value) and $N$ is the number of data points overall. Here two is added to $j$ to make the indexing of $\theta$ agree with Cox (1974) as noted before. For the weighted cause $n$ is replaced by the sum of the weights to the left of the $j$th cut point and $N$ is replaced by the total weight of all units
 
-$$\hat{\theta}_{j+2} = \Phi^{-1}\left( \frac{\sum_{i=1}^N w_i {\rm 1\kern -2.85 pxI}(m_i < j) }{\sum_{i=1}^N w_i} \right)$$
+$$\hat{\theta}_{j+2} = \Phi^{-1}\left( \frac{\sum_{i=1}^N w_i \mathbf{1}(m_i < j) }{\sum_{i=1}^N w_i} \right)$$
 
-where ${\rm 1\kern -2.85 pxI}$ is the indicator function that is 1 when the condition is true and 0 otherwise. 
+where $\mathbf{1}$ is the indicator function that is 1 when the condition is true and 0 otherwise. 
 
 ###Computation of polyserial correlation
 For the polyserial, derivatives of $\ell$ can be written down but are not readily computed. When the `ML` argument is set to `FALSE` (the default), a one dimensional optimization of $\rho$ is calculated using the `optimize` function in the `stats` package and the values of $\boldsymbol{\theta}$ from the previous paragraph. When the `ML` argument is set to `TRUE`, a multi-dimensional optimization is done for $\rho$ and $\boldsymbol{\theta}$ using the `bobyqa` function in the ``minqa`` package. See the *wCorr Arguments* vignette for a comparison of these two methods.
@@ -197,7 +198,7 @@ As in the polyserial correlation, $\mu_y$ is not identifed (or is irrelevant) be
 
 Then the probability of any given $m_i$, $p_i$ pair is 
 
-$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta'_{p_i+1}}^{\theta'_{p_i+2}}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \mkern-40mu  f(x,y|\rho=r)dydx$$
+$$\mathrm{Pr}\left( \rho=r, \boldsymbol{\Theta}=\boldsymbol{\theta}, \boldsymbol{\Theta}'=\boldsymbol{\theta}' ; P=p_i, M=m_i \right) = \int_{\theta'_{p_i+1}}^{\theta'_{p_i+2}}  \int_{\theta_{m_i+1}}^{\theta_{m_i+2}} \!\!\!\!\!\!\!\!\!\!\!\!  f(x,y|\rho=r)dydx$$
 
 where $\rho$ is the correlation coefficient.
 
