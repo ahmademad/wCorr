@@ -1,15 +1,14 @@
-#' @importFrom doBy summaryBy
-#' 
-
 bias <- function(workingDir) {
   setwd(workingDir)
   iter <- NULL
   n <- 0
   
   grid <- expand.grid(ML=FALSE,
-                      iter=1:20000,
+                      #iter=1:20000,
+                      iter=1:2,
                       n = c(10,100,1000),
-                      rho = c(-0.99,seq(-0.95,0.95,by=0.05), 0.99),
+                      #rho = c(-0.99,seq(-0.95,0.95,by=0.05), 0.99),
+                      rho = c(-0.99,seq(-0.95,0.95,by=0.2), 0.99),
                       fast=TRUE)
   grid$reset <- TRUE
   grid <- subset(grid, ! ( (iter > 100) & (n == 1000) | ( (iter > 1000) & (n==100) ) ) )
@@ -20,8 +19,14 @@ bias <- function(workingDir) {
   
   bias$rmse <- sqrt( (bias$est - bias$rho)^2 )
   bias$bias <- bias$est - bias$rho
-  aggbias <- summaryBy(bias + rmse  ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
-  aggbias2 <- summaryBy(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
+
+  aggbiasA <- aggregate(bias ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
+  aggbiasB <- aggregate(rmse ~ n + rho + type, data=bias, FUN=mean, na.rm=TRUE)
+  aggbias <- merge(aggbiasA, aggbiasB, by=c("n", "rho", "type"), all=TRUE)
+  names(aggbias)[names(aggbias) == "bias"] <- "bias.mean"
+  names(aggbias)[names(aggbias) == "rmse"] <- "rmse.mean"
+  aggbias2 <- aggregate(rmse  ~ n+type, data=bias, FUN=mean, na.rm=TRUE)
+  names(aggbias2)[names(aggbias2) == "rmse"] <- "rmse.mean"
   
   save(aggbias, aggbias2, file="aggbias.RData")
 }
@@ -64,7 +69,8 @@ fast <- function(workingDir){
                  suffixes=c(".fast",".slow"))
   mfast$fast <- NULL
   mfast$absdrho <- pmax(abs(mfast$est.fast - mfast$est.slow), 1E-16)
-  aggfast <- summaryBy(absdrho ~ n + rho + type, data=mfast, FUN=mean, na.rm=TRUE)
+  aggfast <- aggregate(absdrho ~ n + rho + type, data=mfast, FUN=mean, na.rm=TRUE)
+  names(aggfast)[names(aggfast) == "absdrho"] <- "absdrho.mean"
   save(aggfast, file="aggfast.RData")
   
 }
@@ -85,7 +91,9 @@ ML <- function(workingDir) {
   ml <- subset(ML, type %in% c("Polychoric", "Polyserial"))
   ml$rmse <- (ml$est - ml$rho)^2
   
-  aggml <- summaryBy(rmse ~ n + rho + type + ML, data=ml, FUN=mean, na.rm=TRUE)
+  aggml <- aggregate(rmse ~ n + rho + type + ML, data=ml, FUN=mean, na.rm=TRUE)
+  names(aggml)[names(aggml) == "rmse"] <- "rmse.mean"
+
   aggml$rmse.mean <- sqrt(aggml$rmse.mean)
   aggml$ml <- ifelse(aggml$ML==TRUE, "ML=TRUE", "ML=FALSE")
   aggml$nt <- factor(paste("n=",aggml$n))
@@ -97,17 +105,21 @@ ML <- function(workingDir) {
                by="i",
                suffixes=c(".ml",".nonml"))
   mml$absd <- abs(mml$est.ml - mml$est.nonml)
-  aggt1_0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
+  aggt1_0 <- aggregate(absd ~ type + n + ML, data=subset(mml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
+  names(aggt1_0)[names(aggt1_0) == "absd"] <- "absd.mean"
   aggt1_0$ML <- NULL
   
-  aggt1 <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
+  aggt1 <- aggregate(rmse ~ type + n + ML, data=subset(ml, type=="Polychoric"), FUN=mean, na.rm=TRUE)
+  names(aggt1)[names(aggt1) == "rmse"] <- "rmse.mean"
   
   
   
-  aggt2_0 <- summaryBy(absd ~ type + n + ML, data=subset(mml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+  aggt2_0 <- aggregate(absd ~ type + n + ML, data=subset(mml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+  names(aggt2_0)[names(aggt2_0) == "absd"] <- "absd.mean"
   aggt2_0$ML <- NULL
   
-  aggt2 <- summaryBy(rmse ~ type + n + ML, data=subset(ml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+  aggt2 <- aggregate(rmse ~ type + n + ML, data=subset(ml, type=="Polyserial"), FUN=mean, na.rm=TRUE)
+  names(aggt2)[names(aggt2) == "rmse"] <- "rmse.mean"
   aggt2$rmse.mean <- sqrt(aggt2$rmse.mean)
   
   save(aggml, aggt1_0, aggt1, aggt2_0, aggt2, file="aggML.RData")
@@ -145,7 +157,8 @@ ntime <- function(workingDir) {
   ntime <- rbind(ntime1, ntime2)
   save(ntime, file="ntime.RData")
   
-  aggTime <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
+  aggTime <- aggregate(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
+  names(aggTime)[names(aggTime) == "t"] <- "t.mean"
   aggTime$t.mean <- ifelse(aggTime$t.mean==0, 0.001,aggTime$t.mean)
   save(aggTime, file="aggTime.RData")
   
@@ -246,11 +259,11 @@ speed <- function(workingDir) {
   speed <- rbind(speed, speed4)
   save(speed, file="speed.RData")
   
-  require(doBy)
   speed$class <- ifelse(speed$ML, "ML=T,", "ML=F,")
   speed$class <- paste0(speed$class, ifelse(speed$fast, "fast=T", "fast=F"))
   speed$t <- pmax(speed$t, 0.001)
-  aggSpeed <- summaryBy(t ~ n + type + class, data=speed, FUN=mean, na.rm=TRUE)
+  aggSpeed <- aggregate(t ~ n + type + class, data=speed, FUN=mean, na.rm=TRUE)
+  names(aggSpeed)[names(aggSpeed) == "t"] <- "t.mean"
   save(aggSpeed, file="aggSpeed.RData")
   
 }
@@ -279,7 +292,8 @@ spearmanSpeed <- function(workingDir) {
   wgt <- rbind(wgtvn, spear)
   wgt$mserho <- (wgt$est - wgt$rho)^2
   
-  aggWgtvn <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+  aggWgtvn <- aggregate(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+  names(aggWgtvn)[names(aggWgtvn) == "mserho"] <- "mserho.mean"
   aggWgtvn$rmserho <- sqrt(aggWgtvn$mserho)
   aggWgtvn$weight <- ifelse(aggWgtvn$usew, "Weighted", "Unweighted")
   
@@ -299,7 +313,8 @@ wgtvrho <- function(workingDir) {
   wgt <- wgtvrho
   wgt$absdrho <- abs(wgt$est - wgt$rho)
   
-  aggWgtvrho <- summaryBy(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+  aggWgtvrho <- aggregate(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+  names(aggWgtvrho)[names(aggWgtvrho) == "absdrho"] <- "absdrho.mean"
   aggWgtvrho$weight <- ifelse(aggWgtvrho$usew, "Weighted", "Unweighted")
   save(aggWgtvrho, file="aggWgtvrho.RData")
 }

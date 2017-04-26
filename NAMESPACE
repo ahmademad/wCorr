@@ -14,4 +14,3 @@ importFrom(stats, cor,
                   sd,
                   weighted.mean
                   )
-importFrom(doBy, summaryBy)

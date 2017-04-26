@@ -7,4 +7,3 @@
 \description{
 See \code{\link{weightedCorr}} for examples.
 }
-
