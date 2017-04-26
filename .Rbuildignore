@@ -6,3 +6,4 @@ bias[.]RData
 ML[.]RData
 ^.*\.Rproj$
 ^\.Rproj\.user$
+paper
