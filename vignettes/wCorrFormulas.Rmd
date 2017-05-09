@@ -3,9 +3,9 @@ title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
 output:
-  word_document:
-    reference_docx: format.docx  
   pdf_document: default
+  word_document:
+    reference_docx: format.docx
 vignette: |
   %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{wCorr Formulas} \usepackage[utf8]{inputenc}
 ---
@@ -13,7 +13,6 @@ vignette: |
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 require(wCorr)
 require(lattice)
-require(doBy)
 require(captioner)
 # set layout so a figure label appears to go with the figure
 trellis.device()
