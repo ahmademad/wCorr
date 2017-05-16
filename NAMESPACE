@@ -1,5 +1,5 @@
 importFrom(Rcpp, evalCpp)
-useDynLib(wCorr)
+useDynLib(wCorr, .registration=TRUE)
 export(weightedCorr)
 importFrom(minqa,bobyqa)
 importFrom(mnormt,biv.nt.prob)
@@ -13,5 +13,6 @@ importFrom(stats, aggregate,
                   rnorm,
                   runif,
                   sd,
-                  weighted.mean
+                  weighted.mean,
+                  aggregate
                   )
