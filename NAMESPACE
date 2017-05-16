@@ -3,7 +3,8 @@ useDynLib(wCorr)
 export(weightedCorr)
 importFrom(minqa,bobyqa)
 importFrom(mnormt,biv.nt.prob)
-importFrom(stats, cor,
+importFrom(stats, aggregate,
+                  cor,
                   dnorm,
                   optim,
                   optimize,
