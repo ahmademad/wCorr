@@ -13,6 +13,5 @@ importFrom(stats, aggregate,
                   rnorm,
                   runif,
                   sd,
-                  weighted.mean,
-                  aggregate
+                  weighted.mean
                   )
