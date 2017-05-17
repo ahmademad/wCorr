@@ -3,9 +3,6 @@ title: "wCorr Formulas"
 author: "Paul Bailey, Ahmad Emad, Ting Zhang, Qingshu Xie"
 date: '`r Sys.Date()`'
 output:
-  word_document:
-    reference_docx: format.docx  
-        pandoc_args: ["--smart"]
   pdf_document: default
 vignette: |
   %\VignetteEngine{knitr::rmarkdown}
