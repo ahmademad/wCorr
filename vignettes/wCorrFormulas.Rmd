@@ -12,7 +12,6 @@ vignette: >
 ```{r packages and data, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
 require(wCorr)
 require(lattice)
-require(doBy)
 require(captioner)
 # set layout so a figure label appears to go with the figure
 trellis.device()
@@ -310,8 +309,8 @@ xyplot(rmse.mean ~ n,
 
 **`r fig_nums("speedi", display="cite")`.** *Computation time.*    
 ```{r time vs n, echo=FALSE,fig.width=7, fig.height=4}
-agg <- summaryBy(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
-agg$t.mean <- ifelse(agg$t.mean==0, 0.001,agg$t.mean)
+agg <- aggregate(t ~ n + type, data=ntime, FUN=mean, na.rm=TRUE)
+agg$t.mean <- ifelse(agg$t==0, 0.001,agg$t)
 
 xyplot(t.mean ~ n,
        data=agg,
@@ -351,10 +350,10 @@ The following plot shows the MAD for the weighted and unweighted results as a fu
 wgt <- wgtvrho
 wgt$absdrho <- abs(wgt$est - wgt$rho)
 
-agg <- summaryBy(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+agg <- aggregate(absdrho ~ rho + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
 agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 
-xyplot(absdrho.mean ~ rho|type,
+xyplot(absdrho ~ rho|type,
        data=agg,
        groups=weight,
        scales=list(y=list(log=10, cex=0.7), x=list(cex=0.7)),
@@ -381,7 +380,7 @@ wgtvn <- wgtvn[wgtvn$type!= "Spearman",]
 wgt <- rbind(wgtvn, spear)
 wgt$mserho <- (wgt$est - wgt$rho)^2
 
-agg <- summaryBy(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
+agg <- aggregate(mserho ~ n + usew + type, data=wgt, FUN=mean, na.rm=TRUE)
 agg$rmserho <- sqrt(agg$mserho)
 agg$weight <- ifelse(agg$usew, "Weighted", "Unweighted")
 
