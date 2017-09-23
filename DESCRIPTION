@@ -1,15 +1,16 @@
 Package: wCorr
 Type: Package
 Title: Weighted Correlations
-Version: 1.8.0
-Date: 2016-05-03
+Version: 1.9.0
+Date: 2017-05-15
 Author: Ahmad Emad & Paul Bailey
 Maintainer: Paul Bailey <pbailey@air.org>
 Description: Calculates Pearson, Spearman, polychoric, and polyserial correlation coefficients, in weighted or unweighted form. The package implements tetrachoric correlation as a special case of the polychoric and biserial correlation as a specific case of the polyserial.
 License: GPL-2
+BugReports: https://github.com/ahmademad/wCorr/issues
 Imports: minqa, mnormt, Rcpp, stats 
 Depends: R (>= 3.0.0) 
-RoxygenNote: 5.0.1
-Suggests: knitr, rmarkdown, doBy, lattice, captioner
+RoxygenNote: 6.0.1
+Suggests: knitr, rmarkdown, lattice, captioner
 VignetteBuilder: knitr
 LinkingTo: Rcpp, RcppArmadillo

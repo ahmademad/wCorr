@@ -14,7 +14,6 @@ vignette: >
 require(knitr)
 require(wCorr)
 require(lattice)
-require(doBy)
 require(captioner)
 
 # set layout so a figure label appears to go with the figure
@@ -26,21 +25,21 @@ trellis.par.set(list(layout.widths  = list(left.padding = 3, right.padding = 3),
 #load("../vignettes/sim/fast.RData")
 #load("../vignettes/sim/speed.RData")
 
-load("aggML.RData")
-load("fast.RData")
-load("speed.RData")
-
+#load("aggML.RData")
+#load("fast.RData")
+#load("speed.RData")
+load("../R/sysdata.rda")
 ```
 
 ```{r setup fast, echo=FALSE, results="hide", message=FALSE, warning=FALSE}
-fast$i <- rep(1:(nrow(fast)/2),each=2)
-mfast <- merge(subset(fast,fast),
-               subset(fast,!fast, c("i", "est")),
-               by="i",
-               suffixes=c(".fast",".slow"))
-mfast$fast <- NULL
-mfast$absdrho <- pmax(abs(mfast$est.fast - mfast$est.slow), 1E-16)
-aggfast <- summaryBy(absdrho ~ n + rho + type, data=mfast, FUN=mean, na.rm=TRUE)
+# fast$i <- rep(1:(nrow(fast)/2),each=2)
+# mfast <- merge(subset(fast,fast),
+#                subset(fast,!fast, c("i", "est")),
+#                by="i",
+#                suffixes=c(".fast",".slow"))
+# mfast$fast <- NULL
+# mfast$absdrho <- pmax(abs(mfast$est.fast - mfast$est.slow), 1E-16)
+# aggfast <- summaryBy(absdrho ~ n + rho + type, data=mfast, FUN=mean, na.rm=TRUE)
 fmax <- max(aggfast$absdrho.mean)
 fmax10 <- ceiling(log10(fmax))
 ```
@@ -249,12 +248,12 @@ The following plot shows the mean computing time (in seconds) versus $n$.
 
 **`r fig_nums("speedi", display="cite")`.** *Computation time comparison.*  
 ```{r plot speed, echo=FALSE,fig.width=7, fig.height=3.5}
-speed$class <- ifelse(speed$ML, "ML=T,", "ML=F,")
-speed$class <- paste0(speed$class, ifelse(speed$fast, "fast=T", "fast=F"))
-speed$t <- pmax(speed$t, 0.001)
-agg <- summaryBy(t ~ n + type + class, data=speed, FUN=mean, na.rm=TRUE)
+# speed$class <- ifelse(speed$ML, "ML=T,", "ML=F,")
+# speed$class <- paste0(speed$class, ifelse(speed$fast, "fast=T", "fast=F"))
+# speed$t <- pmax(speed$t, 0.001)
+# agg <- summaryBy(t ~ n + type + class, data=speed, FUN=mean, na.rm=TRUE)
 xyplot(t.mean ~ n|type,
-       data=subset(agg, type %in% c("Polyserial", "Polychoric")),
+       data=subset(aggSpeed, type %in% c("Polyserial", "Polychoric")),
        type=c("l", "g"),
        ylab="Computing Time",
        scales=list(y=list(log=10, cex=0.7), x=list(log=10, cex=0.7)),

@@ -75,4 +75,3 @@ The weighted Pearson formula appears in many places, including the "correlate" f
 \seealso{
 \ifelse{latex}{\code{cor}}{\code{\link[stats]{cor}}}
 }
-
