@@ -9,7 +9,7 @@ Description: Calculates Pearson, Spearman, polychoric, and polyserial correlatio
 License: GPL-2
 BugReports: https://github.com/ahmademad/wCorr/issues
 Imports: minqa, mnormt, Rcpp, stats 
-Depends: R (>= 3.0.0) 
+Depends: R (>= 3.3.0) 
 RoxygenNote: 6.0.1
 Suggests: knitr, rmarkdown, lattice, captioner
 VignetteBuilder: knitr
