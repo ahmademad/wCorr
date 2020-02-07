@@ -34,25 +34,10 @@ polycFast <- function(x,y,w,ML=FALSE) {
     -1 * lnl(xytab, cc=fscale_cutsFast(theta2), rc=fscale_cutsFast(theta1), corr=fscale_corr(par))
   }
 
-
   fscale_corr <- function(par) {
     tanh(par)
   }
   xytab <- tableFast(x,y,w)
-
-  #GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
-
- # if (!(GKgamma %in%  c(-1,1)))
- #   if (discord %in% c(-1,1))
- #   {
- #     print(paste("Discord = ", discord(xytab)))
- #     print(paste("GK = ", unname(GKgamma)))
- #   }
-
-  # if( GKgamma %in%  c(-1,1)) {
-  #  return(unname(GKgamma))
-  # }
-
 
   temp <- discord(xytab)
 

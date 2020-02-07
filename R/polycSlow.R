@@ -121,13 +121,6 @@ polycSlow <- function(x,y,w,ML=FALSE) {
     return(-1)
   }
  
-  #GKgamma <- rcorr.cens(x,y,outx=T)["Dxy"]
-  #if( GKgamma %in%  c(-1,1)) {
-  #  return(unname(GKgamma))
-  #}
-
-  #op <- optim(par=c(log(1:(ncol(xytab)-1)), log(1:(nrow(xytab)-1)),cor(x,y)), optf_all, xytab=xytab, control=list(fnscale=-1), method="BFGS")
-  #fscale_corr(op$par[length(op$par)])
   ux <- sort(unique(x))
   cut1 <- imapTheta( sapply(ux[-length(ux)],function(z) qnorm(sum(w[x<=z])/sum(w)) ))
   uy <- sort(unique(y))

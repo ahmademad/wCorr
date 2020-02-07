@@ -5,14 +5,15 @@
 \title{Calculates bivariate Pearson, Spearman, polychoric, and polyserial correlation coefficients}
 \usage{
 weightedCorr(x, y, method = c("Pearson", "Spearman", "Polyserial",
-  "Polychoric"), weights = rep(1, length(x)), ML = FALSE, fast = TRUE)
+  "Polychoric"), weights = rep(1, length(x)), ML = FALSE,
+  fast = TRUE, na.action = options()$na.action)
 }
 \arguments{
 \item{x}{a numeric (or numeric factor in case of polychoric) vector or an object that can be
-coerced to a numeric or factor vector.}
+coerced to a numeric or factor vector}
 
 \item{y}{a numeric vector (or factor in case of polychoric and polyserial) or an object that
-can be coerced to a numeric or factor vector.}
+can be coerced to a numeric or factor vector}
 
 \item{method}{a character string indicating which correlation coefficient is
 to be computed. These include "Pearson" (default), "Spearman", "Polychoric", or "Polyserial".
@@ -28,6 +29,8 @@ compute time. See the 'wCorr Arguments' vignette for a description of the effect
 \item{fast}{a Boolean value indicating if the Rcpp methods should be used. Setting this value to FALSE
 uses the pure R implementation and is included primarily for comparing the implementations
 to each other. See the 'wCorr Arguments' vignette for a description of the effect of this argument.}
+
+\item{na.action}{Similar to \ifelse{latex}{\code{lm}}{\code{\link[stats]{lm}}}}
 }
 \value{
 A scalar that is the estimated correlation.

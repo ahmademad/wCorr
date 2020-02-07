@@ -12,15 +12,12 @@ polysFast <- function(x, M, w, ML=FALSE) {
   }
   theta0 <- sapply(uM[-length(uM)],function(z) qnorm(weighted.mean(M<=z, w)) )
   if(ML) {
-    #values = mainF(x, M, w, theta0)
-    #theta0 <- imapThetaFast2(theta(M));
-    #bob <- bobyqa(par=c(imapCor(cor(x,M)),imapTheta(theta0)), fn=optF(x,M,w))
     temp = w/sum(w)
     temp2 = fixxFast(x, temp)
     temp3 = sum(temp*dnorm(temp2,log=TRUE))
     bob <- suppressWarnings(bobyqa(par=c(atanh(cor(x,M)),imapThetaFast2(theta0)),
                   fn=optFFast, x=temp2,  w=temp, M=M, temp3 = temp3))
-    return(  tanh(bob$par[1]))
+    return(tanh(bob$par[1]))
   } else {
     temp = w/sum(w)
     temp2 = fixxFast(x, temp)

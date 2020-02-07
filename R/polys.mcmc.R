@@ -1,7 +1,3 @@
-#require(MASS)
-#require(sqldf)
-#source("G:/pdbr/helpers.R")
-
 polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
   t1 <- list(xbar=Inf,xsd=Inf,wlpx=Inf)
 
@@ -112,18 +108,7 @@ polys.mcmc <- function(x,y,w=rep(1,length(x)), verbose=FALSE, nmax=1e3) {
     hist$sdx[i] <- sdx
     hist$corr[i] <- corr
     hist$lnl[i] <- lnl0
-    #progress(i, i.max = nmax, n = 40)
   }
-
-  # enforce burn in
-  # plot(1:nrow(hist), hist$lnl)
-  #burni <- which.max( hist$lnl > hist$lnl[nrow(hist)]- 5)
-  #hist <- hist[burni:nrow(hist),]
-  # plot(1:nrow(hist), hist$lnl)
-
-  # go to indep
-
-
 
   mean(hist$corr)
 }
